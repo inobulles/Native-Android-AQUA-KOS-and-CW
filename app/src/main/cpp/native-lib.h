@@ -72,7 +72,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 			return false;
 
 		} else {
-			ALOGW("WARNING Could not load the ROM from assets/root/ROM. Trying from external storage ...\n");
+			ALOGW("WARNING Could not load the file from assets/%s. Trying from external storage ...\n", path);
 
 		}
 

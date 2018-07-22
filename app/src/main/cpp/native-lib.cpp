@@ -26,7 +26,7 @@ extern "C" {
 
 };
 
-#if !defined(DYNAMIC_ES3)
+#ifndef DYNAMIC_ES3
 static GLboolean gl3_stub_init(void) {
 	return GL_TRUE;
 
