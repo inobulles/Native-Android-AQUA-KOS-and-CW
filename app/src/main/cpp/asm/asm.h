@@ -307,6 +307,9 @@ signed_t __THREAD_INST(signed_t address);
 #include "../kos/fs.h"
 #include "../kos/socket.h"
 
+void bmp_load(bitmap_image_t* __this, unsigned long long _path);
+void bmp_free(bitmap_image_t* __this);
+
 #define NOOP (void*) noop,
 
 static void* base_reserved[] = { // predefined functions from the KOS

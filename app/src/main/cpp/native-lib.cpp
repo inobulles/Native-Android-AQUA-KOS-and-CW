@@ -8,12 +8,14 @@
 #include "native-lib.h"
 #include "renderer.h"
 #include "gl.h"
+#include "kos/decoders/bmp.h"
 
-static Renderer* renderer = NULL;
+Renderer* renderer = NULL;
 AAssetManager* asset_manager = NULL;
 
 const char* internal_storage_path;
 bool is_internal_storage_path_set = false;
+bool default_assets = false;
 
 extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager);
@@ -78,7 +80,19 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	unsigned long long buffer_bytes;
 
 	if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
-		ALOGE("ERROR Could not load the ROM\n");
+		if (!default_assets) {
+			ALOGW("WARNING Could not load the ROM from internal storage. Trying from assets ...\n");
+			default_assets = true;
+
+			if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
+				ALOGE("ERROR Could not load the ROM from assets either\n");
+
+			}
+
+		} else {
+			ALOGE("ERROR Could not load the ROM\n");
+
+		}
 
 	}
 
@@ -100,7 +114,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	}
 
 	if (*code_buffer) {
-		ALOGV("WARNING ROM reading did not end cleanly (%d)\n", *code_buffer);
+		ALOGW("WARNING ROM reading did not end cleanly (%d)\n", *code_buffer);
 
 	}
 

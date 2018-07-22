@@ -124,6 +124,8 @@ void surface_free(surface_t* __this) {
 
 }
 
+extern Renderer* renderer;
+
 void surface_draw(surface_t* __this) {
 	renderer->draw_surface(__this);
 

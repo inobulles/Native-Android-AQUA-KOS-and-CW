@@ -43,7 +43,6 @@
 #define printf ALOGV
 
 #define MAX_PATH_LENGTH 4096
-#define DEFAULT_ASSETS 1
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
 	unsigned long long length = strlen(path);
@@ -54,7 +53,9 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 
 	}
 
-	if (DEFAULT_ASSETS) {
+	extern bool default_assets;
+
+	if (default_assets) {
 		extern AAssetManager* asset_manager;
 		AAsset* asset = AAssetManager_open(asset_manager, path, AASSET_MODE_UNKNOWN);
 

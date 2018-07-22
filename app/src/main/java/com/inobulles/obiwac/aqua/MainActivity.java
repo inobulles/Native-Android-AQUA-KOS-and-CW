@@ -28,14 +28,8 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 		File directory = Environment.getExternalStorageDirectory();
 
-		if (directory == null) {
-			Log.w(TAG, "WARNING Failed to get external path\n");
-
-		} else {
-			Log.e(TAG, directory.toString());
-			Lib.give_internal_storage_path(directory.toString());
-
-		}
+		if (directory == null) Log.w(TAG, "WARNING Failed to get external path\n");
+		else Lib.give_internal_storage_path(directory.toString());
 
 	}
 
