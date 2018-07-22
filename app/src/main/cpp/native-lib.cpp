@@ -12,6 +12,9 @@
 static Renderer* renderer = NULL;
 AAssetManager* asset_manager = NULL;
 
+const char* internal_storage_path;
+bool is_internal_storage_path_set = false;
+
 extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jobject obj, jint width, jint height);
@@ -75,7 +78,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	unsigned long long buffer_bytes;
 
 	if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
-		ALOGE("ERROR Could not load the ROM from assets/root/ROM\n");
+		ALOGE("ERROR Could not load the ROM\n");
 
 	}
 

@@ -1,6 +1,6 @@
 
-#ifndef GLES3JNI_H
-#define GLES3JNI_H 1
+#ifndef NATIVE_LIB_H
+#define NATIVE_LIB_H
 
 #include <math.h>
 #include <assert.h>
@@ -14,7 +14,7 @@
 #include "kos/lib/structs.h"
 
 #if DYNAMIC_ES3
-#include "gl3stub.h"
+#include "gl3_stub.h"
 #else
 
 #if __ANDROID_API__ >= 24
@@ -32,6 +32,7 @@
 
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define ALOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 
 #if VERBOSE_OUTPUT
 #define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
@@ -42,10 +43,7 @@
 #define printf ALOGV
 
 #define MAX_PATH_LENGTH 4096
-#define DEFAULT_ASSETS 1
-
-const char* internal_storage_path;
-bool is_internal_storage_path_set = false;
+#define DEFAULT_ASSETS 0
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
 	unsigned long long length = strlen(path);
@@ -57,14 +55,14 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	}
 
 	if (DEFAULT_ASSETS) {
-		extern AAssetManager *asset_manager;
-		AAsset *asset = AAssetManager_open(asset_manager, path, AASSET_MODE_UNKNOWN);
+		extern AAssetManager* asset_manager;
+		AAsset* asset = AAssetManager_open(asset_manager, path, AASSET_MODE_UNKNOWN);
 
 		if (asset) {
 			assert(asset);
 
 			*bytes = (size_t) AAsset_getLength(asset);
-			*buffer = (char *) malloc(*bytes + 1);
+			*buffer = (char*) malloc(*bytes + 1);
 
 			AAsset_read(asset, *buffer, *bytes);
 			AAsset_close(asset);
@@ -73,11 +71,20 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 			return false;
 
 		} else {
-			ALOGV("WARNING Could not load the ROM from assets/root/ROM. Trying from external storage ...\n");
+			ALOGW("WARNING Could not load the ROM from assets/root/ROM. Trying from external storage ...\n");
 
 		}
 
 	}
+
+	extern const char* internal_storage_path;
+	extern bool is_internal_storage_path_set;
+
+	char internal_path[MAX_PATH_LENGTH + length + 2];
+	strcpy(internal_path, internal_storage_path);
+	strcpy(internal_path, "/");
+	strcat(internal_path, path);
+	ALOGI("%s\n", internal_path);
 
 	if (0) {
 		return false;

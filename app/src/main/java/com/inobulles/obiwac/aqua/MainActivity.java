@@ -9,7 +9,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import java.io.File;
+
 public class MainActivity extends /* AppCompatActivity */ Activity {
+	public static String TAG = "AQUA";
+
 	private static View view;
 	public static AssetManager assets;
 	
@@ -21,7 +25,15 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		view = new View(getApplication());
 		setContentView(view);
 
-		Lib.give_internal_storage_path(this.getFilesDir().getAbsolutePath());
+		File directory = getExternalFilesDir(null);
+
+		if (directory == null) {
+			Log.w(TAG, "WARNING Failed to get external path\n");
+
+		} else {
+			Lib.give_internal_storage_path(directory.getAbsolutePath());
+
+		}
 
 	}
 
