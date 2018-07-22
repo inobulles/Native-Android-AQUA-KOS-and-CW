@@ -13,5 +13,6 @@ public class Lib {
 	public static native void resize(int width, int height);
 	public static native void step();
 	public static native void event(int pointer_index, int pointer_type, int x, int y, int quit, int release);
+	public static native void give_internal_storage_path(String path);
 
 }

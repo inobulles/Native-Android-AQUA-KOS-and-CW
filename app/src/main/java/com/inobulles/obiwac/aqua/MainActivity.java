@@ -21,6 +21,8 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		view = new View(getApplication());
 		setContentView(view);
 
+		Lib.give_internal_storage_path(this.getFilesDir().getAbsolutePath());
+
 	}
 
 	@Override

@@ -17,6 +17,7 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jobject obj, jint width, jint height);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
 
 };
 
@@ -161,5 +162,13 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(JNIEnv* env, job
 
 	event_pointer_x = x;
 	event_pointer_y = y;
+
+}
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path) {
+	internal_storage_path = env->GetStringUTFChars(path, 0);
+	is_internal_storage_path_set = true;
+
+	ALOGV("INFO Internal storage path set to `%s`\n", internal_storage_path);
 
 }
