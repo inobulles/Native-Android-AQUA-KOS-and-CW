@@ -43,7 +43,7 @@
 #define printf ALOGV
 
 #define MAX_PATH_LENGTH 4096
-#define DEFAULT_ASSETS 0
+#define DEFAULT_ASSETS 1
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
 	unsigned long long length = strlen(path);
@@ -80,16 +80,36 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	extern const char* internal_storage_path;
 	extern bool is_internal_storage_path_set;
 
-	char internal_path[MAX_PATH_LENGTH + length + 2];
-	strcpy(internal_path, internal_storage_path);
-	strcpy(internal_path, "/");
-	strcat(internal_path, path);
-	ALOGI("%s\n", internal_path);
+	FILE* pointer = nullptr;
 
-	if (0) {
+	if (is_internal_storage_path_set) {
+		char internal_path[MAX_PATH_LENGTH + length + 3];
+		strcpy(internal_path, internal_storage_path);
+		strcpy(internal_path, "/");
+		strcat(internal_path, path);
+
+		ALOGI("%s\n", internal_path);
+		pointer = fopen(internal_path, "r");
+
+	}
+
+	if (is_internal_storage_path_set && pointer != nullptr) {
+		fseek(pointer, 0L, SEEK_END);
+
+		*bytes = (unsigned long long) ftell(pointer);
+		*buffer = (char*) malloc(*bytes + 1);
+
+		rewind(pointer);
+		fread(*buffer, *bytes, 1, pointer);
+
 		return false;
 
 	} else {
+		if (!is_internal_storage_path_set) {
+			ALOGW("WARNING Internal storage path could not be set\n");
+
+		}
+
 		*bytes = 0;
 		*buffer = NULL;
 

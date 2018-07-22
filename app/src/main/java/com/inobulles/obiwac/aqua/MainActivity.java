@@ -6,13 +6,14 @@ import android.app.Activity;
 
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import java.io.File;
 
 public class MainActivity extends /* AppCompatActivity */ Activity {
-	public static String TAG = "AQUA";
+	public static final String TAG = "AQUA";
 
 	private static View view;
 	public static AssetManager assets;
@@ -25,13 +26,14 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		view = new View(getApplication());
 		setContentView(view);
 
-		File directory = getExternalFilesDir(null);
+		File directory = Environment.getExternalStorageDirectory();
 
 		if (directory == null) {
 			Log.w(TAG, "WARNING Failed to get external path\n");
 
 		} else {
-			Lib.give_internal_storage_path(directory.getAbsolutePath());
+			Log.e(TAG, directory.toString());
+			Lib.give_internal_storage_path(directory.toString());
 
 		}
 
