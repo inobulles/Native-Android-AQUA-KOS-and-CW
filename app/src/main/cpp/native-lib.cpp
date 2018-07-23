@@ -40,6 +40,10 @@ static program_t de_program;
 #include <android/asset_manager_jni.h>
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
+	jclass lib = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	jmethodID create_font = env->GetMethodID(lib, "create_font", "");
+	jobject result = env->CallObjectMethod(obj, create_font);
+
 	// asset manager stuff
 
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);

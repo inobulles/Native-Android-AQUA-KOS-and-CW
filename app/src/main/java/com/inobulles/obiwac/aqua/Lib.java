@@ -2,10 +2,16 @@
 package com.inobulles.obiwac.aqua;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 public class Lib {
 	static {
 		System.loadLibrary("native-lib");
+
+	}
+
+	public static void create_font() {
+		Log.e("asdasd", "asdasdiukhasdkausdh\n");
 
 	}
 
