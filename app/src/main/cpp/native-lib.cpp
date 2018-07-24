@@ -39,10 +39,42 @@ static program_t de_program;
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+#define CALLBACK_NO_PARAMS "()V"
+
+static JNIEnv* callback_env;
+static jclass callback_lib;
+
+typedef struct {
+	bool found;
+	jmethodID method;
+
+} callback_method_t;
+
+static callback_method_t create_font;
+
+static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
+	__this->found = false;
+	__this->method = callback_env->GetStaticMethodID(callback_lib, name, params);
+
+	if (__this->method == 0) {
+		ALOGW("WARNING `%s` method could not be found\n", name);
+
+	} else {
+		__this->found = true;
+
+	}
+
+}
+
+#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method), __VA_ARGS__)
+#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method), __VA_ARGS__)
+
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
-	jclass lib = env->FindClass("com/inobulles/obiwac/aqua/Lib");
-	jmethodID create_font = env->GetMethodID(lib, "create_font", "");
-	jobject result = env->CallObjectMethod(obj, create_font);
+	callback_env = env;
+	callback_lib = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+
+	init_callback_function(&create_font, "create_font", CALLBACK_NO_PARAMS);
+	CALLBACK_VOID(create_font, NULL);
 
 	// asset manager stuff
 
