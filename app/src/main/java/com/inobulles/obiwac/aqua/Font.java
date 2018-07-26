@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 public class Font {
 	private Paint paint;
 
-	public Font(String path, int size) {
+	Font(String path, int size) {
 		Typeface face = Typeface.createFromFile(path);
 		paint = new Paint();
 

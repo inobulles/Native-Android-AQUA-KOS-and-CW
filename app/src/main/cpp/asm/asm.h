@@ -395,11 +395,11 @@ static void* base_reserved[] = { // predefined functions from the KOS
 	(void*) map,
 	(void*) surface_scroll,
 
-	NOOP // get_font_width,
-	NOOP // get_font_height,
+	(void*) get_font_width,
+	(void*) get_font_height,
 	(void*) new_font,
-	NOOP // create_texture_from_font,
-	NOOP // font_remove,
+	(void*) create_texture_from_font,
+	(void*) font_remove,
 
 	(void*) break_point,
 	(void*) index_rom,

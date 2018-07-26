@@ -41,7 +41,10 @@ es3_renderer::es3_renderer(void) : egl_context(eglGetCurrentContext()) {
 }
 
 bool es3_renderer::init(void) {
+	extern bool default_assets;
+
 	int error = 0;
+	default_assets = true;
 
 	error += load_asset("es3_vertex_shader.glsl", &VERTEX_SHADER);
 	error += load_asset("es3_fragment_shader.glsl", &FRAGMENT_SHADER);
@@ -52,6 +55,7 @@ bool es3_renderer::init(void) {
 
 	}
 
+	default_assets = false;
 	shader_program = create_program(VERTEX_SHADER, FRAGMENT_SHADER);
 
 	if (!shader_program) {

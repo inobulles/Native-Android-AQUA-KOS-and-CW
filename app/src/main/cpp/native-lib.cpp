@@ -39,42 +39,19 @@ static program_t de_program;
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-#define CALLBACK_NO_PARAMS "()V"
-
-static JNIEnv* callback_env;
-static jclass callback_lib;
-
-typedef struct {
-	bool found;
-	jmethodID method;
-
-} callback_method_t;
-
-static callback_method_t create_font;
-
-static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
-	__this->found = false;
-	__this->method = callback_env->GetStaticMethodID(callback_lib, name, params);
-
-	if (__this->method == 0) {
-		ALOGW("WARNING `%s` method could not be found\n", name);
-
-	} else {
-		__this->found = true;
-
-	}
-
-}
-
-#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method), __VA_ARGS__)
-#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method), __VA_ARGS__)
-
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env = env;
 	callback_lib = env->FindClass("com/inobulles/obiwac/aqua/Lib");
 
-	init_callback_function(&create_font, "create_font", CALLBACK_NO_PARAMS);
-	CALLBACK_VOID(create_font, NULL);
+#define CALLBACK_FONT_AND_TEXT "(ILjava/lang/String;)I"
+
+	init_callback_function(&java_new_font, "new_font", "(Ljava/lang/String;I)I");
+	init_callback_function(&java_font_remove, "font_remove", "(I)V");
+
+	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
+	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
+
+	init_callback_function(&java_create_texture_from_font, "create_texture_from_font", "(ILjava/lang/String;)[B");
 
 	// asset manager stuff
 
@@ -89,10 +66,10 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	}
 
-	printGlString("Version", GL_VERSION);
-	printGlString("Vendor", GL_VENDOR);
-	printGlString("Renderer", GL_RENDERER);
-	printGlString("Extensions", GL_EXTENSIONS);
+	print_gl_string("Version", GL_VERSION);
+	print_gl_string("Vendor", GL_VENDOR);
+	print_gl_string("Renderer", GL_RENDERER);
+	print_gl_string("Extensions", GL_EXTENSIONS);
 
 	const char* version_string = (const char*) glGetString(GL_VERSION);
 

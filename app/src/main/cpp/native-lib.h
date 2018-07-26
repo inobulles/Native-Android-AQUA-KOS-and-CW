@@ -42,6 +42,43 @@
 
 #define printf ALOGV
 
+#define CALLBACK_NO_PARAMS "()V"
+
+static JNIEnv* callback_env;
+static jclass callback_lib;
+
+typedef struct {
+	bool found;
+	jmethodID method;
+
+} callback_method_t;
+
+static callback_method_t java_new_font;
+static callback_method_t java_font_remove;
+
+static callback_method_t java_get_font_width;
+static callback_method_t java_get_font_height;
+
+static callback_method_t java_create_texture_from_font;
+
+static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
+	__this->found = false;
+	__this->method = callback_env->GetStaticMethodID(callback_lib, name, params);
+
+	if (__this->method == 0) {
+		ALOGW("WARNING `%s` method could not be found\n", name);
+
+	} else {
+		__this->found = true;
+
+	}
+
+}
+
+#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method), __VA_ARGS__)
+#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method), __VA_ARGS__)
+#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_lib, (&address)->method), __VA_ARGS__)
+
 #define MAX_PATH_LENGTH 4096
 
 #define GET_PATH(_path) \
@@ -95,7 +132,6 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 		strcpy(internal_path, "/");
 		strcat(internal_path, path);
 
-		ALOGI("%s\n", internal_path);
 		pointer = fopen(internal_path, "r");
 
 	}
