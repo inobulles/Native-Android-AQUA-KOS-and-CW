@@ -61,6 +61,9 @@ static callback_method_t java_get_font_height;
 
 static callback_method_t java_create_texture_from_font;
 
+static callback_method_t java_read_external_slash_internal_storage_path;
+static callback_method_t java_read_external_slash_internal_storage_path_bytes;
+
 static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
 	__this->found = false;
 	__this->method = callback_env->GetStaticMethodID(callback_lib, name, params);
@@ -75,9 +78,9 @@ static void init_callback_function(callback_method_t* __this, const char* name, 
 
 }
 
-#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method), __VA_ARGS__)
-#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method), __VA_ARGS__)
-#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_lib, (&address)->method), __VA_ARGS__)
+#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method, __VA_ARGS__))
+#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method, __VA_ARGS__))
+#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_lib, (&address)->method, __VA_ARGS__))
 
 #define MAX_PATH_LENGTH 4096
 
@@ -115,7 +118,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 			return false;
 
 		} else {
-			ALOGW("WARNING Could not load the file from assets/%s. Trying from external storage ...\n", path);
+			ALOGW("WARNING Could not load the file from assets/%s. Trying from internal / external storage ...\n", path);
 
 		}
 
@@ -124,32 +127,19 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	extern const char* internal_storage_path;
 	extern bool is_internal_storage_path_set;
 
-	FILE* pointer = nullptr;
+	jlong temp_bytes = CALLBACK(java_read_external_slash_internal_storage_path_bytes, callback_env->CallStaticLongMethod, callback_env->NewStringUTF(path));
 
-	if (is_internal_storage_path_set) {
-		char internal_path[MAX_PATH_LENGTH + length + 3];
-		strcpy(internal_path, internal_storage_path);
-		strcpy(internal_path, "/");
-		strcat(internal_path, path);
-
-		pointer = fopen(internal_path, "r");
-
-	}
-
-	if (is_internal_storage_path_set && pointer != nullptr) {
-		fseek(pointer, 0L, SEEK_END);
-
-		*bytes = (unsigned long long) ftell(pointer);
-		*buffer = (char*) malloc(*bytes + 1);
-
-		rewind(pointer);
-		fread(*buffer, *bytes, 1, pointer);
+	if (temp_bytes >= 0) {
+		printf("%s %lld\n", path, (long long int) temp_bytes);
+		*bytes = (unsigned long long) temp_bytes;
+		*buffer = (char*) callback_env->GetStringUTFChars((jstring) CALLBACK(java_read_external_slash_internal_storage_path, callback_env->CallStaticObjectMethod, callback_env->NewStringUTF(path)), 0);
+		printf("%s\n", *buffer);
 
 		return false;
 
 	} else {
 		if (!is_internal_storage_path_set) {
-			ALOGW("WARNING Internal storage path could not be set\n");
+			ALOGW("WARNING Internal / external storage path could not be set\n");
 
 		}
 

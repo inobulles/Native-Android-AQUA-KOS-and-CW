@@ -19,6 +19,7 @@ font_t new_font(const char* _path, unsigned long long size) {
 
 	}
 
+	printf("JEFF MY nAME IS STILL\n");
 	jint error = CALLBACK_INT(java_new_font, callback_env->NewStringUTF(path), (jint) size);
 
 	if (error < 0) {
@@ -39,7 +40,7 @@ void font_remove(font_t font) {
 }
 
 texture_t create_texture_from_font(font_t font, const char* text) {
-	jbyteArray error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticVoidMethod, font, callback_env->NewStringUTF(text));
+	jbyteArray error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, font, callback_env->NewStringUTF(text));
 
 	printf("%p\n", error);
 

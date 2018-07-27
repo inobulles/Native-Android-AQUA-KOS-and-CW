@@ -53,6 +53,9 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	init_callback_function(&java_create_texture_from_font, "create_texture_from_font", "(ILjava/lang/String;)[B");
 
+	init_callback_function(&java_read_external_slash_internal_storage_path, "read_external_slash_internal_storage_path", "(Ljava/lang/String;)Ljava/lang/String;");
+	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
+
 	// asset manager stuff
 
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
@@ -94,7 +97,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
 		if (!default_assets) {
-			ALOGW("WARNING Could not load the ROM from internal storage. Trying from assets ...\n");
+			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
 			default_assets = true;
 
 			if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
@@ -199,6 +202,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storag
 	internal_storage_path = env->GetStringUTFChars(path, 0);
 	is_internal_storage_path_set = true;
 
-	ALOGV("INFO Internal storage path set to `%s`\n", internal_storage_path);
+	ALOGV("INFO Internal / external storage path set to `%s`\n", internal_storage_path);
 
 }

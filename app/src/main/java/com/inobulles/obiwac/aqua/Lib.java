@@ -1,8 +1,22 @@
 
 package com.inobulles.obiwac.aqua;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.os.Build;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import static com.inobulles.obiwac.aqua.MainActivity.TAG;
 
 public class Lib {
 	static {
@@ -38,7 +52,7 @@ public class Lib {
 		}
 
 		if (index < 0) {
-			Log.w(MainActivity.TAG, String.format("WARNING You have too many fonts allocated (MAX_FONTS = %d) (use `font_remove to remove them`)\n", MAX_FONTS));
+			Log.w(TAG, String.format("WARNING You have too many fonts allocated (MAX_FONTS = %d) (use `font_remove to remove them`)\n", MAX_FONTS));
 			return -1;
 
 		}
@@ -63,7 +77,7 @@ public class Lib {
 	private static int get_font_dimension(String dimension, int font, String text) {
 		try {
 			if (fonts[font] == null) {
-				Log.w(MainActivity.TAG, String.format("WARNING Cannot get font %s, as font %d does not exist\n", dimension, font));
+				Log.w(TAG, String.format("WARNING Cannot get font %s, as font %d does not exist\n", dimension, font));
 				return -1;
 
 			} else {
@@ -95,6 +109,64 @@ public class Lib {
 			return null;
 
 		}
+
+	}
+
+	private static String buffer_path;
+	private static File buffer_file;
+	private static BufferedReader buffer_buffered_reader;
+
+	private static boolean put_file_in_buffer(String path) {
+		if (buffer_buffered_reader != null) {
+			try {
+				buffer_buffered_reader.close();
+
+			} catch (IOException exception) {
+				exception.printStackTrace();
+
+			}
+
+		}
+
+		buffer_path = Environment.getExternalStorageDirectory().getPath() + File.separator + path;
+		buffer_file = new File(buffer_path);
+
+		System.out.println(buffer_file.length());
+
+		try {
+			buffer_buffered_reader = new BufferedReader(new FileReader(buffer_file));
+			return false;
+
+		} catch (FileNotFoundException exception) {
+			Log.w(TAG, String.format("WARNING File `%s` most probably does not exist\n", buffer_path));
+			return true;
+
+		}
+
+	}
+
+	public static long read_external_slash_internal_storage_path_bytes(String path) {
+		if (put_file_in_buffer(path)) return -1;
+		else return buffer_file.length();
+
+	}
+
+	public static String read_external_slash_internal_storage_path(String path) {
+		if (!path.equals(buffer_path)) {
+			if (!put_file_in_buffer(path)) {
+				try {
+					return buffer_buffered_reader.readLine();
+
+				} catch (IOException exception) {
+					exception.printStackTrace();
+
+				}
+
+			}
+
+		}
+
+		return "(null)";
 
 	}
 

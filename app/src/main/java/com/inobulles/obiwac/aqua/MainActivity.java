@@ -2,11 +2,15 @@
 package com.inobulles.obiwac.aqua;
 
 //import android.support.v7.app.AppCompatActivity;
+import android.Manifest;
 import android.app.Activity;
 
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -17,7 +21,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	private static View view;
 	public static AssetManager assets;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,6 +34,17 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 		if (directory == null) Log.w(TAG, "WARNING Failed to get external path\n");
 		else Lib.give_internal_storage_path(directory.toString());
+
+		if (Build.VERSION.SDK_INT >= 23) {
+			int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+			if (permission != PackageManager.PERMISSION_GRANTED) {
+				this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+				Log.w(TAG, "WARNING AQUA does not have the permission to read external storage\n");
+
+			}
+
+		}
 
 	}
 
