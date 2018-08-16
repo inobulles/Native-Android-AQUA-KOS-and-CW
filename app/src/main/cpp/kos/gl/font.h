@@ -20,7 +20,6 @@ font_t new_font(const char* _path, unsigned long long size) {
 	}
 
 	jint error = CALLBACK_INT(java_new_font, (jint) size, callback_env->NewStringUTF(path));
-	printf("%d\n", error);
 
 	if (error < 0) {
 		printf("WARNING Java had a problem loading the font\n");
@@ -31,8 +30,8 @@ font_t new_font(const char* _path, unsigned long long size) {
 
 }
 
-unsigned long long get_font_width(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_width, font, callback_env->NewStringUTF(text)); }
-unsigned long long get_font_height(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_height, font, callback_env->NewStringUTF(text)); }
+unsigned long long get_font_width(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_width, (jint) font, callback_env->NewStringUTF(text)); }
+unsigned long long get_font_height(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_height, (jint) font, callback_env->NewStringUTF(text)); }
 
 void font_remove(font_t font) {
 	CALLBACK_VOID(java_font_remove, font);
@@ -40,16 +39,20 @@ void font_remove(font_t font) {
 }
 
 texture_t create_texture_from_font(font_t font, const char* text) {
-	jbyteArray error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, font, callback_env->NewStringUTF(text));
-
-	printf("%p\n", error);
+	jbyteArray error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, (jint) font, callback_env->NewStringUTF(text));
+	jint length = callback_env->GetArrayLength(error);
+	unsigned char* bytes = new unsigned char[length];
+	callback_env->GetByteArrayRegion(error, 0, length, reinterpret_cast<jbyte*>(bytes));
 
 	if (error == NULL) {
 		printf("WARNING Java had a problem loading the font\n");
 
 	}
 
-	return (texture_t) texture_create((unsigned long long*) error, get_font_width(font, text), get_font_height(font, text), 32);
+	texture_t texture = texture_create((unsigned long long*) bytes, get_font_height((jint) font, text), get_font_width((jint) font, text), 32);
+	delete bytes;
+
+	return texture;
 
 }
 

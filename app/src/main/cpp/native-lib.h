@@ -120,7 +120,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 			return false;
 
 		} else {
-			ALOGW("WARNING Could not load the file from assets/%s. Trying from internal / external storage ...\n", path);
+			ALOGW("WARNING Could not load the file from `assets/%s`. Trying from internal / external storage ...\n", path);
 
 		}
 

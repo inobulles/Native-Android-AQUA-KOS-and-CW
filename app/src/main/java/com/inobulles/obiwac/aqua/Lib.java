@@ -159,7 +159,7 @@ public class Lib {
 
 	public static byte[] create_texture_from_font(int font, String text) { /// TODO
 		try {
-			if (fonts[font] == null) return fonts[font].draw(text);
+			if (fonts[font] != null) return fonts[font].draw(text);
 			else return null;
 
 		} catch (IndexOutOfBoundsException exception) {

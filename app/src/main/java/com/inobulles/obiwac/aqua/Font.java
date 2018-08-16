@@ -2,11 +2,12 @@ package com.inobulles.obiwac.aqua;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 public class Font {
 	private Paint paint;
@@ -17,7 +18,7 @@ public class Font {
 
 		paint.setAntiAlias(true);
 		paint.setTextSize(size);
-		paint.setColor(0xFFFFFFFF);
+		paint.setColor(Color.WHITE);
 		paint.setTypeface(face);
 
 	}
@@ -38,19 +39,16 @@ public class Font {
 
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
-		bitmap.eraseColor(0x00000000);
+		bitmap.eraseColor(0);
 
-		canvas.drawText(text, 0, 1, 0, 0, paint);
+		Paint.FontMetrics metric = paint.getFontMetrics();
+		canvas.drawText(text, 0, ((int) Math.ceil(metric.descent - metric.ascent)) - metric.descent, paint);
 
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
+		bitmap.copyPixelsToBuffer(buffer);
 
-		byte[] array = stream.toByteArray();
-
-		if (array == null) {
-			Log.e(MainActivity.TAG, "WARNING Font.draw did not work\n");
-
-		}
+		byte[] array = buffer.array();
+		bitmap.recycle();
 
 		return array;
 

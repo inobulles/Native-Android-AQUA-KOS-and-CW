@@ -54,12 +54,20 @@ unsigned long long bmp_support(void) {
 #define BMP_MAGIC 0x4D42
 
 void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
+	if (!(*((char*) _path))) {
+		_path = (unsigned long long) "test.bmp";
+		printf("WARNING Empty path in %s (setting path to `%s`)\n", __func__, (char*) _path);
+
+	}
+
 	unsigned long long bytes;
 
 	char* buffer;
 	char* original;
 
 	GET_PATH((char*) _path);
+
+	printf("%s\n", path);
 
 	if (load_asset_bytes(path, &buffer, &bytes)) {
 		printf("WARNING Image file could not be opened (probably wrong path `%s`)\n", path);
