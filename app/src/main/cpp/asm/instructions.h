@@ -36,8 +36,15 @@ static inline void movzx_instruction(program_t* __this, unsigned_t ltype, unsign
 	
 }
 
+static inline void movsx_instruction(program_t* __this, unsigned_t ltype, unsigned_t ldata, unsigned_t rtype, unsigned_t rdata) {
+	set_value(__this, ltype, ldata, sign_extend(get_value(__this, rtype, rdata)));
+	
+}
+
 static inline void jmp_instruction(program_t* __this, unsigned_t type, unsigned_t data) {
-    unsigned_t position = type == TOKEN_RESERVED ? __this->reserved_positions[data - __this->label_position_offset] : data;
+	data--;
+	
+    //~ unsigned_t position = type == TOKEN_RESERVED ? __this->reserved_positions[data - __this->label_position_offset] : data;
 	__this->registers[REGISTER_rip] = get_value(__this, type, data) + __this->base_rip;
 	
 }
@@ -135,12 +142,12 @@ static inline void call_instruction(program_t* __this, unsigned_t type, unsigned
         	__this->registers[REGISTER_FAMILY_d], \
         	__this->registers[REGISTER_FAMILY_c], \
         	__this->registers[REGISTER_r8d]);
-
-	} else if (type == TOKEN_REGISTER) {
+        
+	} else if (type == TOKEN_REGISTER || type == TOKEN_RESERVED) {
 		/*#if VERBOSE
 			printf("=== FUNCTION ===\n");
 		#endif*/
-
+		
 		push_instruction(__this, TOKEN_REGISTER, REGISTER_rip);
 		jmp_instruction(__this, type, data);
 
@@ -163,7 +170,7 @@ static inline void ret_instruction(program_t* __this) {
 	jmp_instruction(__this, TOKEN_NUMBER, *((unsigned_t*) __this->registers[REGISTER_rsp]) - __this->base_rip);
 	__this->registers[REGISTER_rsp] += size; // pop
 
-    __this->nest--;
+	__this->nest--;
 	
 	if (__this->nest < 0) {
 		if (__this->current_thread == 0) {
@@ -197,6 +204,9 @@ static inline void mul_instruction(program_t* __this, unsigned_t ltype, unsigned
 
 static inline void neg_instruction(program_t* __this, unsigned_t type, unsigned_t data) { set_value(__this, type, data, (unsigned_t) -get_value(__this, type, data)); }
 static inline void not_instruction(program_t* __this, unsigned_t type, unsigned_t data) { set_value(__this, type, data, ~get_value(__this, type, data)); }
+
+static inline void inc_instruction(program_t* __this, unsigned_t type, unsigned_t data) { set_value(__this, type, data, get_value(__this, type, data) + 1); }
+static inline void dec_instruction(program_t* __this, unsigned_t type, unsigned_t data) { set_value(__this, type, data, get_value(__this, type, data) - 1); }
 
 static inline unsigned_t __hi(unsigned_t x) { return x >> 32; }
 static inline unsigned_t __lo(unsigned_t x) { return ((1ull << 32) - 1) & x; }

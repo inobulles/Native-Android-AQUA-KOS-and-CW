@@ -19,8 +19,8 @@ font_t new_font(const char* _path, unsigned long long size) {
 
 	}
 
-	printf("JEFF MY nAME IS STILL\n");
-	jint error = CALLBACK_INT(java_new_font, callback_env->NewStringUTF(path), (jint) size);
+	jint error = CALLBACK_INT(java_new_font, (jint) size, callback_env->NewStringUTF(path));
+	printf("%d\n", error);
 
 	if (error < 0) {
 		printf("WARNING Java had a problem loading the font\n");

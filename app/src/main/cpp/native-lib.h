@@ -44,14 +44,23 @@
 
 #define CALLBACK_NO_PARAMS "()V"
 
+#define MAX_PATH_LENGTH 4096
+
+#define GET_PATH(_path) \
+	char path[MAX_PATH_LENGTH] = "root/"; \
+    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path)); \
+
 static JNIEnv* callback_env;
-static jclass callback_lib;
+static jclass callback_class;
+static jobject callback_lib;
 
 typedef struct {
 	bool found;
 	jmethodID method;
 
 } callback_method_t;
+
+static callback_method_t java_init_lib;
 
 static callback_method_t java_new_font;
 static callback_method_t java_font_remove;
@@ -66,7 +75,7 @@ static callback_method_t java_read_external_slash_internal_storage_path_bytes;
 
 static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
 	__this->found = false;
-	__this->method = callback_env->GetStaticMethodID(callback_lib, name, params);
+	__this->method = callback_env->GetStaticMethodID(callback_class, name, params);
 
 	if (__this->method == 0) {
 		ALOGW("WARNING `%s` method could not be found\n", name);
@@ -78,17 +87,10 @@ static void init_callback_function(callback_method_t* __this, const char* name, 
 
 }
 
-#define CALLBACK(address, call_type, ...) ((call_type)(callback_lib, (&address)->method, __VA_ARGS__))
-#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_lib, (&address)->method, __VA_ARGS__))
-#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_lib, (&address)->method, __VA_ARGS__))
-
-#define MAX_PATH_LENGTH 4096
-
-#define GET_PATH(_path) \
-	char path[MAX_PATH_LENGTH] = "root/"; \
-    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path)); \
-
-
+#define CALLBACK(address, call_type, ...) ((call_type)(callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK_VOID_NO_PARAMS(address) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method))
+#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_class, (&address)->method, __VA_ARGS__))
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
 	unsigned long long length = strlen(path);
@@ -130,10 +132,8 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	jlong temp_bytes = CALLBACK(java_read_external_slash_internal_storage_path_bytes, callback_env->CallStaticLongMethod, callback_env->NewStringUTF(path));
 
 	if (temp_bytes >= 0) {
-		printf("%s %lld\n", path, (long long int) temp_bytes);
 		*bytes = (unsigned long long) temp_bytes;
 		*buffer = (char*) callback_env->GetStringUTFChars((jstring) CALLBACK(java_read_external_slash_internal_storage_path, callback_env->CallStaticObjectMethod, callback_env->NewStringUTF(path)), 0);
-		printf("%s\n", *buffer);
 
 		return false;
 

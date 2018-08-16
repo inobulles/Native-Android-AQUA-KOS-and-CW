@@ -41,11 +41,16 @@ static program_t de_program;
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env = env;
-	callback_lib = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	callback_class = (jclass) env->NewGlobalRef(_class);
+	callback_lib = env->NewGlobalRef(callback_class);
 
 #define CALLBACK_FONT_AND_TEXT "(ILjava/lang/String;)I"
 
-	init_callback_function(&java_new_font, "new_font", "(Ljava/lang/String;I)I");
+	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
+	CALLBACK_VOID_NO_PARAMS(java_init_lib);
+
+	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
 	init_callback_function(&java_font_remove, "font_remove", "(I)V");
 
 	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
@@ -89,8 +94,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	// program stuff
 
-	ALOGV("\nControl passed to the CW\n");
-	ALOGV("Entering DE ...\n");
+	ALOGI("\nControl passed to the CW\n");
+	ALOGI("Entering DE ...\n");
 
 	char* code_buffer;
 	unsigned long long buffer_bytes;
@@ -135,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	}
 
 	free(original_code_buffer);
-	ALOGV("Starting run setup phase ...\n");
+	ALOGI("Starting run setup phase ...\n");
 	program_run_setup_phase(&de_program);
 
 }

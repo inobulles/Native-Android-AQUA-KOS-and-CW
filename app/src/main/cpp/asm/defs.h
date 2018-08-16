@@ -104,6 +104,7 @@
 	#define TOKEN_NUMBER 4
 	#define TOKEN_ADDRESS 6
 	#define TOKEN_PRERESERVED 9
+	#define TOKEN_QTYPE 12
 	
 	#define TOKEN_mov 0
 	#define TOKEN_ret 1

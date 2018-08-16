@@ -132,7 +132,8 @@ const char* get_name(unsigned long long type, unsigned long long data) {
 	}
 
 	else if (type == TOKEN_RESERVED) return "<reserved>";
-	else if (type == TOKEN_PRERESERVED) return "<label>";
+	else if (type == TOKEN_PRERESERVED) return "<pre>";
+	else if (type == TOKEN_QTYPE) return "<qtype>";
 	else if (type == TOKEN_ADDRESS) return "<address>";
 
 	else if (type == TOKEN_END) return "|||";

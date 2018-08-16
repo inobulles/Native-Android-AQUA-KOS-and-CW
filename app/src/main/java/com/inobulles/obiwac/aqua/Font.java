@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
@@ -11,7 +12,7 @@ public class Font {
 	private Paint paint;
 
 	Font(String path, int size) {
-		Typeface face = Typeface.createFromFile(path);
+		Typeface face = Typeface.createFromAsset(MainActivity.assets, path);
 		paint = new Paint();
 
 		paint.setAntiAlias(true);
@@ -44,7 +45,14 @@ public class Font {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
-		return stream.toByteArray();
+		byte[] array = stream.toByteArray();
+
+		if (array == null) {
+			Log.e(MainActivity.TAG, "WARNING Font.draw did not work\n");
+
+		}
+
+		return array;
 
 	}
 

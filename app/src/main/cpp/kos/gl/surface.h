@@ -6,7 +6,7 @@
 #include "../../asm/asm.h"
 #include "../../native-lib.h"
 
-static const float vertex_matrix[] {
+static const float vertex_matrix[] = {
 	0.0f, 2.0f, 1.0f,
 	0.0f, 0.0f, 1.0f,
 	2.0f, 0.0f, 1.0f,
