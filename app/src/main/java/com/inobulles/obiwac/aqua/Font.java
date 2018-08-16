@@ -42,7 +42,7 @@ public class Font {
 		bitmap.eraseColor(0);
 
 		Paint.FontMetrics metric = paint.getFontMetrics();
-		canvas.drawText(text, 0, ((int) Math.ceil(metric.descent - metric.ascent)) - metric.descent, paint);
+		canvas.drawText(text, 0, ((int) Math.ceil(metric.descent - metric.ascent)) - metric.descent * 2, paint);
 
 		ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
 		bitmap.copyPixelsToBuffer(buffer);
