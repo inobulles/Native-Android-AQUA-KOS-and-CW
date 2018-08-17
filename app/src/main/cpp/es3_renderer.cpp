@@ -17,10 +17,11 @@ class es3_renderer : public Renderer {
 	
 	private:
 		const EGLContext egl_context;
-
 		GLuint shader_program;
+
 		GLint sampler_location;
 		GLint has_texture_location;
+//		GLint projection_matrix_location;
 	
 };
 
@@ -64,8 +65,9 @@ bool es3_renderer::init(void) {
 
 	}
 
-	sampler_location = glGetUniformLocation(shader_program, "sampler_texture");
-	has_texture_location = glGetUniformLocation(shader_program, "has_texture");
+	sampler_location =           glGetUniformLocation(shader_program, "sampler_texture");
+	has_texture_location =       glGetUniformLocation(shader_program, "has_texture");
+//	projection_matrix_location = glGetUniformLocation(shader_program, "projection_matrix");
 
 	return true;
 
@@ -89,11 +91,12 @@ static inline void vertex_attribute_pointer(GLuint index, int vector_size, void*
 
 }
 
-static const GLushort indices[] = {0, 1, 2, 0, 2, 3};
+extern GLfloat projection_matrix[16];
 
 void es3_renderer::draw_surface(surface_t* __this) {
 	glUseProgram(shader_program);
 	glUniform1i(has_texture_location, (GLint) __this->has_texture);
+//	glUniformMatrix4fv(projection_matrix_location, 1, GL_FALSE, (GLfloat*) projection_matrix);
 
 	vertex_attribute_pointer(0, 3, __this->vertices);
 	vertex_attribute_pointer(1, 2, __this->texture_coords);
@@ -110,6 +113,6 @@ void es3_renderer::draw_surface(surface_t* __this) {
 
 	}
 
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, __this->faces);
 
 }

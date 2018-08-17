@@ -93,9 +93,9 @@ static void surface_faces(surface_t* __this) {
 	__this->faces[1] = 1;
 	__this->faces[2] = 2;
 
-	__this->faces[3] = 3; // 0
-	__this->faces[4] = 4; // 2
-	__this->faces[5] = 5; // 3
+	__this->faces[3] = 0; // 0
+	__this->faces[4] = 2; // 2
+	__this->faces[5] = 3; // 3
 
 }
 
@@ -185,7 +185,7 @@ void surface_set_height(surface_t* __this, unsigned long long height) {
 }
 
 void surface_set_layer(surface_t* __this, signed long long layer) {
-	__this->layer = layer;
+	__this->layer = 0;//layer;
 	surface_update_vertices(__this);
 
 }

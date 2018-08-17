@@ -15,6 +15,7 @@ bool check_gl_error(const char* function_name) {
 	}
 
 	return false;
+
 }
 
 GLuint create_shader(GLenum shader_type, const char* code) {
@@ -54,6 +55,7 @@ GLuint create_shader(GLenum shader_type, const char* code) {
 	}
 
 	return shader;
+
 }
 
 GLuint create_program(const char* vertex_code, const char* fragment_code) {
@@ -114,6 +116,31 @@ GLuint create_program(const char* vertex_code, const char* fragment_code) {
 	glDeleteShader(fragment_shader);
 
 	return program;
+
+}
+
+GLfloat projection_matrix[16];
+
+void ortho(float left, float right, float top, float bottom, float near, float far) {
+	projection_matrix[0]  =  2.0f / (right - left);
+	projection_matrix[5]  =  2.0f / (top - bottom);
+	projection_matrix[10] = -2.0f / (far - near);
+	projection_matrix[15] = 1.0f;
+
+	projection_matrix[12] = -((right + left) / (right - left));
+	projection_matrix[13] = -((top + bottom) / (top - bottom));
+	projection_matrix[14] = -((far + near)   / (far - near));
+
+	projection_matrix[1]  = 0.0f;
+	projection_matrix[2]  = 0.0f;
+	projection_matrix[3]  = 0.0f;
+	projection_matrix[4]  = 0.0f;
+	projection_matrix[6]  = 0.0f;
+	projection_matrix[7]  = 0.0f;
+	projection_matrix[8]  = 0.0f;
+	projection_matrix[9]  = 0.0f;
+	projection_matrix[11] = 0.0f;
+
 }
 
 #endif
