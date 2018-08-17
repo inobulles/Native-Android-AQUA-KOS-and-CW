@@ -37,7 +37,7 @@ public class Font {
 		Canvas canvas = new Canvas(bitmap);
 		bitmap.eraseColor(0);
 
-		canvas.drawText(text, 0, (int) texture_height - metrics.descent, paint); /// TODO (probably not metric.descent * 2)
+		canvas.drawText(text, 0, (int) texture_height - metrics.descent, paint);
 
 		ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
 		bitmap.copyPixelsToBuffer(buffer);

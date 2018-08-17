@@ -11,7 +11,12 @@ uniform sampler2D sampler_texture;
 uniform int       has_texture;
 
 void main() {
-	if (has_texture != 0) out_colour = vertex_colour * texture(sampler_texture, vertex_texture_coord);
-	else                  out_colour = vertex_colour;
+	vec4 colour;
+
+	if (has_texture != 0) colour = vertex_colour * texture(sampler_texture, vertex_texture_coord);
+	else                  colour = vertex_colour;
+
+	if (colour.w > 0.0f) out_colour = colour;
+	else                 discard;
 
 }

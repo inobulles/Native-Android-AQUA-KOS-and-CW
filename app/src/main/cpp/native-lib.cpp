@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_ALPHA);
 
-//	ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
+	ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
 
 	//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
 	//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
