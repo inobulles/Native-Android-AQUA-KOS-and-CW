@@ -9,7 +9,7 @@
 #define TEXTURE_WARNING 1
 #endif
 
-#define SHARP_TEXTURES 0
+#define SHARP_TEXTURES 1
 #define TEXTURE_WRAP_TYPE GL_MIRRORED_REPEAT // pushes colour to absolute edge, GL_CLAMP_TO_EDGE to wrap colour around
 
 texture_t __texture_create(unsigned long long* data, unsigned long long bpp, unsigned long long width, unsigned long long height, unsigned char warning) {

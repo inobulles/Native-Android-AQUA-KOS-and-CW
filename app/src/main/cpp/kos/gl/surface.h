@@ -27,24 +27,13 @@ static inline void surface_update_vertices(surface_t* __this) {
 	float width  = (float) __this->width  / _UI64_MAX_MARGIN;
 	float height = (float) __this->height / _UI64_MAX_MARGIN;
 
-	if (__this->layer == 0 || __this->layer == -2 || __this->layer == -1 || __this->layer == 2 || __this->layer == 1 || __this->layer == 3 || __this->layer == 4) {
-		printf("WRANG LATTET\n");
-		return;
-
-	} else {
-		__this->layer = 0;
-
-	}
-
-	printf("%lld %f %f %f %f\n", __this->layer, x, y, width, height);
-
 	int i;
 	for (i = 0; i < 4; i++) {
 		// __this->vertices[i].z has a range of -1.0f → 0.999999f
 		__this->vertices[i].z = ((GLfloat) __this->layer) / 500.0f;
 
-		__this->vertices[i].x = (GLfloat) (width  * vertex_matrix[i * 3]     + x);
-		__this->vertices[i].y = (GLfloat) (height * vertex_matrix[i * 3 + 1] + y);
+		__this->vertices[i].x =  (GLfloat) (width  * vertex_matrix[i * 3]     + x);
+		__this->vertices[i].y =  (GLfloat) (height * vertex_matrix[i * 3 + 1] + y);
 
 		if (!__this->scroll_texture) {
 			__this->texture_coords[i].x = (GLfloat) texture_coords[i * 2];
