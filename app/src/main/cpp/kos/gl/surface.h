@@ -20,6 +20,8 @@ static const float texture_coords[] = {
 	1.0f, 0.0f,
 };
 
+static float lyr = -0.5f;
+
 static inline void surface_update_vertices(surface_t* __this) {
 	float width  = (float) __this->width  / _UI64_MAX_MARGIN;
 	float height = (float) __this->height / _UI64_MAX_MARGIN;
@@ -29,7 +31,8 @@ static inline void surface_update_vertices(surface_t* __this) {
 
 	int i;
 	for (i = 0; i < 4; i++) {
-		__this->vertices[i].z = (GLfloat) __this->layer;
+		lyr += 0.1f;
+		__this->vertices[i].z = (GLfloat) lyr;//__this->layer;
 
 		__this->vertices[i].x = (GLfloat) (width  * vertex_matrix[i * 3]     + x);
 		__this->vertices[i].y = (GLfloat) (height * vertex_matrix[i * 3 + 1] + y);
@@ -185,7 +188,7 @@ void surface_set_height(surface_t* __this, unsigned long long height) {
 }
 
 void surface_set_layer(surface_t* __this, signed long long layer) {
-	__this->layer = 0;//layer;
+	__this->layer = layer;
 	surface_update_vertices(__this);
 
 }

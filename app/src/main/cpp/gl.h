@@ -5,11 +5,37 @@
 #ifndef ANDROID_GL_H
 #define ANDROID_GL_H
 
+#include <EGL/egl.h>
+
 bool check_gl_error(const char* function_name) {
 	GLint error = glGetError();
 
 	if (error != GL_NO_ERROR) {
-		ALOGE("WARNING GL error after `%s()` (error = 0x%08x)\n", function_name, error);
+		const char* error_string;
+
+#define GL_TABLE_TOO_LARGE 0x8031
+#define GL_STACK_OVERFLOW  0x0503
+#define GL_STACK_UNDERFLOW 0x0504
+
+		switch (error) {
+			case GL_INVALID_ENUM:                  error_string = "GL_INVALID_ENUM";                  break;
+			case GL_INVALID_VALUE:                 error_string = "GL_INVALID_VALUE";                 break;
+			case GL_INVALID_OPERATION:             error_string = "GL_INVALID_OPERATION";             break;
+
+			case GL_STACK_OVERFLOW:                error_string = "GL_STACK_OVERFLOW";                break;
+			case GL_STACK_UNDERFLOW:               error_string = "GL_STACK_UNDERFLOW";               break;
+
+			case GL_OUT_OF_MEMORY:                 error_string = "GL_OUT_OF_MEMORY";                 break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: error_string = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+			case EGL_CONTEXT_LOST:                 error_string = "EGL_CONTEXT_LOST";                 break;
+			case GL_TABLE_TOO_LARGE:               error_string = "GL_TABLE_TOO_LARGE";               break;
+
+			default:                               error_string = "Unknown error";                    break;
+
+		}
+
+		ALOGE("WARNING GL error (%s) after `%s()` (error = 0x%04x)\n", error_string, function_name, error);
+
 		return true;
 
 	}
