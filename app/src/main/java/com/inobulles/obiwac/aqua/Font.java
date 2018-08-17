@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 
 public class Font {
 	private Paint paint;
+	private Paint.FontMetrics metrics;
 
 	Font(String path, int size) {
 		Typeface face = Typeface.createFromAsset(MainActivity.assets, path);
@@ -21,28 +22,22 @@ public class Font {
 		paint.setColor(Color.WHITE);
 		paint.setTypeface(face);
 
-	}
-
-	public int get_width(String text) {
-		return (int) paint.measureText(text);
+		metrics = paint.getFontMetrics();
 
 	}
 
-	public int get_height(String text) {
-		return (int) paint.getTextSize();
-
-	}
+	public int get_width(String text)  { return (int) paint.measureText(text); }
+	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
 	public byte[] draw(String text) {
-		long texture_width  = get_width(text);
-		long texture_height = get_height(text);
+		long texture_width  = (long) get_width(text);
+		long texture_height = (long) get_height(text);
 
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		bitmap.eraseColor(0);
 
-		Paint.FontMetrics metric = paint.getFontMetrics();
-		canvas.drawText(text, 0, ((int) Math.ceil(metric.descent - metric.ascent)) - (metric.descent * 2), paint); /// TODO (probably not metric.descent * 2)
+		canvas.drawText(text, 0, (int) texture_height - metrics.descent, paint); /// TODO (probably not metric.descent * 2)
 
 		ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
 		bitmap.copyPixelsToBuffer(buffer);
