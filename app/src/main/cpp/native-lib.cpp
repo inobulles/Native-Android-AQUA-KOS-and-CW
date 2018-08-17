@@ -33,6 +33,7 @@ static GLboolean gl3_stub_init(void) {
 }
 #endif
 
+#include "alog.h"
 #include "asm/asm.h"
 static program_t de_program;
 

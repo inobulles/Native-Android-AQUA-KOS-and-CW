@@ -19,7 +19,7 @@ typedef unsigned char bool;
 #endif
 
 #ifndef DEBUGGING_MODE
-#define DEBUGGING_MODE false
+#define DEBUGGING_MODE true
 #endif
 
 #define STACK_SIZE (1ll << 16)
@@ -213,6 +213,7 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 static program_t* current_program;
 
 #include <stdarg.h>
+#include <string.h>
 
 static char __printf_buffer[4096];
 

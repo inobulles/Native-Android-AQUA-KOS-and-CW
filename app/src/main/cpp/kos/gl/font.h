@@ -50,7 +50,7 @@ texture_t create_texture_from_font(font_t font, const char* text) {
 	}
 
 	texture_t texture = texture_create((unsigned long long*) bytes, get_font_height((jint) font, text), get_font_width((jint) font, text), 32);
-	delete bytes;
+	delete[] bytes;
 
 	return texture;
 
