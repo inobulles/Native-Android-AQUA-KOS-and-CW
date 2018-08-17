@@ -51,15 +51,15 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
 	CALLBACK_VOID_NO_PARAMS(java_init_lib);
 
-	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
+	init_callback_function(&java_new_font,    "new_font",    "(ILjava/lang/String;)I");
 	init_callback_function(&java_font_remove, "font_remove", "(I)V");
 
-	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
+	init_callback_function(&java_get_font_width,  "get_font_width",  CALLBACK_FONT_AND_TEXT);
 	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
 
 	init_callback_function(&java_create_texture_from_font, "create_texture_from_font", "(ILjava/lang/String;)[B");
 
-	init_callback_function(&java_read_external_slash_internal_storage_path, "read_external_slash_internal_storage_path", "(Ljava/lang/String;)Ljava/lang/String;");
+	init_callback_function(&java_read_external_slash_internal_storage_path,       "read_external_slash_internal_storage_path",       "(Ljava/lang/String;)Ljava/lang/String;");
 	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
 
 	// asset manager stuff

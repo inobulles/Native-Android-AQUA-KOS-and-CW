@@ -34,7 +34,7 @@ public class Font {
 	}
 
 	public byte[] draw(String text) {
-		long texture_width = get_width(text);
+		long texture_width  = get_width(text);
 		long texture_height = get_height(text);
 
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);

@@ -30,7 +30,7 @@ font_t new_font(const char* _path, unsigned long long size) {
 
 }
 
-unsigned long long get_font_width(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_width, (jint) font, callback_env->NewStringUTF(text)); }
+unsigned long long get_font_width( font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_width,  (jint) font, callback_env->NewStringUTF(text)); }
 unsigned long long get_font_height(font_t font, const char* text) { return (unsigned long long) CALLBACK_INT(java_get_font_height, (jint) font, callback_env->NewStringUTF(text)); }
 
 void font_remove(font_t font) {
@@ -49,7 +49,7 @@ texture_t create_texture_from_font(font_t font, const char* text) {
 
 	}
 
-	texture_t texture = texture_create((unsigned long long*) bytes, get_font_height((jint) font, text), get_font_width((jint) font, text), 32);
+	texture_t texture = texture_create((unsigned long long*) bytes, 32, get_font_width(font, text), get_font_height(font, text));
 	delete[] bytes;
 
 	return texture;

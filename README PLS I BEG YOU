@@ -1,0 +1,4 @@
+
+Unpack apk: apktool d app-debug.apk
+Pack apk:   apktool b app-debug -o result.apk
+Sign apk:   jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ~/my.keystore new_app.apk mykeyname

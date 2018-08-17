@@ -3,6 +3,7 @@
 // http://www.felixcloutier.com/x86/
 
 #include "root.h"
+#include "asm.h"
 
 static inline void cla_instruction(program_t* __this, unsigned_t ltype, unsigned_t ldata, unsigned_t mtype, unsigned_t mdata, unsigned_t rtype, unsigned_t rdata) {
 	unsigned_t right = rtype == TOKEN_NUMBER ? rdata : __this->registers[rdata];

@@ -67,8 +67,6 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 
 	GET_PATH((char*) _path);
 
-	printf("%s\n", path);
-
 	if (load_asset_bytes(path, &buffer, &bytes)) {
 		printf("WARNING Image file could not be opened (probably wrong path `%s`)\n", path);
 		return;

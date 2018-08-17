@@ -19,7 +19,7 @@ typedef unsigned char bool;
 #endif
 
 #ifndef DEBUGGING_MODE
-#define DEBUGGING_MODE true
+#define DEBUGGING_MODE false
 #endif
 
 #define STACK_SIZE (1ll << 16)
@@ -318,8 +318,11 @@ signed_t __THREAD_INST(signed_t address);
 #include "../kos/gl/font.h"
 #endif
 
-void* __memcpy(void* __dest, const void* __src, size_t __n) { /// TODO check if __src + __n and __dest + __n are within heap bounds
-	return memcpy(__dest, __src, __n);
+void* __memcpy(unsigned long long ___dest, unsigned long long ___src, unsigned long long __n) { /// TODO check if __src + __n and __dest + __n are within heap bounds
+	void* __dest = (void*) ___dest;
+	void* __src  = (void*) ___src;
+
+	return memcpy(__dest, __src, (size_t) __n);
 
 }
 
