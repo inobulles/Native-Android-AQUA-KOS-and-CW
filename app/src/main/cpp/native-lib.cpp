@@ -75,10 +75,14 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	}
 
-	print_gl_string("Version", GL_VERSION);
-	print_gl_string("Vendor", GL_VENDOR);
-	print_gl_string("Renderer", GL_RENDERER);
-	print_gl_string("Extensions", GL_EXTENSIONS);
+	ALOGI("OpenGL info\n");
+
+	ALOGI("OpenGL info\n");
+	ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
+	ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
+	ALOGI("\tVersion:                  %s\n", glGetString(GL_VERSION));
+	ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
 
 	const char* version_string = (const char*) glGetString(GL_VERSION);
 

@@ -26,7 +26,7 @@ public class Font {
 
 	}
 
-	public int get_width(String text)  { return (int) paint.measureText(text); }
+	public int get_width( String text) { return (int) paint.measureText(text); }
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
 	public byte[] draw(String text) {

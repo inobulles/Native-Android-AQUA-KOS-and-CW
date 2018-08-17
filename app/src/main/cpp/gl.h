@@ -116,9 +116,4 @@ GLuint create_program(const char* vertex_code, const char* fragment_code) {
 	return program;
 }
 
-static void print_gl_string(const char* name, GLenum s) {
-	const char* v = (const char*)glGetString(s);
-	ALOGV("GL %s: %s\n", name, v);
-}
-
 #endif
