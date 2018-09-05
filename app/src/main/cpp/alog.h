@@ -9,4 +9,4 @@
 #define ALOGV(...)
 #endif
 
-#define printf ALOGV
+//#define printf ALOGV

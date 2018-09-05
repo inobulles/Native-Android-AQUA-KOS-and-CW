@@ -30,7 +30,7 @@ static inline void surface_update_vertices(surface_t* __this) {
 	int i;
 	for (i = 0; i < 4; i++) {
 		// __this->vertices[i].z has a range of -1.0f → 0.999999f
-		__this->vertices[i].z = ((GLfloat) __this->layer) / 500.0f;
+		__this->vertices[i].z = ((GLfloat) __this->layer) / 500.0f; /// TODO FIXME
 
 		__this->vertices[i].x =  (GLfloat) (width  * vertex_matrix[i * 3]     + x);
 		__this->vertices[i].y =  (GLfloat) (height * vertex_matrix[i * 3 + 1] + y);
@@ -54,7 +54,7 @@ void surface_scroll(surface_t* __this, signed long long _x, signed long long _y,
 	float width  =  (float) _width  / _UI64_MAX_MARGIN / 2;
 	float height =  (float) _height / _UI64_MAX_MARGIN / 2;
 
-	//y = -y - height;
+	y = -y - height - 1.0f;
 
 	int i;
 	for (i = 0; i < 4; i++) {

@@ -52,6 +52,8 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	protected void onPause() {
 		super.onPause();
 		view.onPause();
+
+		Lib.dispose_all();
 		
 	}
 

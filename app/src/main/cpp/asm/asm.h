@@ -1,175 +1,197 @@
 
-#ifndef __AQUA__DECODER_ASM_H
-#define __AQUA__DECODER_ASM_H
+#ifndef __ZED__VCPU_ASM_H
+#define __ZED__VCPU_ASM_H
 
+// inclusions
+
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-#include "defs.h"
-#include "root.h"
-#include "heap.h"
+// compatibilty checks
 
-#ifndef __cplusplus
-typedef unsigned char bool;
-#define true 1
-#define false 0
+#ifndef _UI64_MAX
+	#define _UI64_MAX 0xFFFFFFFFFFFFFFFF
+	#define _SI64_MAX (0xFFFFFFFFFFFFFFFF / 2)
+
+	#define _UI64_MAX_MARGIN (_UI64_MAX >> 8)
+	#define _SI64_MAX_MARGIN (_SI64_MAX >> 8)
 #endif
 
-#ifdef ALOGV
-#define printf ALOGV
+#ifndef __cplusplus
+	typedef uint8_t bool;
+	
+	#define true  1
+	#define false 0
+#endif
+
+#ifdef ALOGI
+	#define printf ALOGI
+	#define ANDROID 1
+#else
+	#define ANDROID 0
 #endif
 
 #ifndef DEBUGGING_MODE
-#define DEBUGGING_MODE false
+	#define DEBUGGING_MODE true
 #endif
 
-#define STACK_SIZE (1ll << 16)
-
-#define MAX_VREGS 16 // thread macros
-#define MAX_THREADS 256
-#define THREAD_CYCLE_STEP 128
-
-#define CURRENT_VERSION 1ull
-#define STANDALONE 1 // is the program running off of a KOS or on its own?
-#define VERBOSE 1
-
-#define CODE_LENGTH_PADDING 64 // so that if the IP jumps too far, things have the time to exit
-
-#if STANDALONE
-void mfree(void* pointer, unsigned_t bytes) { // `mfree` is a wrapper around `free` found in the KOS
-	free(pointer);
-
-}
+#ifndef VERBOSE_MODE
+	#define VERBOSE_MODE true
 #endif
 
+void mfree(void* pointer, unsigned long long bytes);
+
+// types
+
+#define SIGNED_UNSIGNED 0
+
+#if !SIGNED_UNSIGNED
+	typedef unsigned long long unsigned_t;
+#else
+	typedef signed long long unsigned_t;
+#endif
+
+typedef unsigned long long sure_unsigned_t;
+typedef   signed long long        signed_t;
+
+#if !SIGNED_UNSIGNED
+	typedef uint32_t unsigned_32bit_t;
+	typedef uint16_t unsigned_16bit_t;
+	typedef uint8_t  unsigned_8bit_t;
+#else
+	typedef int32_t unsigned_32bit_t;
+	typedef int16_t unsigned_16bit_t;
+	typedef int8_t  unsigned_8bit_t;
+#endif
+
+#define uint64_t sure_unsigned_t
+#define  int64_t        signed_t
+
+// main macros
+
+#define MODE_DONT_CARE 0
+#define MODE_FORCE_YES 1
+#define MODE_FORCE_NO  2
+
+// environment macros
+
+#define DEFAULT_STACK_SIZE (1ll << 16)
+#define CURRENT_VERSION 1ll
+
+// global variables
+
 typedef struct {
-	unsigned_t used;
-	unsigned_t address;
-	void* argument;
+	void* pointer;
+	
+	signed long long warning;
+	bool debugging_mode; bool verbose_mode;
+	
+	uint64_t length; uint64_t version;
+	void* meta; void* data_section;
+	unsigned long long reserved_count; void** reserved;
+	
+	int main_thread;
+	
+} __pointer__program_t;
 
-	unsigned_t registers[REGISTER_LAST];
+static void*                 __pointer_current_program;
+static __pointer__program_t* __pointer___this;
 
-} thread_t;
+// error macros
+
+#define kill(...)    {                              printf("FATAL ERROR "); printf(__VA_ARGS__); printf("Aborting ...\n"); printf("TODO Abort\n"); while (1); } /// TODO ALOGE on Android KOS
+#define warn(...)    { __pointer___this->warning++; printf("WARNING     "); printf(__VA_ARGS__); } /// TODO ALOGW on Android KOS
+#define info(...)    {                              printf("INFO        "); printf(__VA_ARGS__); } /// TODO ALOGI on Android KOS
+#define verbose(...) { if (__pointer___this->verbose_mode) {                printf(__VA_ARGS__); } } /// TODO ALOGV on Android KOS
+#define debug(...)   {                              printf("DEBUG       "); printf(__VA_ARGS__); } /// TODO ALOGD on Android KOS
+
+// structures
+
+#include "thread.h"
 
 typedef struct {
-	// enviroment
+	uint64_t length;              uint64_t version;               uint64_t invalidated;
+	uint64_t base_reserved_count; uint64_t label_position_offset; uint64_t main_reserved_position;
+	uint64_t debugging_mode;      uint64_t verbose_mode;
+	uint64_t data_section_element_count;
+	
+} metadata_t;
 
-	unsigned_t registers[REGISTER_LAST + 1];
-	unsigned_t* stack;
+typedef struct {
+	uint8_t* data;
+	
+	unsigned long long  element_count; unsigned long long element_count_bytes;
+	unsigned long long* element_element_count; bool* qtypes; void** start_position;
+	uint8_t* contiguous_data;
+	
+} data_section_t;
 
-	unsigned_t reserved_count;
-	void** reserved;
-
-	// threading
-
-	signed_t current_thread;
-	unsigned_t current_thread_index;
-
-	unsigned_t has_threads;
-	thread_t threads[MAX_THREADS];
-
-	// enviroment variables
-
-	signed_t nest;
-	unsigned_t base_rip;
-
-	signed_t condition_left;
-	signed_t condition_right;
-
-	unsigned_t next_skip;
-
-	// code
-
-	unsigned_t* code;
-	unsigned_t code_length;
-
-	// misc section
-
-	unsigned_t version;
-	unsigned_t label_position_offset;
-	unsigned_t base_reserved_count;
-	unsigned_t main_reserved_position;
-
-	// data section
-
-	char* data_section;
-	unsigned_t data_section_size;
-	unsigned_t sum;
-
-	unsigned_t data_section_element_count;
-	unsigned_t* data_section_element_element_count;
-
-	// reserved positions section
-
-	unsigned_t reserved_positions_count;
-	unsigned_t* reserved_positions;
-
-	// misc
-
-	int error_code;
-
+typedef struct {
+	void* pointer;
+	
+	signed long long warning;
+	bool debugging_mode; bool verbose_mode;
+	
+	uint64_t length; uint64_t version;
+	metadata_t* meta; data_section_t data_section;
+	
+	unsigned long long reserved_count; void** reserved;
+	
+	thread_t main_thread;
+	
+	uint64_t reserved_positions_count; uint64_t* reserved_positions;
+	uint16_t* base_pointer; uint64_t* base_pointer_64; int error_code;
+	
 } program_t;
 
-const int size = sizeof(unsigned_t); // just to make things easier
+#define current_program ((thread_t*)  __pointer_current_program)
+#define ___this         ((program_t*) __pointer___this)
 
-void program_alloc(program_t* __this) { // allocate the code in the program
-	__this->code = (unsigned_t*) malloc((__this->code_length + CODE_LENGTH_PADDING) * size);
+static inline unsigned_t msb(unsigned_t value) { return value & (1ull << (sizeof(unsigned_t) * 8 - 1)); } // calculate most significant bit (of an `unsigned_t`)
+static inline unsigned_t lsb(unsigned_t value) { return value & 1; } // calculate least significant bit
 
+static inline unsigned_t zero_extend(unsigned_t value) { return value & 0xFFFFFFFF; } // extend zeroes into the 32 higher bits
+static inline unsigned_t sign_extend(unsigned_t value) { /// TODO
+	return (value & 0xFFFFFFFF) | ((value & (1llu << 32)) << 32);
+	printf("%d %lld\n", (int32_t) value, (value & (1llu << 32)));
+	
 }
 
-void program_free(program_t* __this) { // free the code in the program
-	mfree(__this->code, (__this->code_length + CODE_LENGTH_PADDING) * size);
-
-}
-
-static void _program_free(program_t* __this) { // free all the sections and environment
-	// free stack
-
-	mfree(__this->stack, (unsigned_t) STACK_SIZE * size);
-
-	// free data section
-
-	mfree(__this->data_section_element_element_count, __this->data_section_element_count * size);
-	mfree(__this->data_section, __this->sum * sizeof(char));
-
-	// free reserved and reserved positions section
-
-	mfree(__this->reserved_positions, __this->reserved_positions_count * size);
-	mfree(__this->reserved, __this->reserved_count * sizeof(void*));
-
-}
+/// TODO prettify the get_value / set value functions
 
 static inline unsigned_t get_value(program_t* __this, unsigned_t type, unsigned_t data) { // get value from an argument's type and data values
 	switch (type) {
 		case TOKEN_REGISTER: {
 			if (data <= REGISTER_LAST_GENERAL_PURPOSE) { // check if general purpose register
-				unsigned_t temp = __this->registers[data & 0b0011]; // get family register value
+				unsigned_t temp = __this->main_thread.registers[data & 0b0011]; // get family register value
 
 				switch (data & 0b1100) { // mask according to the size of the register
 					case REGISTER_TYPE_64: return temp; // don't do anything if 64 bit
 
 					case REGISTER_TYPE_32: return temp & 0xFFFFFFFF;
 					case REGISTER_TYPE_16: return temp & 0xFFFF;
-					case REGISTER_TYPE_8: return temp & 0xFF;
+					case REGISTER_TYPE_8:  return temp & 0xFF;
 
 					default: return temp;
 
 				}
 
 			} else {
-				return __this->registers[data];
+				return __this->main_thread.registers[data];
 
 			}
 
 		}
 
-		case TOKEN_ADDRESS: return *((unsigned_t*) __this->registers[data]); // return the first `unsigned_t` value at the address of the register
-		case TOKEN_NUMBER: return data;
+		case TOKEN_ADDRESS:     return *((unsigned_t*) __this->main_thread.registers[data]); // return the first `unsigned_t` value at the address of the register
+		case TOKEN_NUMBER:      return data;
 
-		case TOKEN_RESERVED: return __this->reserved_positions[data - __this->label_position_offset];
+		case TOKEN_RESERVED:    return __this->reserved_positions[data - __this->meta->label_position_offset];
 		case TOKEN_QTYPE:
 		case TOKEN_PRERESERVED: return (unsigned_t) __this->reserved[data];
-
-		default: return data;
+		
+		default:                return data;
 
 	}
 
@@ -182,18 +204,18 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 				unsigned_t family = data & 0b0011;
 
 				switch (data & 0b1100) { // set the register family and shift by (times it can fit in an unsigned_t) - 1, to keep one of that data type on the lower end
-					case REGISTER_TYPE_64: __this->registers[family] = set; break; // don't do anything if 64 bit
+					case REGISTER_TYPE_64: __this->main_thread.registers[family] = set; break; // don't do anything if 64 bit
 
-					case REGISTER_TYPE_32: ((unsigned_32bit_t*) __this->registers)[family * 2] = (unsigned_32bit_t) set; break;
-					case REGISTER_TYPE_16: ((unsigned_16bit_t*) __this->registers)[family * 4] = (unsigned_16bit_t) set; break;
-					case REGISTER_TYPE_8: ((unsigned_8bit_t*) __this->registers)[family * 8] = (unsigned_8bit_t) set; break;
+					case REGISTER_TYPE_32: ((unsigned_32bit_t*) __this->main_thread.registers)[family * 2] = (unsigned_32bit_t) set; break;
+					case REGISTER_TYPE_16: ((unsigned_16bit_t*) __this->main_thread.registers)[family * 4] = (unsigned_16bit_t) set; break;
+					case REGISTER_TYPE_8:   ((unsigned_8bit_t*) __this->main_thread.registers)[family * 8] = (unsigned_8bit_t)  set; break;
 
-					default: __this->registers[family] = set; break;
+					default: __this->main_thread.registers[family] = set; break;
 
 				}
 
 			} else {
-				__this->registers[data] = set;
+				__this->main_thread.registers[data] = set;
 
 			}
 
@@ -201,8 +223,13 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 
 		}
 
-		case TOKEN_ADDRESS: *((unsigned_t*) __this->registers[data]) = set; break; // set the first `unsigned_t` value at the address of the register
-		case TOKEN_RESERVED: __this->reserved_positions[data] = set; break; // can't really remember what __this one's for :3
+		case TOKEN_ADDRESS: *((unsigned_t*) __this->main_thread.registers[data]) = set; break; // set the first `unsigned_t` value at the address of the register
+		case TOKEN_RESERVED: {
+			warn("`type` argument of `%s` is `TOKEN_RESERVED`\n", __func__);
+			__this->reserved_positions[data]  = set;
+			break; // can't really remember what __this one's for :3
+			
+		}
 
 		default: break;
 
@@ -210,479 +237,209 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 
 }
 
-static program_t* current_program;
-
-#include <stdarg.h>
-#include <string.h>
-
-static char __printf_buffer[4096];
-
-int __print(const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-
-	vsprintf(__printf_buffer, format, args);
-	printf("%s", __printf_buffer);
-
-	va_end(args);
-	return 0;
-
-}
-
-void ____sprintf(char* buffer, const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-
-	vsprintf(buffer, format, args);
-	va_end(args);
-
-}
-
-static void __debug(void) {
-	printf("\n=== FLAGS ===\n");
-
-	printf("ZF = 0x%llx\n", current_program->registers[REGISTER_zf]);
-	printf("OF = 0x%llx\n", current_program->registers[REGISTER_of]);
-	printf("CF = 0x%llx\n", current_program->registers[REGISTER_cf]);
-
-	printf("\n=== IMPORTANT REGISTERS ===\n");
-
-	printf("EAX = 0x%llx\tRAX = 0x%llx\n", current_program->registers[REGISTER_eax], current_program->registers[REGISTER_rax]);
-	printf("RDI = 0x%llx\tRSI = 0x%llx\tRDX = 0x%llx\tRCX = 0x%llx\n", current_program->registers[REGISTER_rdi], current_program->registers[REGISTER_rsi], current_program->registers[REGISTER_rdx], current_program->registers[REGISTER_rcx]);
-	printf("RIP = 0x%llx\tRSP = 0x%llx\tRBP = 0x%llx\tADDR = 0x%llx\n", current_program->registers[REGISTER_rip], current_program->registers[REGISTER_rsp], current_program->registers[REGISTER_rbp], current_program->registers[REGISTER_addr]);
-
-	printf("\n");
-
-}
-
-static void __exit(unsigned_t status) {
-	printf("EXIT CALLED (with status %lld)\n", status);
-	current_program->error_code = (int) status;
-
-	current_program->registers[REGISTER_rip] = current_program->code_length + 1;
-	current_program->registers[REGISTER_FAMILY_a] = status;
-
-}
-
-static void ____stack_chk_fail() {
-	printf("WARNING Stack overflow (STACK_SIZE = %lld)\n", STACK_SIZE);
-	__debug();
-
-}
-
-unsigned_t map(unsigned_t x, unsigned_t y) {
-	return (unsigned_t) ((double) _UI64_MAX_MARGIN / ((double) y / (double) x));
-
-}
-
-static bool debugging_mode = false;
-
-void break_point(const char* message) {
-	printf("DEBUG Setting breakpoint (%s)\n", message);
-	debugging_mode = true;
-
-}
-
-unsigned long long index_rom(unsigned long long index) {
-	if (index < current_program->code_length) {
-		return current_program->code[index];
-
-	} else {
-		printf("WARNING You are trying to access ROM that is outside authorized space (index = %lld, current_program->code_length = %lld). Returning 0 ...\n", index, current_program->code_length);
-		return 0;
-
-	}
-
-}
-
-signed_t noop(const char* none, ...) {
-	printf("WARNING This is a no-operation function. If you reach this, either your current CW/KOS is incomplete, or you have a severe problem in your code (the former is most likely)\n");
-	return 1;
-
-}
-
-signed_t __THREAD_END(signed_t address); // thread function prototypes
-signed_t __THREAD_START(signed_t address, signed_t freq, void* argument);
-signed_t __THREAD_FREQ(signed_t address, signed_t freq);
-signed_t __THREAD_INST(signed_t address);
-
-#ifdef ALOGV
-#include "../kos/placeholders.h" // include all of the KOS functions
-#include "../kos/video.h"
-#include "../kos/events.h"
-#include "../kos/misc.h"
-#include "../kos/decoders/bmp.h"
-
-#include "../kos/fs.h"
-#include "../kos/socket.h"
-#include "../kos/gl/font.h"
-#endif
-
-void* __memcpy(unsigned long long ___dest, unsigned long long ___src, unsigned long long __n) { /// TODO check if __src + __n and __dest + __n are within heap bounds
-	void* __dest = (void*) ___dest;
-	void* __src  = (void*) ___src;
-
-	return memcpy(__dest, __src, (size_t) __n);
-
-}
-
-void bmp_load(bitmap_image_t* __this, unsigned long long _path);
-void bmp_free(bitmap_image_t* __this);
-
-#define NOOP (void*) noop,
-
-static void* base_reserved[] = { // predefined functions from the KOS
-	(void*) __print,
-	(void*) __debug,
-	(void*) __exit,
-
-	(void*) ____stack_chk_fail,
-
-	(void*) heap_malloc,
-	(void*) heap_mfree,
-
-	(void*) platform,
-	(void*) is_device_supported,
-
-	(void*) get_device,
-	(void*) send_device,
-
-	(void*) video_fps,
-
-	(void*) video_clear,
-	(void*) video_clear_colour,
-
-	(void*) video_draw,
-	(void*) video_flip,
-
-	(void*) get_events,
-
-	(void*) bmp_load,
-	(void*) bmp_free,
-
-	(void*) texture_create,
-	(void*) texture_remove,
-
-	(void*) surface_new,
-	(void*) surface_set_texture,
-	(void*) surface_draw,
-	(void*) surface_free,
-
-	(void*) new_rectangle,
-	(void*) draw_rectangle,
-
-	(void*) video_width,
-	(void*) video_height,
-
-	(void*) surface_set_alpha,
-	(void*) surface_set_colour,
-	(void*) surface_set_x,
-	(void*) surface_set_y,
-
-	(void*) free_events,
-	(void*) surface_set_layer,
-	NOOP //video_zoom,
-
-	(void*) surface_set_width,
-	(void*) surface_set_height,
-
-	NOOP //socket_close,
-	NOOP //socket_server,
-	(void*) socket_support,
-	NOOP //socket_receive,
-	NOOP //socket_send,
-
-	(void*) get_platform,
-	(void*) platform_system,
-
-	(void*) set_video_visibility,
-	(void*) ____sprintf,
-
-	(void*) fs_support,
-	(void*) fs_read,
-	(void*) fs_free,
-
-	NOOP //get_predefined_texture,
-	NOOP //update_predefined_texture,
-
-	(void*) __THREAD_START,
-	(void*) __THREAD_FREQ,
-	(void*) __THREAD_END,
-	(void*) __THREAD_INST,
-
-	(void*) map,
-	(void*) surface_scroll,
-
-	(void*) get_font_width,
-	(void*) get_font_height,
-	(void*) new_font,
-	(void*) create_texture_from_font,
-	(void*) font_remove,
-
-	(void*) break_point,
-	(void*) index_rom,
-
-	(void*) __memcpy,
-
-};
-
-static inline unsigned_t msb(unsigned_t value) { return value & (1ull << (sizeof(unsigned_t) * 8 - 1)); } // calculate most significant bit (of an `unsigned_t`)
-static inline unsigned_t lsb(unsigned_t value) { return value & 1; } // calculate least significant bit
-
-static inline unsigned_t zero_extend(unsigned_t value) { return value & 0xFFFFFFFF; } // extend zeroes into the 32 higher bits
-static inline unsigned_t sign_extend(unsigned_t value) {
-	return (value & 0xFFFFFFFF) | ((value & (1llu << 32)) << 32);
-	printf("%d %lld\n", (int32_t) value, (value & (1llu << 32)));
-
-}
-
-signed_t __THREAD_END(signed_t address) {
-	printf("TODO __THREAD_END\n");
-	return 1;
-
-}
-
+#include "kos_wrapper.h"
 #include "instructions.h"
-#include "name_database.h"
 
-static inline void copy_regs(void* __destination, void* __source) { // copy registers from one address to another
-	unsigned_t* destination = (unsigned_t*) __destination;
-	unsigned_t* source = (unsigned_t*) __source;
+// static functions
 
-	int i;
-	for (i = 0; i < REGISTER_LAST + 1; i++) {
-		destination[i] = source[i];
-
+static inline void __program_set_mode(bool* value, int meta_value, bool default_value, const char* string) {
+	switch (meta_value) {
+		case MODE_FORCE_YES: *value = true;          break;
+		case MODE_FORCE_NO:  *value = false;         break;
+		default:             *value = default_value; break;
+		
 	}
-
+	
+	verbose("\t%s mode is %s\n", string, *value ? "enabled" : "disabled");
+	
 }
 
-signed_t __THREAD_START(signed_t address, signed_t freq, void* argument) {
-	printf("TODO __THREAD_START\n");
-	return 1;
+// phase functions
 
+void program_free(program_t* ____this) {
+	verbose("Freeing program ...\n");
+	
+	// free environment
+
+	verbose("\tKilling main thread ...\n");
+	
+	// free data section
+	verbose("\tFreeing data section (____this->data_section.element_element_count and ____this->data_section.qtypes) ...\n");
+	
+	mfree(____this->data_section.element_element_count, ____this->data_section.element_count_bytes * sizeof(unsigned long long));
+	mfree(____this->data_section.qtypes,                ____this->data_section.element_count_bytes * sizeof(bool));
+	
+	// free reserved
+	verbose("\tFreeing ____this->reserved ...\n");
+	mfree(____this->reserved, ____this->reserved_count * sizeof(void*));
+	
+	// free reserved positions section
+	verbose("\tFreeing ____this->reserved_positions ...\n");
+	mfree(____this->reserved_positions, ____this->reserved_positions_count * sizeof(uint64_t));
+	
 }
 
-signed_t __THREAD_FREQ(signed_t address, signed_t freq) {
-	printf("WARNING Deprecated function `__THREAD_FREQ`\n");
-	return 1;
-
-}
-
-signed_t __THREAD_INST(signed_t address) {
-	printf("TODO __THREAD_INST\n");
-	return 1;
-
-}
-
-#define ip __this->registers[REGISTER_rip] // just to make things easier
-
-#define INSTR if (!origin_skip) // __this is so that we can check if we are supposed to execute the next instruction
-
-#define PARAMS2 { param1 = __this->code[++ip]; param2 = __this->code[++ip]; } // we need to create these macros, else the parameters will get mixed up
-#define PARAMS4 { param1 = __this->code[++ip]; param2 = __this->code[++ip]; param3 = __this->code[++ip]; param4 = __this->code[++ip]; }
-#define PARAMS6 { param1 = __this->code[++ip]; param2 = __this->code[++ip]; param3 = __this->code[++ip]; param4 = __this->code[++ip]; param5 = __this->code[++ip]; param6 = __this->code[++ip]; }
-
-void program_run_setup_phase(program_t* __this) {
-	current_program = __this;
-	debugging_mode = DEBUGGING_MODE;
-
-	// initialize / clear the heap
-
-#if VERBOSE
-	printf("Initializing / clearing the heap `init_heap()` ...\n");
-#endif
-
-	init_heap();
-
-	// setup the program
-
-	__this->stack = (unsigned_t*) malloc((size_t) (STACK_SIZE * size));
-	//~ __this->registers[REGISTER_rsp] = (unsigned_t) __this->stack + size * (STACK_SIZE / 2); // set the stack pointer to the middle of the stack
-	__this->registers[REGISTER_rsp] = (unsigned_t) __this->stack + size * (STACK_SIZE - 1); // set the stack pointer to the end of the stack
-	*((unsigned_t*) (__this->registers[REGISTER_rsp] -= size)) = __this->code_length; // push the code length to the stack
-
-	__this->next_skip = 0;
-	__this->nest = 0;
-	unsigned_t i = 0;
-
-	// setup threads
-
-	for (i = 1; i < MAX_THREADS; i++) {
-		__this->threads[i].used = 0;
-
+void program_run_setup_phase(program_t* ____this) {
+	// notes
+	
+	info("NOTE When refering to a \"unit\", I am talking about a type with a width of %lld bytes\n", (unsigned_t) sizeof(unsigned long long));
+	
+	// setting up
+	
+	__pointer___this          = (__pointer__program_t*) ____this;
+	__pointer_current_program = (void*)                &____this->main_thread;
+	
+	___this->warning    = 0;
+	___this->error_code = 0;
+	
+	___this->verbose_mode   = true;
+	___this->debugging_mode = false;
+	
+	void* base_pointer = ___this->pointer;
+	
+	// parse metadata
+	verbose("Parsing metadata section ...\n");
+	
+	___this->meta = (metadata_t*) ___this->pointer;
+	uint8_t* temp_uint8_t_buffer = (uint8_t*) ___this->pointer;
+	temp_uint8_t_buffer += sizeof(metadata_t);
+	___this->pointer = (void*) temp_uint8_t_buffer;
+	
+	verbose("\tMetadata\n");
+	verbose("\t\tInvalid: %s\n",   ___this->meta->invalidated ? "yes" : "no");
+	verbose("\t\tLength:  %lld\n", ___this->meta->length);
+	verbose("\t\tVersion: %lld\n", ___this->meta->version);
+	
+	verbose("\t___this->meta->base_reserved_count    = %lld\n", ___this->meta->base_reserved_count);
+	verbose("\t___this->meta->label_position_offset  = %lld\n", ___this->meta->label_position_offset);
+	verbose("\t___this->meta->main_reserved_position = %lld\n", ___this->meta->main_reserved_position);
+	
+	___this->version = CURRENT_VERSION;
+	verbose("\t___this->version = %lld (same as CURRENT_VERSION)\n", ___this->version);
+	
+	if (___this->meta->invalidated)                kill("The program ROM has been invalidated (meta->invalidated = %lld). This program can not be executed ...\n", ___this->meta->invalidated);
+	//~ if (___this->meta->length  > ___this->length)  kill("The program's extracted code length (%lld) is greater than the current code length (%lld)\n", ___this->meta->length, ___this->length);
+	if (___this->meta->version > ___this->version) warn("The program's version (%lld) is greater than the current version (%lld)\n", ___this->meta->version, ___this->version);
+	
+	// set modes
+	verbose("Setting modes ...\n");
+	
+	__program_set_mode(&___this->debugging_mode, (bool) ___this->meta->debugging_mode, DEBUGGING_MODE, "debugging");
+	__program_set_mode(&___this->verbose_mode,   (bool) ___this->meta->verbose_mode,     VERBOSE_MODE, "verbose");
+	
+	// set up environment
+	verbose("Setting up environment\n")
+	
+	verbose("\tCreating main thread ...\n");
+	thread_create(&___this->main_thread, (void*) 0, (void*) 0, ___this->meta->length, DEFAULT_STACK_SIZE);
+	
+	// parse data section
+	verbose("Parsing data section ...\n");
+	
+	___this->data_section.element_count       = ___this->meta->data_section_element_count;
+	___this->data_section.element_count_bytes = ___this->meta->data_section_element_count * sizeof(unsigned long long);
+	
+	verbose("\tAllocating ___this->data_section.element_count (%lld) units for ___this->data_section.element_element_count ...\n", ___this->data_section.element_count);
+	___this->data_section.element_element_count = (unsigned long long*) malloc(___this->data_section.element_count_bytes);
+	
+	verbose("\tAllocating ___this->data_section.element_count (%lld) units for ___this->data_section.qtypes ...\n", ___this->data_section.element_count);
+	___this->data_section.qtypes                = (bool*)               malloc(___this->data_section.element_count_bytes);
+	
+	verbose("\tAllocating ___this->data_section.element_count (%lld) units for ___this->data_section.start_position ...\n", ___this->data_section.element_count);
+	___this->data_section.start_position        = (void**)              malloc(___this->data_section.element_count_bytes);
+	
+	uint64_t* new_pointer = (uint64_t*) ___this->pointer;
+	verbose("\tParsing data section to get element bytes and qtypes ...\n")
+	
+	unsigned long long i;
+	for (i = 0; i < ___this->data_section.element_count; i++) {
+		___this->data_section.element_element_count[i] =        *new_pointer++;
+		___this->data_section.qtypes[i]                = (bool) *new_pointer++;
+		
 	}
-
-	__this->current_thread = 0;
-	__this->current_thread_index = 0;
-
-	__this->threads[0].used = 1; // main thread is always used, even if threading is not enabled
-	__this->has_threads = 0;
-
-	i = 0;
-
-	// parse the misc section
-
-	if (__this->code[i++] != __this->code_length) {
-		printf("WARNING The extracted code_length (%lld) is not the same as the predefined one (%lld) ...\n", __this->code[i - 1], __this->code_length);
-
+	
+	___this->data_section.contiguous_data = (uint8_t*) new_pointer;
+	uint8_t* contiguous_data_copy = ___this->data_section.contiguous_data;
+	verbose("\tParsing data section to get element starting position pointers ...\n");
+	
+	for (i = 0; i < ___this->data_section.element_count; i++) {
+		___this->data_section.start_position[i] = contiguous_data_copy;
+		contiguous_data_copy += ___this->data_section.element_element_count[i] + 1;
+		
 	}
-
-	__this->version = __this->code[i++];
-	__this->base_reserved_count = __this->code[i++];
-	__this->label_position_offset = __this->code[i++];
-	__this->main_reserved_position = __this->code[i++];
-
-	if (__this->version > CURRENT_VERSION) {
-		printf("WARNING The program's version (%lld) is higher than the current version (%lld)\n", __this->version, CURRENT_VERSION);
-
+	
+	// create reserved list (from base_reserved)
+	verbose("\tCreating reserved list (from base_reserved) ...\n");
+	
+	___this->reserved_count = ___this->meta->base_reserved_count + ___this->data_section.element_count;
+	verbose("\t\t___this->reserved_count = %lld\n", ___this->reserved_count);
+	___this->reserved       = (void**) malloc(___this->reserved_count * sizeof(void*));
+	
+	for (i = 0; i < ___this->meta->base_reserved_count; i++) {
+		___this->reserved[i] = base_reserved[i];
+		
 	}
-
-	// parse the data section
-
-	unsigned_t base_i = i;
-	__this->data_section_element_count = 0;
-
-	for (; __this->code[i] != TOKEN_DATA_SECTION_END; i++) { // get the size of the data section
-		__this->data_section_element_count += __this->code[i] == TOKEN_DATA_END;
-
-	}
-
-	__this->data_section_size = i;
-
-	__this->data_section_element_element_count = (unsigned_t*) malloc(__this->data_section_element_count * size);
-	__this->sum = 0;
-
-	bool qtypes[__this->data_section_element_count];
-
-	unsigned_t j = 1;
+	
+	uint8_t* data = (uint8_t*) ___this->pointer;
 	unsigned_t k = 0;
-
-	qtypes[k] = (bool) __this->code[base_i];
-
-	for (i = base_i; __this->code[i] != TOKEN_DATA_SECTION_END; i++) { // get the size of each element in the data section
-		if (__this->code[i] == TOKEN_DATA_END) {
-			__this->data_section_element_element_count[k] = j - 1 - 1; // -1 to accomodate for the first QTYPE byte
-			j = 0;
-
-			__this->sum += __this->data_section_element_element_count[k++];
-			qtypes[k] = (bool) __this->code[i + 1];
-
-		}
-
-		j++;
-
+	
+	unsigned_t j;
+	for (i = 0; i < ___this->data_section.element_count; i++) {
+		k += 2 * sizeof(uint64_t); // x2 because one unit for qtype and the other for length
+		___this->reserved[i + ___this->meta->base_reserved_count] = (void*) ___this->data_section.start_position[i];
+		k += ___this->data_section.element_element_count[i];
+		
 	}
-
-#if VERBOSE
-	printf("__this->data_section_element_count = %lld\n", __this->data_section_element_count);
-#endif
-
-	// create the reserved list (from base_reserved)
-
-	__this->reserved_count = __this->base_reserved_count + __this->data_section_element_count;
-	__this->reserved = (void**) malloc(__this->reserved_count * sizeof(void*));
-
-	for (i = 0; i < __this->base_reserved_count; i++) {
-		__this->reserved[i] = base_reserved[i];
-
-	}
-
-#if VERBOSE
-	printf("__this->reserved_count = %lld\n", __this->reserved_count);
-#endif
-
-	__this->data_section = (char*) malloc(__this->sum * sizeof(char));
-
-	unsigned_t n = 0;
-
-	k = base_i;
-	for (i = 0; i < __this->data_section_element_count; i++) { // allocate the data section
-		__this->reserved[i + __this->base_reserved_count] = (void*) ((unsigned_t) __this->data_section + n);
-		unsigned_t on = n;
-
-		k++;
-		for (j = 0; j < __this->data_section_element_element_count[i]; j++) { // fill each element of the data section
-			unsigned_t l = __this->code[k++];
-
-			if (l == TOKEN_DATA_END) __this->data_section[n++] = (char) __this->code[k++];
-			else __this->data_section[n++] = (char) l;
-
-		}
-
-		k++;
-
-	}
-
-	unsigned_t data_section_index;
-
-	for (i = 0; i < __this->data_section_element_count; i++) {
-		data_section_index = i;
-
-		if (qtypes[data_section_index]) {
-#if VERBOSE
-			printf("%lld is QTYPE. Calculating addresses ...\n", data_section_index);
-#endif
-
-			unsigned_t* data_section_pointer = (unsigned_t*) __this->reserved[data_section_index + __this->base_reserved_count];
-
+	
+	verbose("\tFinding QTYPES in ___this->data_section.qtypes ...\n");
+	
+	for (i = 0; i < ___this->data_section.element_count; i++) {
+		if (___this->data_section.qtypes[i]) {
+			verbose("\t\t%lld is QTYPE. Calculating addresses ...\n", i);
+			
 			unsigned_t m;
-			for (m = 0; m < __this->data_section_element_element_count[data_section_index] / sizeof(unsigned_t); m++) {
-				unsigned_t label = data_section_pointer[m] >> 32;
-				unsigned_t offset = data_section_pointer[m] & 0xFFFFFFFF;
-
-				data_section_pointer[m] = (unsigned_t) __this->reserved[label  + __this->base_reserved_count] + offset; // 1337
-
+			for (m = 0; m < ___this->data_section.element_element_count[i] / sizeof(unsigned_t); m++) {
+				unsigned_t label  = ((unsigned_t*) ___this->data_section.start_position[i])[m] >> 32;
+				unsigned_t offset = ((unsigned_t*) ___this->data_section.start_position[i])[m] & 0xFFFFFFFF;
+				
+				((unsigned_t*) ___this->data_section.start_position[i])[m] = (unsigned_t) ___this->reserved[label + ___this->meta->base_reserved_count] + offset;
+				
 			}
-
+			
 		}
-
+		
 	}
-
+	
 	// parse the reserved positions section
-
-	__this->reserved_positions_count = 0;
-
-	unsigned_t old_k = k;
-	for (; __this->code[k] != TOKEN_RESERVED_POSITIONS_END; k++) { // get the size of the reserved positions section
-		__this->reserved_positions_count++;
-
+	verbose("Parsing reserved positions section ...\n");
+	
+	new_pointer = (uint64_t*) (contiguous_data_copy + 7);
+	___this->reserved_positions_count = *new_pointer++;
+	verbose("\t___this->reserved_positions_count = %lld\n", ___this->reserved_positions_count);
+	
+	verbose("\tAllocating ___this->reserved_positions_count (%lld) units for ___this->reserved_positions ...\n", ___this->reserved_positions_count);
+	___this->reserved_positions = (uint64_t*) malloc(___this->reserved_positions_count * sizeof(uint64_t));
+	
+	for (i = 0; i < ___this->reserved_positions_count; i++) {
+		___this->reserved_positions[i] = *new_pointer++;
+		//~ printf("\t\t___this->reserved_positions[%lld] %lld\n", i, ___this->reserved_positions[i] / sizeof(uint16_t));
+		
 	}
-
-#if VERBOSE
-	printf("__this->reserved_positions_count = %lld\n", __this->reserved_positions_count);
-#endif
-
-	__this->reserved_positions = (unsigned_t*) malloc(__this->reserved_positions_count * size);
-
-	i = 0;
-	for (k = old_k + 2 /* offset the last two data section tokens */; __this->code[k] != TOKEN_RESERVED_POSITIONS_END; k++) { // fill each element of the reserved positions section
-		__this->reserved_positions[i++] = __this->code[k];
-
-	}
-
-	// parse the text section
-
-	__this->base_rip = k + 1;
-
-#if VERBOSE
-	printf("__this->base_rip = %lld\n", __this->base_rip);
-#endif
-
-	// jump to `main` label
-
-	ip = ++k;
-	ip += __this->main_reserved_position;
-
-	*((unsigned_t*) (__this->registers[REGISTER_rsp] -= size)) = ip; // push the `main` label to the stack
-
-#if VERBOSE
-	printf("Pushed `main` label to stack at address 0x%llx and IP %lld\n", __this->registers[REGISTER_rsp], ip);
-#endif
-
+	
+	// set up for parsing the text section
+	verbose("Setting up for text section parsing ...\n");
+	
+	verbose("\tSetting ___this->main_thread.registers[REGISTER_rip] to ___this->meta->main_reserved_position / sizeof(uint16_t) (%lld) ...\n", ___this->meta->main_reserved_position / sizeof(uint16_t));
+	___this->main_thread.registers[REGISTER_rip] = ___this->meta->main_reserved_position / sizeof(uint16_t);
+	
+	verbose("\tPushing the `main` label (___this->main_thread.registers[REGISTER_rip]) to the main thread stack ...\n");
+	thread_stack_push(&___this->main_thread, ___this->main_thread.registers[REGISTER_rip]);
+	
+	___this->base_pointer    = (uint16_t*) base_pointer;
+	___this->base_pointer_64 = (uint64_t*) base_pointer;
+	
 }
 
-static unsigned_t thread_count = 0;
 static unsigned_t origin_skip;
 
 static unsigned_t param1;
@@ -694,181 +451,154 @@ static unsigned_t param4;
 static unsigned_t param5;
 static unsigned_t param6;
 
-#include "search.h"
-static unsigned char click_proxy = 0;
-
-#define REMME 0
+int usleep(int usec);
 
 int program_run_loop_phase(program_t* __this) {
-	/*if (__this->has_threads && thread_count++ > THREAD_CYCLE_STEP) { /// TODO (also in ret_instruction)
-		__thread_swap(__this);
-		thread_count = 0;
+	uint64_t token;
+	
+	unsigned long long type;
+	unsigned long long data;
+	
+	#define SIZE (sizeof(uint64_t) / sizeof(uint16_t))
+	#define TOKEN_BYTE 13ll
+	
+	__this->debugging_mode = 0; /// REMME
+	
+	#define NEXT_TOKEN { \
+		token = (uint64_t) *(__this->base_pointer + __this->main_thread.registers[REGISTER_rip]++); \
+		type  = token & 0x00FF; \
+		if (type==TOKEN_NUMBER||type==TOKEN_QTYPE||type==TOKEN_RESERVED||type==TOKEN_PRERESERVED) { \
+			if (__this->main_thread.registers[REGISTER_rip] % SIZE) { \
+				data = *(__this->base_pointer_64 + (__this->main_thread.registers[REGISTER_rip]) / SIZE + 1); \
+				__this->main_thread.registers[REGISTER_rip] = (__this->main_thread.registers[REGISTER_rip] / SIZE + 2) * SIZE; \
+			} else { \
+				data = *(__this->base_pointer_64 + (__this->main_thread.registers[REGISTER_rip]) / SIZE); \
+				__this->main_thread.registers[REGISTER_rip] = (__this->main_thread.registers[REGISTER_rip] / SIZE + 1) * SIZE; \
+			} \
+		} else { \
+			data = (token & 0xFF00) >> 8; \
+		} \
+		type = type == TOKEN_BYTE ? TOKEN_NUMBER : type; \
+		if (__this->debugging_mode) { \
+			printf("%lld:\t0x%llx\t0x%llx\n", __this->main_thread.registers[REGISTER_rip], type, data); \
+		} \
+	}
+	
+	//~ usleep(200000); // lock CPU to 5Hz (200000)
+	
+	if (__this->debugging_mode) {
+		printf("\n");
+		
+	}
+	
+	NEXT_TOKEN
+	
+	#define INSTR if (!origin_skip) // this is so that we can check if we are supposed to execute the next instruction
+	
+	#define PARAMS2 { NEXT_TOKEN param1 = type; param2 = data; } // we need to create these macros, else the parameters will get mixed up
+	#define PARAMS4 { NEXT_TOKEN param1 = type; param2 = data; NEXT_TOKEN param3 = type; param4 = data; }
+	#define PARAMS6 { NEXT_TOKEN param1 = type; param2 = data; NEXT_TOKEN param3 = type; param4 = data; NEXT_TOKEN param5 = type; param6 = data; }
+	
+	switch (type) {
+		case TOKEN_KEYWORD: { // instruction
+			origin_skip = __this->main_thread.next_skip;
+			__this->main_thread.next_skip = 0;
+			
+			switch (data) {
+				case TOKEN_cla:   PARAMS6; INSTR cla_instruction(  __this, param1, param2, param3, param4, param5, param6);          break;
+				case TOKEN_mov:   PARAMS4; INSTR mov_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_jmp:   PARAMS2; INSTR jmp_instruction(  __this, param1, param2);                                          break;
+				case TOKEN_cnd:   PARAMS2; INSTR cnd_instruction(  __this, param1, param2);                                          break;
+				case TOKEN_cmp:   PARAMS4; INSTR cmp_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_sar:   PARAMS4; INSTR sar_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_call:  PARAMS2; INSTR call_instruction( __this, param1, param2);                                          break;
 
-	}*/
+				case TOKEN_add:   PARAMS4; INSTR add_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_sub:   PARAMS4; INSTR sub_instruction(  __this, param1, param2, param3, param4);                          break;
 
-	switch (__this->code[ip]) { // switch though the type
-		case TOKEN_KEYWORD: { // fail-safe, I guess?
+				case TOKEN_lea:   PARAMS4; INSTR lea_instruction(  __this, param1, param2, param3, param4);                          break;
 
-#if REMME
-			printf("REMME\n");
+				case TOKEN_push:  PARAMS2; INSTR push_instruction( __this, param1, param2);                                          break;
+				case TOKEN_pop:   PARAMS2; INSTR pop_instruction(  __this, param1, param2);                                          break;
 
-				if (click_proxy) {
-					click_proxy = 0;
-					
-					int excluded_count = 151;
-					int excluded[] = {0, 543, 6, 47, 1, 282, 258, 91, 233, 407, 26, 444, 241, 220, 96, 364, 307, 306, 333, 77, 119, \
-									  105, 154, 147, 248, 508, 440, 236, 334, 44, 41, 396, 62, 84, 575, 197, 187, 46, 516, 38, 103, \
-									  205, 152, 165, 123, 554, 294, 153, 400, 445, 185, 249, 210, 90, 102, 78, 394, 293, 260, 602,  \
-									  292, 552, 289, 93, 374, 463, 67, 348, 588, 485, 482, 526, 23, 131, 279, 106, 8, 310, 32, 318, \
-									  92, 391, 174, 302, 53, 379, 571, 473, 256, 121, 546, 418, 582, 88, 230, 161, 331, 528, 380,   \
-									  297, 551, 438, 242, 446, 151, 48, 350, 55, 341, 227, 423, 196, 4, 149, 412, 21, 219, 520,     \
-									  323, 285, 221, 513, 204, 160, 79, 33, 381, 172, 464, 189, 461, 359, 97, 578, 344, 347, 100,   \
-									  122, 500, 262, 16, 45, 150, 265, 5, 433, 57, 466, 75, 104, 156};
-					
-					int zhongyao_ji = 199;
-					int zhongyao[] = {15, 17, 19, 22, 24, 27, 29, 30, 36, 37, 40, 49, 52, 54, 60, 63, 65, 69, 71, 80, 81, 82, 83,  \
-									  85, 86, 94, 95, 98, 108, 110, 112, 113, 125, 136, 137, 139, 142, 146, 155, 159, 162, 168,    \
-									  173, 178, 179, 180, 183, 184, 190, 191, 193, 194, 198, 203, 206, 207, 208, 212, 214, 215,    \
-									  217, 218, 222, 223, 225, 226, 232, 234, 235, 250, 254, 255, 257, 259, 261, 272, 274, 276,    \
-									  280, 281, 283, 287, 288, 295, 311, 322, 325, 326, 330, 339, 340, 343, 346, 349, 351, 355,    \
-									  356, 357, 360, 367, 368, 373, 384, 386, 387, 389, 390, 392, 393, 395, 397, 398, 401, 402,    \
-									  404, 405, 406, 410, 411, 414, 420, 421, 422, 425, 426, 427, 428, 429, 430, 431, 432, 435,    \
-									  437, 441, 442, 448, 449, 450, 451, 452, 453, 457, 458, 459, 462, 465, 468, 470, 476, 480,    \
-									  481, 484, 487, 489, 491, 492, 493, 494, 495, 497, 499, 501, 502, 503, 505, 506, 514, 529,    \
-									  530, 531, 532, 539, 541, 542, 544, 545, 553, 557, 559, 561, 562, 563, 564, 566, 568, 569,    \
-									  570, 577, 579, 580, 581, 585, 589, 590, 592, 594, 595, 596, 597};
-					
-					regenerate: {
-						//~ __this->stack[0x7ffd8 / sizeof(__this->stack[0])] = rand() % 604;
-						__this->stack[0x7ffd8 / sizeof(__this->stack[0])] = zhongyao[rand() % zhongyao_ji];
-						
-					}
-					
-					//~ char found = 0;
-					//~ 
-					//~ int i;
-					//~ for (i = 0; i < zhongyao_ji; i++) {
-						//~ if (__this->stack[0x7ffd8 / sizeof(__this->stack[0])] == zhongyao[i]) {
-							//~ found = 1;
-							//~ break;
-							//~ 
-						//~ }
-						//~ 
-					//~ } if (!found) {
-						//~ __this->stack[0x7ffd8 / sizeof(__this->stack[0])]++;
-						//~ goto regenerate;
-						//~ 
-					//~ }
-					
-					int i;
-					for (i = 0; i < excluded_count; i++) {
-						if (__this->stack[0x7ffd8 / sizeof(__this->stack[0])] == excluded[i]) {
-							__this->stack[0x7ffd8 / sizeof(__this->stack[0])]++;
-							goto regenerate;
-							break;
-							
-						}
-						
-					}
-					
-					printf("%lld\n", __this->stack[0x7ffd8 / sizeof(__this->stack[0])]);
-					
-				}
-#endif
+				case TOKEN_ret:            INSTR ret_instruction(  __this);                                                          break;
 
-			if (debugging_mode) { // TODO commands and stuff here
-				printf("%lld: %s %s %s %s %s\n", ip,
-					   get_name(TOKEN_KEYWORD,        __this->code[ip + 1]),
-					   get_name(__this->code[ip + 2], __this->code[ip + 3]),
-					   get_name(__this->code[ip + 4], __this->code[ip + 5]),
-					   get_name(__this->code[ip + 6], __this->code[ip + 7]),
-					   get_name(__this->code[ip + 8], __this->code[ip + 9]));
+				case TOKEN_and:   PARAMS4; INSTR and_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_or:    PARAMS4; INSTR or_instruction(   __this, param1, param2, param3, param4);                          break;
+				case TOKEN_xor:   PARAMS4; INSTR xor_instruction(  __this, param1, param2, param3, param4);                          break;
 
-			}
+				case TOKEN_mul:   PARAMS4; INSTR mul_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_div:   PARAMS4; INSTR div_instruction(  __this, param1, param2, param3, param4);                          break;
 
-			origin_skip = __this->next_skip;
-			__this->next_skip = 0; // reset the skip
+				case TOKEN_mul3:  PARAMS6; INSTR mul3_instruction( __this, param1, param2, param3, param4, param5, param6);          break;
+				case TOKEN_div3:  PARAMS6; INSTR div3_instruction( __this, param1, param2, param3, param4, param5, param6);          break;
 
-			switch (__this->code[++ip]) { // switch through the data value (instruction)
-				case TOKEN_cla:   PARAMS6; INSTR cla_instruction(  __this, param1, param2, param3, param4, param5, param6); break;
-				case TOKEN_mov:   PARAMS4; INSTR mov_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_jmp:   PARAMS2; INSTR jmp_instruction(  __this, param1, param2); break;
-				case TOKEN_cnd:   PARAMS2; INSTR cnd_instruction(  __this, param1, param2); break;
-				case TOKEN_cmp:   PARAMS4; INSTR cmp_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_sar:   PARAMS4; INSTR sar_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_call:  PARAMS2; INSTR call_instruction( __this, param1, param2); break;
+				case TOKEN_mul1:  PARAMS2; INSTR mul1_instruction( __this, param1, param2);                                          break;
+				case TOKEN_div1:  PARAMS2; INSTR div1_instruction( __this, param1, param2);                                          break;
 
-				case TOKEN_add:   PARAMS4; INSTR add_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_sub:   PARAMS4; INSTR sub_instruction(  __this, param1, param2, param3, param4); break;
+				case TOKEN_shr:   PARAMS4; INSTR rsh_instruction(  __this, param1, param2, param3, param4);                          break;
+				case TOKEN_shl:   PARAMS4; INSTR lsh_instruction(  __this, param1, param2, param3, param4);                          break;
 
-				case TOKEN_lea:   PARAMS4; INSTR lea_instruction(  __this, param1, param2, param3, param4); break;
+				case TOKEN_test:  PARAMS4; INSTR test_instruction( __this, param1, param2, param3, param4);                          break;
 
-				case TOKEN_push:  PARAMS2; INSTR push_instruction( __this, param1, param2); break;
-				case TOKEN_pop:   PARAMS2; INSTR pop_instruction(  __this, param1, param2); break;
+				case TOKEN_neg:   PARAMS2; INSTR neg_instruction(  __this, param1, param2);                                          break;
+				case TOKEN_not:   PARAMS2; INSTR not_instruction(  __this, param1, param2);                                          break;
 
-				case TOKEN_ret:            INSTR ret_instruction(  __this); break;
+				case TOKEN_cdq:            INSTR cdq_instruction(  __this);                                                          break;
+				case TOKEN_cqo:            INSTR cqo_instruction(  __this);                                                          break;
 
-				case TOKEN_and:   PARAMS4; INSTR and_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_or:    PARAMS4; INSTR or_instruction(   __this, param1, param2, param3, param4); break;
-				case TOKEN_xor:   PARAMS4; INSTR xor_instruction(  __this, param1, param2, param3, param4); break;
+				case TOKEN_rep:   PARAMS2; INSTR rep_instruction(  __this, param1, param2);                                          break;
 
-				case TOKEN_mul:   PARAMS4; INSTR mul_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_div:   PARAMS4; INSTR div_instruction(  __this, param1, param2, param3, param4); break;
-
-				case TOKEN_mul3:  PARAMS6; INSTR mul3_instruction( __this, param1, param2, param3, param4, param5, param6); break;
-				case TOKEN_div3:  PARAMS6; INSTR div3_instruction( __this, param1, param2, param3, param4, param5, param6); break;
-
-				case TOKEN_mul1:  PARAMS2; INSTR mul1_instruction( __this, param1, param2); break;
-				case TOKEN_div1:  PARAMS2; INSTR div1_instruction( __this, param1, param2); break;
-
-				case TOKEN_shr:   PARAMS4; INSTR rsh_instruction(  __this, param1, param2, param3, param4); break;
-				case TOKEN_shl:   PARAMS4; INSTR lsh_instruction(  __this, param1, param2, param3, param4); break;
-
-				case TOKEN_test:  PARAMS4; INSTR test_instruction( __this, param1, param2, param3, param4); break;
-
-				case TOKEN_neg:   PARAMS2; INSTR neg_instruction(  __this, param1, param2); break;
-				case TOKEN_not:   PARAMS2; INSTR not_instruction(  __this, param1, param2); break;
-
-				case TOKEN_cdq:            INSTR cdq_instruction(  __this); break;
-				case TOKEN_cqo:            INSTR cqo_instruction(  __this); break;
-
-				case TOKEN_rep:   PARAMS2; INSTR rep_instruction(  __this, param1, param2); break;
-
-				case TOKEN_movzx: PARAMS4; INSTR movzx_instruction(__this, param1, param2, param3, param4); break;
-				case TOKEN_movsx: PARAMS4; INSTR movsx_instruction(__this, param1, param2, param3, param4); break;
+				case TOKEN_movzx: PARAMS4; INSTR movzx_instruction(__this, param1, param2, param3, param4);                          break;
+				case TOKEN_movsx: PARAMS4; INSTR movsx_instruction(__this, param1, param2, param3, param4);                          break;
 				case TOKEN_set:   PARAMS2;       mov_instruction(  __this, param1, param2, TOKEN_NUMBER, (unsigned_t) !origin_skip); break;
 
-				case TOKEN_inc:   PARAMS2; INSTR inc_instruction(  __this, param1, param2); break;
-				case TOKEN_dec:   PARAMS2; INSTR dec_instruction(  __this, param1, param2); break;
-
-				default:                   INSTR printf("WARNING Unknown instruction %lld\n", __this->code[ip]);
-
+				case TOKEN_inc:   PARAMS2; INSTR inc_instruction(  __this, param1, param2);                                          break;
+				case TOKEN_dec:   PARAMS2; INSTR dec_instruction(  __this, param1, param2);                                          break;
+				
+				case TOKEN_mod:   PARAMS4; INSTR mod_instruction(  __this, param1, param2, param3, param4);                          break;
+				
+				default: warn("Unknown instruction 0x%llx\n", type); break;
+				
 			}
-
-			ip++; // pass the ending token so we don't have to process it later
-
-		} default: {
+			
 			break;
-
-		}
-
+			
+		} case 0: break; // padding
+		default: warn("Unknown token type 0x%llx (was expecting instruction, or 0x%x)\n", type, TOKEN_KEYWORD); break;
+		
 	}
-
-	ip++;
-
-	if (ip >= __this->code_length) {
-		printf("IP has surpassed __this->code_length (%lld). Initiating exit sequence ...\n", __this->code_length);
-
-		__this->error_code = (int) __this->registers[REGISTER_FAMILY_a];
-		_program_free(__this);
-
+	
+	if (__this->main_thread.registers[REGISTER_rip] > __this->meta->length * (sizeof(uint64_t) / sizeof(uint16_t))) {
+		__this->error_code = (int) __this->main_thread.registers[REGISTER_FAMILY_a];
+		
+		uint64_t signature_hex = *(__this->base_pointer_64 + (__this->main_thread.registers[REGISTER_rip] += sizeof(uint64_t) / sizeof(uint16_t)) / (sizeof(uint64_t) / sizeof(uint16_t)));
+		char signature[9]; // signature string is 8 bytes long
+		signature[8] = 0;
+		
+		int i;
+		for (i = 0; i < 8; i++) {
+			signature[i] = (char) ((signature_hex >> (i * 8)) & 0xFF);
+			
+		}
+		
+		verbose("Signature is %s\n", signature);
+		#define DEFAULT_SIGNATURE "AQUA-ZED"
+		
+		 if (strcmp(signature, DEFAULT_SIGNATURE) == 0) {info("Signature matches default AQUA signature\n");
+		}else                                            warn("Signature does not match default AQUA signature (%s)\n", DEFAULT_SIGNATURE);
+		
+		verbose("You have reached the end of the program (with %lld warnings, error code %d, 0x%x)\n", __this->warning, __this->error_code, __this->error_code);
+		verbose("\t__this->meta->length * (sizeof(uint64_t) / sizeof(uint16_t)) = %lld\n", __this->meta->length * (sizeof(uint64_t) / sizeof(uint16_t)));
+		verbose("\t__this->main_thread.registers[REGISTER_rip] = %lld\n", __this->main_thread.registers[REGISTER_rip]);
+		
 		return 1;
-
+		
 	} else {
 		return 0;
-
+		
 	}
-
+	
 }
 
 #endif

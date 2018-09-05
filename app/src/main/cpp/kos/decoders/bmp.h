@@ -54,6 +54,8 @@ unsigned long long bmp_support(void) {
 #define BMP_MAGIC 0x4D42
 
 void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
+	printf("ASDOAIDUNOAUYDAUIsDHNUAILKDJ DONT FORGET THAT IF STUFF DONT WORK, BMP_LOAD MAY BE THE CULPRAT\n");
+
 	if (!(*((char*) _path))) {
 		_path = (unsigned long long) "test.bmp";
 		printf("WARNING Empty path in %s (setting path to `%s`)\n", __func__, (char*) _path);
@@ -95,13 +97,13 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 	__this->image_size = info_header.image_bytes / sizeof(unsigned long long);
 	__this->bpp = (unsigned long long) info_header.bpp;
 
-	__this->width = (unsigned long long) info_header.width;
+	__this->width  = (unsigned long long) info_header.width;
 	__this->height = (unsigned long long) info_header.height;
 
 	unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
 	unsigned char temp;
 
-	buffer = original;
+	buffer  = original;
 	buffer += header.offset;
 
 	memcpy(char_data, buffer, info_header.image_bytes);
@@ -114,24 +116,31 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 			unsigned char g = char_data[i + 2];
 			unsigned char b = char_data[i + 3];
 
-			char_data[i] = b;
+			char_data[i]     = b;
 			char_data[i + 1] = g;
 			char_data[i + 2] = r;
 			char_data[i + 3] = a;
 
 		} else {
-			temp = char_data[i];
-			char_data[i] = char_data[i + 2];
+			temp             = char_data[i];
+			char_data[i]     = char_data[i + 2];
 			char_data[i + 2] = temp;
-
-			printf("%d %d %d\n", buffer[i], buffer[i + 1], buffer[i + 2]);
 
 		}
 
 	}
 
-	__this->data = (unsigned long long*) char_data;
-	mfree(original, bytes);
+	__this->data             = (unsigned long long*) malloc(info_header.image_bytes);
+	unsigned char* data8     = (unsigned char*)      __this->data;
+	unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
+
+	int y;
+	for (y = 0; y < info_header.height; y++) {
+		memcpy(data8 + (info_header.height - y + 1) * pitch, char_data + y * pitch, pitch);
+
+	}
+
+	mfree(char_data, bytes);
 
 }
 

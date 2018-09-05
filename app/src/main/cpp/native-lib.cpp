@@ -18,10 +18,11 @@ bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
 extern "C" {
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jobject obj, jint width, jint height);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(                         JNIEnv* env, jobject obj, jobject java_asset_manager);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(                 JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(                       JNIEnv* env, jobject obj, jint width, jint height);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(                         JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(                        JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
 
 };
@@ -33,12 +34,26 @@ static GLboolean gl3_stub_init(void) {
 }
 #endif
 
+void mfree(void* pointer, unsigned long long bytes) {
+	free(pointer);
+
+}
+
 #include "alog.h"
 #include "asm/asm.h"
-static program_t de_program;
 
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+
+static program_t*         current_de_program;
+static char*              rom_data;
+static unsigned long long rom_bytes;
+
+signed long long load_rom(const char* path) {
+	ALOGE("WARNING ROM loading (%s) is not supported on this platform\n", __func__);
+	return -1;
+
+}
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env = env;
@@ -111,20 +126,22 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	//~ glEnable(GL_LINE_SMOOTH);
 	//~ glEnable(GL_POLYGON_SMOOTH);
 
+	kos_setup_predefined_textures();
+
 	// program stuff
 
 	ALOGI("\nControl passed to the CW\n");
 	ALOGI("Entering DE ...\n");
 
-	char* code_buffer;
-	unsigned long long buffer_bytes;
+	program_t* de_program = (program_t*) malloc(sizeof(program_t));
+	current_de_program = de_program;
 
-	if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
+	if (load_asset_bytes("root/ROM", &rom_data, &rom_bytes)) {
 		if (!default_assets) {
 			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
 			default_assets = true;
 
-			if (load_asset_bytes("root/ROM", &code_buffer, &buffer_bytes)) {
+			if (load_asset_bytes("root/ROM", &rom_data, &rom_bytes)) {
 				ALOGE("ERROR Could not load the ROM from assets either\n");
 
 			}
@@ -136,31 +153,10 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	}
 
-	char* original_code_buffer = code_buffer;
-	sscanf(code_buffer, "%llu", &de_program.code_length);
-	program_alloc(&de_program);
+	current_de_program->pointer = rom_data;
 
-	int digits;
-
-	unsigned long long i;
-	for (i = 0; i < strlen(original_code_buffer); i++) {
-		if (sscanf(code_buffer, "%llu, %n", &de_program.code[i], &digits) != 1) {
-			break;
-
-		}
-
-		code_buffer += digits;
-
-	}
-
-	if (*code_buffer) {
-		ALOGW("WARNING ROM reading did not end cleanly (%d)\n", *code_buffer);
-
-	}
-
-	free(original_code_buffer);
 	ALOGI("Starting run setup phase ...\n");
-	program_run_setup_phase(&de_program);
+	program_run_setup_phase(current_de_program);
 
 }
 
@@ -170,16 +166,22 @@ static int loop(void) {
 
 	}
 
-	if (program_run_loop_phase(&de_program) && de_program.error_code) {
-		ALOGV("DE return code is %d\n", de_program.error_code);
-		program_free(&de_program);
+	if (program_run_loop_phase(current_de_program) && current_de_program->error_code) {
+		ALOGV("DE return code is %d\n", current_de_program->error_code);
+		program_free(current_de_program);
+		free(current_de_program->base_pointer/*, rom_bytes*/);
 
-		return de_program.error_code;
+		return current_de_program->error_code;
 
 	} else {
 		return 0;
 
 	}
+
+}
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj, jint width, jint height) {
+	kos_free_predefined_textures();
 
 }
 

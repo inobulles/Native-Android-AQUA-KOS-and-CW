@@ -55,4 +55,6 @@ void set_video_visibility(signed long long state) {
 void* new_rectangle(unsigned long long x, unsigned long long y, unsigned long long width, unsigned long long height) { printf("WARNING Deprecated function `new_rectangle`\n"); return nullptr; }
 void draw_rectangle(void* __this) { printf("WARNING Deprecated function `draw_rectangle`\n"); }
 
+#include "predefined_textures.h"
+
 #endif
