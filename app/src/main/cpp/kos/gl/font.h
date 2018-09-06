@@ -19,7 +19,7 @@ font_t new_font(const char* _path, unsigned long long size) {
 
 	}
 
-	jint error = CALLBACK_INT(java_new_font, (jint) (((float) size / _UI64_MAX) * (float) video_height()), callback_env->NewStringUTF(path));
+	jint error = CALLBACK_INT(java_new_font, (jint) (((float) size / _UI64_MAX) * (float) video_width()), callback_env->NewStringUTF(path));
 
 	if (error < 0) {
 		printf("WARNING Java had a problem loading the font\n");
