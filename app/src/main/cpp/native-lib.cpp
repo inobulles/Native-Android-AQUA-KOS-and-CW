@@ -66,16 +66,21 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
 	CALLBACK_VOID_NO_PARAMS(java_init_lib);
 
-	init_callback_function(&java_new_font,    "new_font",    "(ILjava/lang/String;)I");
+	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
 	init_callback_function(&java_font_remove, "font_remove", "(I)V");
 
-	init_callback_function(&java_get_font_width,  "get_font_width",  CALLBACK_FONT_AND_TEXT);
+	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
 	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
 
-	init_callback_function(&java_create_texture_from_font, "create_texture_from_font", "(ILjava/lang/String;)[B");
+	init_callback_function(&java_create_texture_from_font, "create_texture_from_font",
+						   "(ILjava/lang/String;)[B");
 
-	init_callback_function(&java_read_external_slash_internal_storage_path,       "read_external_slash_internal_storage_path",       "(Ljava/lang/String;)Ljava/lang/String;");
-	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
+	init_callback_function(&java_read_external_slash_internal_storage_path,
+						   "read_external_slash_internal_storage_path",
+						   "(Ljava/lang/String;)Ljava/lang/String;");
+	init_callback_function(&java_read_external_slash_internal_storage_path_bytes,
+						   "read_external_slash_internal_storage_path_bytes",
+						   "(Ljava/lang/String;)J");
 
 	// asset manager stuff
 
@@ -97,7 +102,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 //	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
 
-	const char* version_string = (const char*) glGetString(GL_VERSION);
+	const char *version_string = (const char *) glGetString(GL_VERSION);
 
 	if (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) {
 		renderer = create_es3_renderer();
@@ -116,7 +121,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_ALPHA);
 
-	ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
+	//~ ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
 
 	//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
 	//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
@@ -126,8 +131,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	//~ glEnable(GL_LINE_SMOOTH);
 	//~ glEnable(GL_POLYGON_SMOOTH);
 
-	kos_setup_predefined_textures();
-
 	// program stuff
 
 	ALOGI("\nControl passed to the CW\n");
@@ -136,12 +139,14 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	program_t* de_program = (program_t*) malloc(sizeof(program_t));
 	current_de_program = de_program;
 
-	if (load_asset_bytes("root/ROM", &rom_data, &rom_bytes)) {
+	default_assets = true; /// REMME
+
+	if (load_asset_bytes("root/rom.zed", &rom_data, &rom_bytes)) {
 		if (!default_assets) {
 			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
 			default_assets = true;
 
-			if (load_asset_bytes("root/ROM", &rom_data, &rom_bytes)) {
+			if (load_asset_bytes("root/rom.zed", &rom_data, &rom_bytes)) {
 				ALOGE("ERROR Could not load the ROM from assets either\n");
 
 			}
@@ -153,8 +158,15 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	}
 
-	current_de_program->pointer = rom_data;
+	ALOGI("Setting up predefined_textures ...\n");
+	int warning = kos_setup_predefined_textures();
 
+	if (warning) {
+		ALOGW("WARNING Problem occurred whilst setting up predefined textures (failed %d textures)\n", warning);
+
+	}
+
+	current_de_program->pointer = rom_data;
 	ALOGI("Starting run setup phase ...\n");
 	program_run_setup_phase(current_de_program);
 
@@ -180,7 +192,7 @@ static int loop(void) {
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj) {
 	kos_free_predefined_textures();
 
 }
@@ -203,6 +215,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 		loop();
 
 	}
+
+	printf("%lld\n", gl_fps);
 
 	if (renderer) {
 		waiting_video_flip = 0;

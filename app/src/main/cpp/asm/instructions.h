@@ -2,6 +2,9 @@
 // https://c9x.me/x86/ ← really good references
 // http://www.felixcloutier.com/x86/
 
+#include "asm.h"
+#include "thread.h"
+
 static inline void cla_instruction(program_t* __this, unsigned_t ltype, unsigned_t ldata, unsigned_t mtype, unsigned_t mdata, unsigned_t rtype, unsigned_t rdata) {
 	unsigned_t right = rtype == TOKEN_NUMBER ? rdata : __this->main_thread.registers[rdata];
 	
@@ -68,12 +71,12 @@ static inline void pop_instruction(program_t* __this, unsigned_t type, unsigned_
 
 static inline void lea_instruction(program_t* __this, unsigned_t ltype, unsigned_t ldata, unsigned_t rtype, unsigned_t rdata) {
 	if (rtype == TOKEN_ADDRESS) set_value(__this, ltype, ldata, __this->main_thread.registers[rdata]);
-	else set_value(__this, ltype, ldata, get_value(__this, rtype, rdata));
+	else                        set_value(__this, ltype, ldata, get_value(__this, rtype, rdata));
 	
 }
 
 static inline void cmp_instruction(program_t* __this, unsigned_t ltype, unsigned_t ldata, unsigned_t rtype, unsigned_t rdata) {
-	__this->main_thread.condition_left = get_value(__this, ltype, ldata);
+	__this->main_thread.condition_left  = get_value(__this, ltype, ldata);
 	__this->main_thread.condition_right = get_value(__this, rtype, rdata);
 	
 	__this->main_thread.registers[REGISTER_zf] = (unsigned_t) (__this->main_thread.condition_left == __this->main_thread.condition_right);

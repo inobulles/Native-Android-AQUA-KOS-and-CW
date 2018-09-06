@@ -35,7 +35,7 @@
 #define MAX_PATH_LENGTH 4096
 
 #define GET_PATH(_path) \
-	char path[MAX_PATH_LENGTH] = "root/"; \
+	char path[MAX_PATH_LENGTH] = "root/root/"; \
     strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path)); \
 
 static JNIEnv* callback_env;

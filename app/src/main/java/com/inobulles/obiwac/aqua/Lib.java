@@ -86,6 +86,7 @@ public class Lib {
 
 		}
 
+		Log.e(MainActivity.TAG, String.format("Failed to load file `%s`\n", path));
 		return "(null)";
 
 	}

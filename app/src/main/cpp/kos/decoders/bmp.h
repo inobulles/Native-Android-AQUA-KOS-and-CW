@@ -52,12 +52,13 @@ unsigned long long bmp_support(void) {
 }
 
 #define BMP_MAGIC 0x4D42
+static const char* bmp_load_default_path = "test.bmp";
 
-void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
-	printf("ASDOAIDUNOAUYDAUIsDHNUAILKDJ DONT FORGET THAT IF STUFF DONT WORK, BMP_LOAD MAY BE THE CULPRAT\n");
+void bmp_load(unsigned_t ____this, unsigned long long _path) {
+	bitmap_image_t* __this = (bitmap_image_t*) ____this;
 
 	if (!(*((char*) _path))) {
-		_path = (unsigned long long) "test.bmp";
+		_path = (unsigned long long) bmp_load_default_path;
 		printf("WARNING Empty path in %s (setting path to `%s`)\n", __func__, (char*) _path);
 
 	}
@@ -92,7 +93,6 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 	}
 
 	info_header = *((bitmap_info_header_t*) buffer);
-//	buffer += sizeof(bitmap_info_header_t);
 
 	__this->image_size = info_header.image_bytes / sizeof(unsigned long long);
 	__this->bpp = (unsigned long long) info_header.bpp;
@@ -100,16 +100,14 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 	__this->width  = (unsigned long long) info_header.width;
 	__this->height = (unsigned long long) info_header.height;
 
-	unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
-	unsigned char temp;
-
 	buffer  = original;
 	buffer += header.offset;
 
-	memcpy(char_data, buffer, info_header.image_bytes);
+	unsigned char* char_data = (unsigned char*) buffer;//(unsigned char*) malloc(info_header.image_bytes);
+	unsigned char  temp;
 
 	int i;
-	for (i = 0; i < info_header.image_bytes; i += __this->bpp / 8) {
+	for (i = 0; i < info_header.image_bytes / 2; i += __this->bpp / 8) {
 		if (__this->bpp == 32) {
 			unsigned char a = char_data[i];
 			unsigned char r = char_data[i + 1];
@@ -140,11 +138,12 @@ void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
 
 	}
 
-	mfree(char_data, bytes);
+	mfree(original, bytes);
 
 }
 
-void bmp_free(bitmap_image_t* __this) {
+void bmp_free(unsigned long long ____this) {
+	bitmap_image_t* __this = (bitmap_image_t*) ____this;
 	mfree(__this->data, __this->image_size * sizeof(unsigned long long));
 
 }
