@@ -216,8 +216,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 
 	}
 
-	printf("%lld\n", gl_fps);
-
 	if (renderer) {
 		waiting_video_flip = 0;
 		gl_fps = renderer->render();
