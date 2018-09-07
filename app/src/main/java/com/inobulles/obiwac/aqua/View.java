@@ -12,7 +12,7 @@ class View extends GLSurfaceView {
 		super(context);
 
 		setEGLConfigChooser(8, 8, 8, 0, 16, 0);
-		setEGLContextClientVersion(3);
+		setEGLContextClientVersion(2);
 		setRenderer(new Renderer());
 
 	}
