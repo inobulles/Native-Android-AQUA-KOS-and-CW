@@ -20,6 +20,8 @@ static const float texture_coords[] = {
 	1.0f, 0.0f,
 };
 
+#define ACTUAL_SURFACE_VERTEX_COUNT 4
+
 static inline void surface_update_vertices(surface_t* __this) {
 	float x      = (float) __this->x      / _UI64_MAX_MARGIN;
 	float y      = (float) __this->y      / _UI64_MAX_MARGIN;
@@ -28,9 +30,9 @@ static inline void surface_update_vertices(surface_t* __this) {
 	float height = (float) __this->height / _UI64_MAX_MARGIN;
 
 	int i;
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < ACTUAL_SURFACE_VERTEX_COUNT; i++) {
 		// __this->vertices[i].z has a range of -1.0f → 0.999999f
-		__this->vertices[i].z = ((GLfloat) __this->layer) / 500.0f; /// TODO FIXME
+		__this->vertices[i].z = (GLfloat) __this->layer; /// TODO FIXME
 
 		__this->vertices[i].x =  (GLfloat) (width  * vertex_matrix[i * 3]     + x);
 		__this->vertices[i].y =  (GLfloat) (height * vertex_matrix[i * 3 + 1] + y);
@@ -72,7 +74,7 @@ static void surface_update_colours(surface_t* __this) {
 	float alpha = (float) __this->alpha / _UI64_MAX;
 
 	int i;
-	for (i = 0; i < SURFACE_VERTEX_COUNT; i++) {
+	for (i = 0; i < ACTUAL_SURFACE_VERTEX_COUNT; i++) {
 		__this->colours[i].alpha = alpha;
 
 		__this->colours[i].red   = red;
@@ -130,6 +132,11 @@ void surface_free(surface_t* __this) {
 extern Renderer* renderer;
 
 void surface_draw(surface_t* __this) {
+	if (__this->layer) {
+		return;
+
+	}
+
 	renderer->draw_surface(__this);
 
 }
