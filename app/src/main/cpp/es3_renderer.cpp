@@ -47,11 +47,11 @@ bool es3_renderer::init(void) {
 	int error = 0;
 	default_assets = true;
 
-	error += load_asset("es3_vertex_shader.glsl", &VERTEX_SHADER);
+	error += load_asset("es3_vertex_shader.glsl",   &VERTEX_SHADER);
 	error += load_asset("es3_fragment_shader.glsl", &FRAGMENT_SHADER);
 
 	if (error > 0) {
-		printf("WARNING Failed to load shader assets, returning error from `es3_renderer::init` ...\n");
+		ALOGE("WARNING Failed to load shader assets, returning error from `es3_renderer::init` ...\n");
 		return false;
 
 	}
@@ -60,13 +60,13 @@ bool es3_renderer::init(void) {
 	shader_program = create_program(VERTEX_SHADER, FRAGMENT_SHADER);
 
 	if (!shader_program) {
-		printf("WARNING Failed to create shader program, returning error from `es3_renderer::init` ...\n");
+		ALOGE("WARNING Failed to create shader program, returning error from `es3_renderer::init` ...\n");
 		return false;
 
 	}
 
-	sampler_location =           glGetUniformLocation(shader_program, "sampler_texture");
-	has_texture_location =       glGetUniformLocation(shader_program, "has_texture");
+	sampler_location           = glGetUniformLocation(shader_program, "sampler_texture");
+	has_texture_location       = glGetUniformLocation(shader_program, "has_texture");
 //	projection_matrix_location = glGetUniformLocation(shader_program, "projection_matrix");
 
 	return true;
@@ -108,7 +108,7 @@ void es3_renderer::draw_surface(surface_t* __this) {
 
 	if (__this->has_texture) {
 		glActiveTexture(GL_TEXTURE0); // NOTE that you can have up to 32 active textures without having to rebind
-		glBindTexture(GL_TEXTURE_2D, (GLuint) __this->texture);
+		glBindTexture(  GL_TEXTURE_2D, (GLuint) __this->texture);
 		glUniform1i(sampler_location, 0);
 
 	}

@@ -59,7 +59,7 @@ void surface_scroll(surface_t* __this, signed long long _x, signed long long _y,
 	y = -y - height - 1.0f;
 
 	int i;
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < ACTUAL_SURFACE_VERTEX_COUNT; i++) {
 		__this->texture_coords[i].x = (GLfloat) (texture_coords[i * 2] * width + x);
 		__this->texture_coords[i].y = (GLfloat) (texture_coords[i * 2] * height + y);
 
@@ -132,11 +132,6 @@ void surface_free(surface_t* __this) {
 extern Renderer* renderer;
 
 void surface_draw(surface_t* __this) {
-	if (__this->layer) {
-		return;
-
-	}
-
 	renderer->draw_surface(__this);
 
 }
@@ -152,7 +147,7 @@ void surface_set_alpha(surface_t* __this, unsigned long long alpha) {
 	GLfloat float_alpha = (GLfloat) __this->alpha / _UI64_MAX;
 
 	int i;
-	for (i = 0; i < SURFACE_VERTEX_COUNT; i++) {
+	for (i = 0; i < ACTUAL_SURFACE_VERTEX_COUNT; i++) {
 		__this->colours[i].alpha = float_alpha;
 
 	}
