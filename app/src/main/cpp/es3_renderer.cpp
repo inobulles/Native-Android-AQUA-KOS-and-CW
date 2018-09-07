@@ -69,6 +69,7 @@ bool es3_renderer::init(void) {
 	has_texture_location       = glGetUniformLocation(shader_program, "has_texture");
 //	projection_matrix_location = glGetUniformLocation(shader_program, "projection_matrix");
 
+	glUseProgram(shader_program);
 	return true;
 
 }
@@ -94,7 +95,6 @@ static inline void vertex_attribute_pointer(GLuint index, int vector_size, void*
 extern GLfloat projection_matrix[16];
 
 void es3_renderer::draw_surface(surface_t* __this) {
-	glUseProgram(shader_program);
 	glUniform1i(has_texture_location, (GLint) __this->has_texture);
 //	glUniformMatrix4fv(projection_matrix_location, 1, GL_FALSE, (GLfloat*) projection_matrix);
 
