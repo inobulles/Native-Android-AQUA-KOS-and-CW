@@ -107,7 +107,7 @@ void bmp_load(unsigned_t ____this, unsigned long long _path) {
 	unsigned char  temp;
 
 	int i;
-	for (i = 0; i < info_header.image_bytes / 2; i += __this->bpp / 8) {
+	for (i = 0; i < info_header.image_bytes; i += __this->bpp / 8) {
 		if (__this->bpp == 32) {
 			unsigned char a = char_data[i];
 			unsigned char r = char_data[i + 1];
@@ -138,7 +138,7 @@ void bmp_load(unsigned_t ____this, unsigned long long _path) {
 
 	}
 
-	mfree(original, bytes);
+	//free(original);
 
 }
 
