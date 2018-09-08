@@ -6,7 +6,7 @@
 #include "../../asm/asm.h"
 
 #ifndef TEXTURE_WARNING
-#define TEXTURE_WARNING 1
+#define TEXTURE_WARNING 0
 #endif
 
 #define SHARP_TEXTURES 1
