@@ -36,11 +36,17 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		else Lib.give_internal_storage_path(directory.toString());
 
 		if (Build.VERSION.SDK_INT >= 23) {
-			int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+			int read_permission  = PackageManager.PERMISSION_DENIED;
+			int write_permission = PackageManager.PERMISSION_DENIED;
 
-			if (permission != PackageManager.PERMISSION_GRANTED) {
-				this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-				Log.w(TAG, "WARNING AQUA does not have the permission to read external storage\n");
+			while (read_permission != PackageManager.PERMISSION_GRANTED && write_permission != PackageManager.PERMISSION_GRANTED) {
+				read_permission  = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+				write_permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+				if (read_permission != PackageManager.PERMISSION_GRANTED || write_permission != PackageManager.PERMISSION_GRANTED) {
+					this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+
+				}
 
 			}
 
