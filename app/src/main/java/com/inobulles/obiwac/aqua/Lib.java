@@ -67,7 +67,7 @@ public class Lib {
 
 	public static long read_external_slash_internal_storage_path_bytes(String path) {
 		if (put_file_in_buffer(path)) return -1;
-		else return buffer_file.length();
+		else                          return buffer_file.length();
 
 	}
 
@@ -75,7 +75,15 @@ public class Lib {
 		if (!path.equals(buffer_path)) {
 			if (!put_file_in_buffer(path)) {
 				try {
-					return buffer_buffered_reader.readLine();
+					StringBuilder buffer = new StringBuilder();
+					String        line;
+
+					while ((line = buffer_buffered_reader.readLine()) != null) {
+						buffer.append(line).append("\n");
+
+					}
+
+					return buffer.toString();
 
 				} catch (IOException exception) {
 					exception.printStackTrace();
