@@ -39,6 +39,8 @@ public class Lib {
 	private static BufferedReader buffer_buffered_reader;
 
 	private static boolean put_file_in_buffer(String path) {
+		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+
 		if (buffer_buffered_reader != null) {
 			try {
 				buffer_buffered_reader.close();
@@ -66,12 +68,16 @@ public class Lib {
 	}
 
 	public static long read_external_slash_internal_storage_path_bytes(String path) {
+		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+
 		if (put_file_in_buffer(path)) return -1;
 		else                          return buffer_file.length();
 
 	}
 
 	public static String read_external_slash_internal_storage_path(String path) {
+		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+
 		if (!path.equals(buffer_path)) {
 			if (!put_file_in_buffer(path)) {
 				try {
