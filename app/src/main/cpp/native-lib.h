@@ -36,10 +36,14 @@
 
 #define GET_PATH(_path) \
 	char path[MAX_PATH_LENGTH] = "root/root/"; \
-    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path)); \
+    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path));
+
+#define GET_PATH_FS(_path) \
+	char path[MAX_PATH_LENGTH] = "root/"; \
+    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path));
 
 static JNIEnv* callback_env;
-static jclass callback_class;
+static jclass  callback_class;
 static jobject callback_lib;
 
 typedef struct {
@@ -128,6 +132,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	char* final_path;
 	SET_FINAL_PATH
 
+	ALOGW("%s\n", final_path);
 	FILE* file = fopen(final_path, "rb");
 	free(              final_path);
 

@@ -13,8 +13,10 @@ unsigned long long fs_support(void) {
 
 }
 
-unsigned long long fs_read(const char* path, char** data, unsigned long long* length) {
+unsigned long long fs_read(const char* _path, char** data, unsigned long long* length) {
 	FS_SUPPORT_CHECK {
+		GET_PATH_FS(_path)
+
 		if (load_asset_bytes(path, data, length)) {
 			*data   = (char*) 0;
 			*length = 0;
@@ -40,12 +42,13 @@ void fs_free(char* data, unsigned long long length) {
 
 }
 
-unsigned long long fs_write(const char* path, const char* data, unsigned long long length) {
+unsigned long long fs_write(const char* _path, const char* data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
 		extern bool default_assets;
 
 		if (!default_assets) {
 			char* final_path;
+			GET_PATH_FS(_path)
 			SET_FINAL_PATH
 
 			FILE* file = fopen(final_path, "wb");

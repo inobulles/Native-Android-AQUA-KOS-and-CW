@@ -156,8 +156,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	}
 
-#define INTERNAL_STORAGE_PREFIX "/storage/emulated/0/root/"
-
 	ALOGI("Setting up predefined_textures ...\n");
 	int warning = kos_setup_predefined_textures();
 
