@@ -30,8 +30,13 @@ public class Font {
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
 	public byte[] draw(String text) {
-		long texture_width  = (long) get_width(text);
+		long texture_width  = (long) get_width( text);
 		long texture_height = (long) get_height(text);
+
+		if (texture_width <= 0 || texture_height <= 0) {
+			return null;
+
+		}
 
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);

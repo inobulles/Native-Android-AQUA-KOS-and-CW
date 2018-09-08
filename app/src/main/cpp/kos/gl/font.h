@@ -39,18 +39,34 @@ void font_remove(font_t font) {
 }
 
 texture_t create_texture_from_font(font_t font, const char* text) {
-	jbyteArray error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, (jint) font, callback_env->NewStringUTF(text));
-	jint length = callback_env->GetArrayLength(error);
-	unsigned char* bytes = new unsigned char[length];
-	callback_env->GetByteArrayRegion(error, 0, length, reinterpret_cast<jbyte*>(bytes));
+	unsigned char* bytes   = NULL;
+	texture_t      texture = 0;
 
-	if (error == NULL) {
-		printf("WARNING Java had a problem loading the font\n");
+	jbyteArray error;
+	jint       length;
+
+	if (get_font_width( font, text) <= 0 || \
+		get_font_height(font, text) <= 0) {
+		error = NULL;
+
+	} else {
+		error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, (jint) font, callback_env->NewStringUTF(text));
+		length = callback_env->GetArrayLength(error);
+		bytes = new unsigned char[length];
+		callback_env->GetByteArrayRegion(error, 0, length, reinterpret_cast<jbyte*>(bytes));
 
 	}
 
-	texture_t texture = texture_create((unsigned long long*) bytes, 32, get_font_width(font, text), get_font_height(font, text));
-	delete[] bytes;
+	if (error == NULL) {
+		ALOGE("WARNING Java had a problem loading the font\n");
+
+	}
+
+	if (bytes != NULL) {
+		texture = texture_create((unsigned long long*) bytes, 32, get_font_width(font, text), get_font_height(font, text));
+		delete[] bytes;
+
+	}
 
 	return texture;
 
