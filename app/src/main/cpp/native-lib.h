@@ -75,10 +75,18 @@ static void init_callback_function(callback_method_t* __this, const char* name, 
 
 }
 
-#define CALLBACK(address, call_type, ...) ((call_type)(callback_class, (&address)->method, __VA_ARGS__))
-#define CALLBACK_VOID(address, ...) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method, __VA_ARGS__))
-#define CALLBACK_VOID_NO_PARAMS(address) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method))
-#define CALLBACK_INT(address, ...) (callback_env->CallStaticIntMethod(callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK(               address, call_type, ...) (                       (call_type)(callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK_VOID(          address,            ...) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK_VOID_NO_PARAMS(address)                 (callback_env->CallStaticVoidMethod(callback_class, (&address)->method))
+#define CALLBACK_INT(           address,            ...) (callback_env->CallStaticIntMethod( callback_class, (&address)->method, __VA_ARGS__))
+
+#define INTERNAL_STORAGE_PREFIX "/storage/emulated/0/"
+
+#define SET_FINAL_PATH { \
+    final_path = (char*) malloc(strlen(path) + strlen(INTERNAL_STORAGE_PREFIX) + 1); \
+    strcpy(final_path, INTERNAL_STORAGE_PREFIX); \
+    strcat(final_path, path); \
+}
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
 	unsigned long long length = strlen(path);
@@ -117,10 +125,8 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	extern const char* internal_storage_path;
 	extern bool is_internal_storage_path_set;
 
-#define INTERNAL_STORAGE_PREFIX "/storage/emulated/0/"
-	char*  final_path = (char*) malloc(strlen(path) + strlen(INTERNAL_STORAGE_PREFIX) + 1);
-	strcpy(final_path, INTERNAL_STORAGE_PREFIX);
-	strcat(final_path, path);
+	char* final_path;
+	SET_FINAL_PATH
 
 	FILE* file = fopen(final_path, "rb");
 	free(              final_path);
@@ -130,7 +136,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 		*bytes = (unsigned long long) ftell(file);
 		rewind(file);
 
-		*buffer = (char*) malloc(*bytes);
+		*buffer = (char*) malloc(    *bytes);
 		fread(*buffer, sizeof(char), *bytes, file);
 		fclose(file);
 
