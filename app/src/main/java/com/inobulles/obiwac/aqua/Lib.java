@@ -34,8 +34,8 @@ public class Lib {
 
 	}
 
-	private static String buffer_path;
-	private static File buffer_file;
+	private static String         buffer_path;
+	private static File           buffer_file;
 	private static BufferedReader buffer_buffered_reader;
 
 	private static boolean put_file_in_buffer(String path) {
@@ -79,7 +79,8 @@ public class Lib {
 					String        line;
 
 					while ((line = buffer_buffered_reader.readLine()) != null) {
-						buffer.append(line).append("\n");
+						buffer.append(line);
+						buffer.append("\n");
 
 					}
 

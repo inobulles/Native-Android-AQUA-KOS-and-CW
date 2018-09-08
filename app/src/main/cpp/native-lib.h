@@ -117,11 +117,22 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	extern const char* internal_storage_path;
 	extern bool is_internal_storage_path_set;
 
-	jlong temp_bytes = CALLBACK(java_read_external_slash_internal_storage_path_bytes, callback_env->CallStaticLongMethod, callback_env->NewStringUTF(path));
+#define INTERNAL_STORAGE_PREFIX "/storage/emulated/0/"
+	char*  final_path = (char*) malloc(strlen(path) + strlen(INTERNAL_STORAGE_PREFIX) + 1);
+	strcpy(final_path, INTERNAL_STORAGE_PREFIX);
+	strcat(final_path, path);
 
-	if (temp_bytes >= 0) {
-		*bytes = (unsigned long long) temp_bytes;
-		*buffer = (char*) callback_env->GetStringUTFChars((jstring) CALLBACK(java_read_external_slash_internal_storage_path, callback_env->CallStaticObjectMethod, callback_env->NewStringUTF(path)), 0);
+	FILE* file = fopen(final_path, "rb");
+	free(              final_path);
+
+	if (file) {
+		fseek(file, 0L, SEEK_END);
+		*bytes = (unsigned long long) ftell(file);
+		rewind(file);
+
+		*buffer = (char*) malloc(*bytes);
+		fread(*buffer, sizeof(char), *bytes, file);
+		fclose(file);
 
 		return false;
 
@@ -131,7 +142,7 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 
 		}
 
-		*bytes = 0;
+		*bytes  = 0;
 		*buffer = NULL;
 
 		return true; // problem

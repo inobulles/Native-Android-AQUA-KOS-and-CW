@@ -139,12 +139,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	program_t* de_program = (program_t*) malloc(sizeof(program_t));
 	current_de_program = de_program;
 
-	load_asset_bytes("es3_vertex_shader.glsl", &rom_data, &rom_bytes);
-	printf("%lld %s\n", rom_bytes, rom_data);
-	free(rom_data);
-
-	exit(1);
-
 	if (load_asset_bytes("root/rom.zed", &rom_data, &rom_bytes)) {
 		if (!default_assets) {
 			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
@@ -163,7 +157,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	}
 
 	ALOGI("Setting up predefined_textures ...\n");
-	int warning = 0;//kos_setup_predefined_textures();
+	int warning = kos_setup_predefined_textures();
 
 	if (warning) {
 		ALOGW("WARNING Problem occurred whilst setting up predefined textures (failed %d textures)\n", warning);
