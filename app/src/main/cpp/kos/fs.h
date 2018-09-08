@@ -19,7 +19,7 @@ unsigned long long fs_read(const char* path, char** data, unsigned long long* le
 			*data   = (char*) 0;
 			*length = 0;
 
-			ALOGW("WARNING File `%s` could not be opened\n", path);
+			ALOGE("WARNING File `%s` could not be opened (for reading)\n", path);
 			return 1;
 
 		}
@@ -52,7 +52,7 @@ unsigned long long fs_write(const char* path, const char* data, unsigned long lo
 			free(              final_path);
 
 			if (!file) {
-				ALOGE("WARNING File `%s` could not be opened\n", path);
+				ALOGE("WARNING File `%s` could not be opened (for writing)\n", path);
 				return 1;
 
 			}
