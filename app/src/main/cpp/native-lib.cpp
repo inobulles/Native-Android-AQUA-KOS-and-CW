@@ -191,6 +191,19 @@ static int loop(void) {
 }
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj) {
+	event_quit = 1;
+
+	while (1) {
+		int return_value = loop();
+		waiting_video_flip = 0;
+
+		if (return_value) {
+			break;
+
+		}
+
+	}
+
 	kos_free_predefined_textures();
 
 }

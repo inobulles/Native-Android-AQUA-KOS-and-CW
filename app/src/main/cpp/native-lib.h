@@ -132,7 +132,6 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 	char* final_path;
 	SET_FINAL_PATH
 
-	ALOGW("%s\n", final_path);
 	FILE* file = fopen(final_path, "rb");
 	free(              final_path);
 

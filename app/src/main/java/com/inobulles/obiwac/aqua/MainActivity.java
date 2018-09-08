@@ -59,6 +59,8 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	protected void onResume() {
+		/// TODO restart
+
 		super.onResume();
 		view.onResume();
 
