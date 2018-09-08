@@ -210,7 +210,12 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jo
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj) {
 	while (!waiting_video_flip) {
-		loop();
+		int return_value = loop();
+
+		if (return_value) {
+			exit(return_value);
+
+		}
 
 	}
 

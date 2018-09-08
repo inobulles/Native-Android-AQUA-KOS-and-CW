@@ -155,7 +155,7 @@ public class Lib {
 				return -1;
 
 			} else {
-				if (dimension.equals("width")) return fonts[font].get_width(text);
+				if      (dimension.equals("width"))  return fonts[font].get_width(text);
 				else if (dimension.equals("height")) return fonts[font].get_height(text);
 
 				return -1;
