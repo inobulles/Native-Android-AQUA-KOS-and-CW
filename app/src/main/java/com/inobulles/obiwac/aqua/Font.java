@@ -33,11 +33,6 @@ public class Font {
 		long texture_width  = (long) get_width( text);
 		long texture_height = (long) get_height(text);
 
-		if (texture_width <= 0 || texture_height <= 0) {
-			return null;
-
-		}
-
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		bitmap.eraseColor(0);

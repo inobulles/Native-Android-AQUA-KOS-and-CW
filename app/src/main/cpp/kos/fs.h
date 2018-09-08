@@ -18,8 +18,8 @@ unsigned long long fs_read(const char* _path, char** data, unsigned long long* l
 		GET_PATH_FS(_path)
 
 		if (load_asset_bytes(path, data, length)) {
-			*data   = (char*) 0;
-			*length = 0;
+//			*data   = (char*) 0;
+//			*length = 0;
 
 			ALOGE("WARNING File `%s` could not be opened (for reading)\n", path);
 			return 1;

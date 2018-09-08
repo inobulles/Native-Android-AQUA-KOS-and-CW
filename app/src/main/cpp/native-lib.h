@@ -93,6 +93,12 @@ static void init_callback_function(callback_method_t* __this, const char* name, 
 }
 
 static bool load_asset_bytes(const char* path, char** buffer, unsigned long long* bytes) {
+	if (buffer == NULL) {
+		ALOGE("WARNING `buffer` is NULL\n");
+		return true;
+
+	}
+
 	unsigned long long length = strlen(path);
 
 	if (length > MAX_PATH_LENGTH) {
@@ -152,8 +158,8 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 
 		}
 
-		*bytes  = 0;
-		*buffer = NULL;
+//		*bytes  = 0;
+//		*buffer = NULL;
 
 		return true; // problem
 

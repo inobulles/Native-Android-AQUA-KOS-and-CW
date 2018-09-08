@@ -12,7 +12,7 @@ font_t new_font(const char* _path, unsigned long long size) {
 	GET_PATH(_path);
 
 	if (load_asset_bytes(path, &buffer, &bytes)) {
-		printf("WARNING Font file could not be opened (probably wrong path `%s`)\n", path);
+		ALOGE("WARNING Font file could not be opened (probably wrong path `%s`)\n", path);
 
 	} else {
 		free(buffer);
@@ -22,7 +22,7 @@ font_t new_font(const char* _path, unsigned long long size) {
 	jint error = CALLBACK_INT(java_new_font, (jint) (((float) size / _UI64_MAX) * (float) video_width()), callback_env->NewStringUTF(path));
 
 	if (error < 0) {
-		printf("WARNING Java had a problem loading the font\n");
+		ALOGE("WARNING Java had a problem loading the font\n");
 
 	}
 
@@ -45,8 +45,12 @@ texture_t create_texture_from_font(font_t font, const char* text) {
 	jbyteArray error;
 	jint       length;
 
-	if (get_font_width( font, text) <= 0 || \
-		get_font_height(font, text) <= 0) {
+	unsigned long long width  = get_font_width( font, text);
+	unsigned long long height = get_font_height(font, text);
+
+	ALOGE("%lld %lld\n", width, height);
+
+	if (width <= 0 || height <= 0) {
 		error = NULL;
 
 	} else {
