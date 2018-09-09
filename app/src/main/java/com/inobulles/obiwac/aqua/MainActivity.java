@@ -57,10 +57,15 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	}
 
+	private void dispose_all() {
+		Lib.dispose_all();
+
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Lib.dispose_all();
+		dispose_all();
 
 	}
 
@@ -68,7 +73,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	protected void onPause() {
 		super.onPause();
 		view.onPause();
-		Lib.dispose_all();
+		dispose_all();
 		
 	}
 

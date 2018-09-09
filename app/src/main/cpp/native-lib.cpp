@@ -63,7 +63,7 @@ void nothing(...) {
 
 }
 
-void rom_init(void) {
+void rom_init(JNIEnv* env, jobject obj) {
 	already_disposed = false;
 
 	// gl stuff
@@ -184,7 +184,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(NULL != asset_manager);
 
-	rom_init();
+	rom_init(env, obj);
 
 }
 
@@ -209,7 +209,7 @@ static int loop(void) {
 }
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, jobject obj) {
-	rom_init();
+	rom_init(env, obj);
 
 }
 

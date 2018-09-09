@@ -173,7 +173,9 @@ public class Lib {
 	public static int get_font_width(int font, String text) { return get_font_dimension("width", font, text); }
 	public static int get_font_height(int font, String text) { return get_font_dimension("height", font, text); }
 
-	public static byte[] create_texture_from_font(int font, String text) { /// TODO
+	public static byte[] create_texture_from_font(int font, String text) {
+		Log.e(MainActivity.TAG, String.format("%d %s\n", font, text));
+
 		try {
 			if (fonts[font] != null) return fonts[font].draw(text);
 			else return null;

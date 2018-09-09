@@ -20,10 +20,10 @@ texture_t __texture_create(unsigned long long* data, unsigned long long bpp, uns
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	texture_t texture_id;
-	glGenTextures(1, (GLuint*) &texture_id);
+	GLuint texture;
+	glGenTextures(1, &texture);
 
-	glBindTexture(GL_TEXTURE_2D, (GLuint) texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, bpp == 24 ? GL_RGB : GL_RGBA, (GLuint) width, (GLuint) height, 0, bpp == 24 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, TEXTURE_WRAP_TYPE); // x axis
@@ -37,7 +37,7 @@ texture_t __texture_create(unsigned long long* data, unsigned long long bpp, uns
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 #endif
 
-	return texture_id;
+	return texture;
 
 }
 

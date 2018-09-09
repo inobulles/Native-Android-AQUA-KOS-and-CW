@@ -39,8 +39,8 @@ void font_remove(font_t font) {
 }
 
 texture_t create_texture_from_font(font_t font, unsigned long long text) {
-	unsigned char* bytes   = NULL;
-	texture_t      texture = 0;
+	jbyte*    bytes   = NULL;
+	texture_t texture = 0;
 
 	jbyteArray error;
 	jint       length;
@@ -52,10 +52,10 @@ texture_t create_texture_from_font(font_t font, unsigned long long text) {
 		error = NULL;
 
 	} else {
-		error = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, (jint) font, callback_env->NewStringUTF((const char*) text));
+		error  = (jbyteArray) CALLBACK(java_create_texture_from_font, callback_env->CallStaticObjectMethod, (jint) font, callback_env->NewStringUTF((const char*) text));
+		bytes  = callback_env->GetByteArrayElements(error, 0);
 		length = callback_env->GetArrayLength(error);
-		bytes = new unsigned char[length];
-		callback_env->GetByteArrayRegion(error, 0, length, reinterpret_cast<jbyte*>(bytes));
+		callback_env->GetByteArrayRegion(error, 0, length, bytes);
 
 	}
 
@@ -66,7 +66,7 @@ texture_t create_texture_from_font(font_t font, unsigned long long text) {
 
 	if (bytes != NULL) {
 		texture = __texture_create((unsigned long long*) bytes, 32, width, height, (unsigned long long) false);
-		delete[] bytes;
+		callback_env->ReleaseByteArrayElements(error, bytes, 0);
 
 	}
 
