@@ -57,12 +57,15 @@ signed long long load_rom(const char* path) {
 }
 
 bool disable_gl = false;
+bool already_disposed = true;
 
 void nothing(...) {
 
 }
 
 void rom_init(void) {
+	already_disposed = false;
+
 	// gl stuff
 
 	disable_gl = false;
@@ -210,6 +213,13 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, job
 }
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj) {
+	if (already_disposed) {
+		return;
+
+	}
+
+	already_disposed = true;
+
 	ALOGI("Forcing program to exit ...\n");
 	disable_gl = true;
 
@@ -228,9 +238,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 	}
 
 	ALOGI("Freeing other things (return_value = %d) ...\n", return_value);
-
 	kos_free_predefined_textures();
-	exit(return_value);
 
 }
 

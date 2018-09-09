@@ -280,6 +280,8 @@ void program_free(program_t* ____this) {
 }
 
 void program_run_setup_phase(program_t* ____this) {
+	init_heap(); // init heap
+
 	// notes
 	
 	info("NOTE When refering to a \"unit\", I am talking about a type with a width of %lld bytes\n", (unsigned_t) sizeof(unsigned long long));
