@@ -20,6 +20,7 @@ bool default_assets = false;
 extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(                         JNIEnv* env, jobject obj, jobject java_asset_manager);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(                 JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(                        JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(                       JNIEnv* env, jobject obj, jint width, jint height);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(                         JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(                        JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release);
@@ -61,38 +62,7 @@ void nothing(...) {
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
-	callback_env = env;
-	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
-	callback_class = (jclass) env->NewGlobalRef(_class);
-	callback_lib = env->NewGlobalRef(callback_class);
-
-#define CALLBACK_FONT_AND_TEXT "(ILjava/lang/String;)I"
-
-	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
-	CALLBACK_VOID_NO_PARAMS(java_init_lib);
-
-	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
-	init_callback_function(&java_font_remove, "font_remove", "(I)V");
-
-	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
-	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
-
-	init_callback_function(&java_create_texture_from_font, "create_texture_from_font",
-						   "(ILjava/lang/String;)[B");
-
-	init_callback_function(&java_read_external_slash_internal_storage_path,
-						   "read_external_slash_internal_storage_path",
-						   "(Ljava/lang/String;)Ljava/lang/String;");
-	init_callback_function(&java_read_external_slash_internal_storage_path_bytes,
-						   "read_external_slash_internal_storage_path_bytes",
-						   "(Ljava/lang/String;)J");
-
-	// asset manager stuff
-
-	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
-	assert(NULL != asset_manager);
-
+void rom_init(void) {
 	// gl stuff
 
 	disable_gl = false;
@@ -110,7 +80,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 //	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
 
-	const char *version_string = (const char *) glGetString(GL_VERSION);
+	const char* version_string = (const char*) glGetString(GL_VERSION);
 
 	if (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) {
 		renderer = create_es3_renderer();
@@ -178,6 +148,42 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 }
 
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
+	callback_env = env;
+	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	callback_class = (jclass) env->NewGlobalRef(_class);
+	callback_lib = env->NewGlobalRef(callback_class);
+
+#define CALLBACK_FONT_AND_TEXT "(ILjava/lang/String;)I"
+
+	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
+	CALLBACK_VOID_NO_PARAMS(java_init_lib);
+
+	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
+	init_callback_function(&java_font_remove, "font_remove", "(I)V");
+
+	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
+	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
+
+	init_callback_function(&java_create_texture_from_font, "create_texture_from_font",
+						   "(ILjava/lang/String;)[B");
+
+	init_callback_function(&java_read_external_slash_internal_storage_path,
+						   "read_external_slash_internal_storage_path",
+						   "(Ljava/lang/String;)Ljava/lang/String;");
+	init_callback_function(&java_read_external_slash_internal_storage_path_bytes,
+						   "read_external_slash_internal_storage_path_bytes",
+						   "(Ljava/lang/String;)J");
+
+	// asset manager stuff
+
+	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
+	assert(NULL != asset_manager);
+
+	rom_init();
+
+}
+
 static int loop(void) {
 	if (waiting_video_flip) {
 		return -1;
@@ -195,6 +201,11 @@ static int loop(void) {
 		return -1;
 
 	}
+
+}
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, jobject obj) {
+	rom_init();
 
 }
 

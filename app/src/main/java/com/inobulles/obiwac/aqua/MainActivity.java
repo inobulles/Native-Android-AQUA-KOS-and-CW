@@ -1,7 +1,6 @@
 
 package com.inobulles.obiwac.aqua;
 
-//import android.support.v7.app.AppCompatActivity;
 import android.Manifest;
 import android.app.Activity;
 
@@ -22,10 +21,14 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	private static View view;
 	public static AssetManager assets;
 
+	private static boolean first_resume;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		assets = getAssets();
+
+		first_resume = false;
 
 		view = new View(getApplication());
 		setContentView(view);
@@ -65,10 +68,16 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	protected void onResume() {
-		/// TODO restart
-
 		super.onResume();
 		view.onResume();
+
+		if (first_resume) {
+			Lib.start();
+
+		} else {
+			first_resume = true;
+
+		}
 
 	}
 
