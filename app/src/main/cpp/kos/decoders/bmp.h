@@ -54,7 +54,7 @@ unsigned long long bmp_support(void) {
 #define BMP_MAGIC 0x4D42
 static const char* bmp_load_default_path = "test.bmp";
 
-void bmp_load(unsigned_t ____this, unsigned long long _path) {
+void bmp_load(unsigned long long ____this, unsigned long long _path) {
 	bitmap_image_t* __this = (bitmap_image_t*) ____this;
 
 	if (!(*((char*) _path))) {

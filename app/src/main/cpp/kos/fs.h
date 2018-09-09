@@ -13,11 +13,11 @@ unsigned long long fs_support(void) {
 
 }
 
-unsigned long long fs_read(const char* _path, char** data, unsigned long long* length) {
+unsigned long long fs_read(unsigned long long _path, unsigned long long data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
 		GET_PATH_FS(_path)
 
-		if (load_asset_bytes(path, data, length)) {
+		if (load_asset_bytes(path, (char**) data, (unsigned long long*) length)) {
 //			*data   = (char*) 0;
 //			*length = 0;
 
@@ -34,15 +34,15 @@ unsigned long long fs_read(const char* _path, char** data, unsigned long long* l
 
 }
 
-void fs_free(char* data, unsigned long long length) {
+void fs_free(unsigned long long data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
-		free(data);
+		free((void*) data);
 
 	}
 
 }
 
-unsigned long long fs_write(const char* _path, const char* data, unsigned long long length) {
+unsigned long long fs_write(unsigned long long _path, unsigned long long data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
 		extern bool default_assets;
 

@@ -82,7 +82,7 @@ static void init_callback_function(callback_method_t* __this, const char* name, 
 #define CALLBACK(               address, call_type, ...) (                       (call_type)(callback_class, (&address)->method, __VA_ARGS__))
 #define CALLBACK_VOID(          address,            ...) (callback_env->CallStaticVoidMethod(callback_class, (&address)->method, __VA_ARGS__))
 #define CALLBACK_VOID_NO_PARAMS(address)                 (callback_env->CallStaticVoidMethod(callback_class, (&address)->method))
-#define CALLBACK_INT(           address,            ...) (callback_env->CallStaticIntMethod( callback_class, (&address)->method, __VA_ARGS__))
+#define CALLBACK_INT(           address,            ...) (callback_env->CallStaticIntMethod (callback_class, (&address)->method, __VA_ARGS__))
 
 #define INTERNAL_STORAGE_PREFIX "/storage/emulated/0/"
 
