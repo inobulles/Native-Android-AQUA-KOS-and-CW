@@ -48,8 +48,6 @@ texture_t create_texture_from_font(font_t font, const char* text) {
 	unsigned long long width  = get_font_width( font, text);
 	unsigned long long height = get_font_height(font, text);
 
-	ALOGE("%lld %lld\n", width, height);
-
 	if (width <= 0 || height <= 0) {
 		error = NULL;
 

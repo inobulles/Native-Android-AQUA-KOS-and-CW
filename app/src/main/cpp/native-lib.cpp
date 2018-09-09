@@ -57,6 +57,10 @@ signed long long load_rom(const char* path) {
 
 bool disable_gl = false;
 
+void nothing(...) {
+
+}
+
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env = env;
 	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
@@ -176,11 +180,11 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 static int loop(void) {
 	if (waiting_video_flip) {
-		return 0;
+		return -1;
 
 	}
 
-	if (program_run_loop_phase(current_de_program) && current_de_program->error_code) {
+	if (program_run_loop_phase(current_de_program)) {
 		ALOGV("DE return code is %d\n", current_de_program->error_code);
 		program_free(current_de_program);
 		free(current_de_program->base_pointer/*, rom_bytes*/);
@@ -188,7 +192,7 @@ static int loop(void) {
 		return current_de_program->error_code;
 
 	} else {
-		return 0;
+		return -1;
 
 	}
 
@@ -205,7 +209,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 		return_value = loop();
 		waiting_video_flip = 0;
 
-		if (return_value) {
+		if (return_value >= 0) {
 			break;
 
 		}
@@ -236,7 +240,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 	while (!waiting_video_flip) {
 		int return_value = loop();
 
-		if (return_value) {
+		if (return_value >= 0) {
 			exit(return_value);
 
 		}
