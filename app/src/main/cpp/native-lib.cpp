@@ -55,6 +55,8 @@ signed long long load_rom(const char* path) {
 
 }
 
+bool disable_gl = false;
+
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env = env;
 	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
@@ -88,6 +90,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	assert(NULL != asset_manager);
 
 	// gl stuff
+
+	disable_gl = false;
 
 	if (renderer) {
 		delete renderer;
@@ -191,10 +195,14 @@ static int loop(void) {
 }
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj) {
+	ALOGI("Forcing program to exit ...\n");
+	disable_gl = true;
+
 	event_quit = 1;
+	int return_value;
 
 	while (1) {
-		int return_value = loop();
+		return_value = loop();
 		waiting_video_flip = 0;
 
 		if (return_value) {
@@ -204,7 +212,10 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 
 	}
 
+	ALOGI("Freeing other things (return_value = %d) ...\n", return_value);
+
 	kos_free_predefined_textures();
+	exit(return_value);
 
 }
 

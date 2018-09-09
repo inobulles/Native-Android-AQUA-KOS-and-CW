@@ -11,6 +11,8 @@
 #include <time.h>
 #include "native-lib.h"
 
+extern bool disable_gl;
+
 Renderer::Renderer(void)  {
 	last_frame_ns = 0;
 
@@ -20,15 +22,19 @@ Renderer::~Renderer(void) {}
 
 void Renderer::resize(int w, int h) {
 	last_frame_ns = 0;
-	glViewport(0, 0, w, h);
+
+	if (!disable_gl) {
+		glViewport(0, 0, w, h);
+
+	}
 
 }
 
 unsigned long long Renderer::step(void) {
 	timespec now;
 	clock_gettime(CLOCK_MONOTONIC, &now);
-	unsigned long long nowNs = now.tv_sec * 1000000000ull + now.tv_nsec;
 
+	unsigned long long nowNs = now.tv_sec * 1000000000ull + now.tv_nsec;
 	unsigned long long fps = 0;
 
 	if (last_frame_ns > 0) {
@@ -43,10 +49,15 @@ unsigned long long Renderer::step(void) {
 }
 
 unsigned long long Renderer::render(void) {
-	unsigned long long fps = step();
-	check_gl_error("Renderer::render");
+	if (!disable_gl) {
+		unsigned long long fps = step();
+		check_gl_error("Renderer::render");
+		return fps;
 
-	return fps;
+	} else {
+		return 0;
+
+	}
 
 }
 

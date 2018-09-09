@@ -19,18 +19,26 @@ unsigned long long video_fps(void) {
 
 }
 
+extern bool disable_gl;
+
 void video_clear(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (!disable_gl) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	}
 
 }
 
 void video_clear_colour(unsigned long long red, unsigned long long green, unsigned long long blue, unsigned long long alpha) {
-	glClearColor(
-		(GLfloat) red / (GLfloat) _UI64_MAX,
-		(GLfloat) green / (GLfloat) _UI64_MAX,
-		(GLfloat) blue / (GLfloat) _UI64_MAX,
-		(GLfloat) alpha / (GLfloat) _UI64_MAX
-	);
+	if (!disable_gl) {
+		glClearColor(
+			(GLfloat) red / (GLfloat) _UI64_MAX,
+			(GLfloat) green / (GLfloat) _UI64_MAX,
+			(GLfloat) blue / (GLfloat) _UI64_MAX,
+			(GLfloat) alpha / (GLfloat) _UI64_MAX
+		);
+
+	}
 
 }
 
@@ -44,7 +52,7 @@ void video_flip(void) {
 
 }
 
-unsigned long long video_width(void) { return gl_width; }
+unsigned long long video_width (void) { return gl_width; }
 unsigned long long video_height(void) { return gl_height; }
 
 void set_video_visibility(signed long long state) {
