@@ -69,6 +69,7 @@ void rom_init(void) {
 	// gl stuff
 
 	disable_gl = false;
+	event_quit = false;
 
 	if (renderer) {
 		delete renderer;
@@ -245,7 +246,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jobject obj, jint width, jint height) {
 	gl_resize = 1;
 
-	gl_width = (unsigned long long) width;
+	gl_width  = (unsigned long long) width;
 	gl_height = (unsigned long long) height;
 
 	if (renderer) {

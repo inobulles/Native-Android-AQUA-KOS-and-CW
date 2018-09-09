@@ -19,7 +19,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	public static final String TAG = "AQUA";
 
 	private static View view;
-	public static AssetManager assets;
+	public  static AssetManager assets;
 
 	private static boolean first_resume;
 
@@ -69,7 +69,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		super.onPause();
 		view.onPause();
 
-		Lib.dispose_all();
+		//Lib.dispose_all();
 		
 	}
 
@@ -78,13 +78,13 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		super.onResume();
 		view.onResume();
 
-		if (first_resume) {
+		/*if (first_resume) {
 			Lib.start();
 
 		} else {
 			first_resume = true;
 
-		}
+		}*/
 
 	}
 
