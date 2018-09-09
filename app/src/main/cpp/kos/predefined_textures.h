@@ -22,12 +22,12 @@ static int kos_setup_predefined_textures(void) {
 	bitmap_image_t temp_bmp;
 
 	bmp_load((unsigned long long) &temp_bmp, (unsigned long long) "wallpaper/wallpaper.bmp");
-	predefined_background_texture = texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
+	predefined_background_texture = __texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height, (unsigned char) false);
 	bmp_free((unsigned long long) &temp_bmp);
 	warning += predefined_background_texture == -1;
 
 	bmp_load((unsigned long long) &temp_bmp, (unsigned long long) "wallpaper/frost.bmp");
-	predefined_frost_background_texture = texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
+	predefined_frost_background_texture = __texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height, (unsigned char) false);
 	bmp_free((unsigned long long) &temp_bmp);
 	warning += predefined_frost_background_texture == -1;
 

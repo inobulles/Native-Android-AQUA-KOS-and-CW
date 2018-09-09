@@ -89,18 +89,26 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		int tray_offset = 0;
+		int resource = getResources().getIdentifier("status_bar_height", "dimen", "android");
+
+		if (resource > 0) {
+			tray_offset = getResources().getDimensionPixelSize(resource);
+
+		}
+
 		int x = (int) event.getX();
 		int y = (int) event.getY();
 
 		int pointer_index = event.getActionIndex();
-		int pointer_id = event.getPointerId(pointer_index);
+		int pointer_id    = event.getPointerId(pointer_index);
 		int masked_action = event.getActionMasked();
 
 		switch (masked_action) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_POINTER_DOWN:
 			case MotionEvent.ACTION_MOVE: {
-				Lib.event(pointer_index, 1, x, y, 0, 0);
+				Lib.event(pointer_index, 1, x, y, 0, 0, tray_offset);
 				break;
 
 			}
@@ -108,7 +116,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 			case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
 			case MotionEvent.ACTION_CANCEL: {
-				Lib.event(pointer_index, 1, x, y, 0, 1);
+				Lib.event(pointer_index, 1, x, y, 0, 1, tray_offset);
 				break;
 				
 			} default: {

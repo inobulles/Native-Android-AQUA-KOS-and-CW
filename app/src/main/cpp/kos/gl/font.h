@@ -65,7 +65,7 @@ texture_t create_texture_from_font(font_t font, const char* text) {
 	}
 
 	if (bytes != NULL) {
-		texture = texture_create((unsigned long long*) bytes, 32, get_font_width(font, text), get_font_height(font, text));
+		texture = __texture_create((unsigned long long*) bytes, 32, get_font_width(font, text), get_font_height(font, text), (unsigned long long) false);
 		delete[] bytes;
 
 	}

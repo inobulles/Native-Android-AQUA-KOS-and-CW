@@ -41,8 +41,8 @@ texture_t __texture_create(unsigned long long* data, unsigned long long bpp, uns
 
 }
 
-texture_t texture_create(unsigned long long* data, unsigned long long bpp, unsigned long long width, unsigned long long height) {
-	return __texture_create(data, bpp, width, height, TEXTURE_WARNING);
+texture_t texture_create(unsigned long long data, unsigned long long bpp, unsigned long long width, unsigned long long height) {
+	return __texture_create((unsigned long long*) data, bpp, width, height, TEXTURE_WARNING);
 
 }
 
