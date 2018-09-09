@@ -58,11 +58,18 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Lib.dispose_all();
+
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 		view.onPause();
 
-		Lib.dispose_all();
+		//Lib.dispose_all();
 		
 	}
 
@@ -71,13 +78,13 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		super.onResume();
 		view.onResume();
 
-		if (first_resume) {
+		/*if (first_resume) {
 			Lib.start();
 
 		} else {
 			first_resume = true;
 
-		}
+		}*/
 
 	}
 
