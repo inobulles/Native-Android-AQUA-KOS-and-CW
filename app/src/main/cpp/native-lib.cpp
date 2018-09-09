@@ -50,7 +50,7 @@ static program_t*         current_de_program;
 static char*              rom_data;
 static unsigned long long rom_bytes;
 
-signed long long load_rom(const char* path) {
+signed long long load_rom(unsigned long long path) {
 	ALOGE("WARNING ROM loading (%s) is not supported on this platform\n", __func__);
 	return -1;
 

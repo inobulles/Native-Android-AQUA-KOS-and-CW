@@ -11,9 +11,9 @@ unsigned long long get_platform(void) {
 
 }
 
-unsigned long long platform_system(const char* command) {
-    if (SYS_PRIVILEGES) return system(command);
-    else printf("WARNING You do not have SYS_PRIVILEGES to run command `%s` (function `platform_system`)\n", command);
+unsigned long long platform_system(unsigned long long command) {
+    if (SYS_PRIVILEGES) return (unsigned long long) system((const char*) command);
+    else printf("WARNING You do not have SYS_PRIVILEGES to run command `%s` (function `platform_system`)\n", (const char*) command);
 
     return 1;
 
