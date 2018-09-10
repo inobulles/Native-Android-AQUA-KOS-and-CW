@@ -184,6 +184,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(NULL != asset_manager);
 
+	program_run_global_init_phase();
 	rom_init(env, obj);
 
 }

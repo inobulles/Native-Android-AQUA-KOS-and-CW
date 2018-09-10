@@ -72,15 +72,15 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		view.onPause();
-		dispose_all();
+		/*view.onPause();
+		dispose_all();*/
 		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		view.onResume();
+		//view.onResume();
 
 		/*if (first_resume) {
 			Lib.start();
