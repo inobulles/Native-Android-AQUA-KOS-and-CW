@@ -24,8 +24,8 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(                       JNIEnv* env, jobject obj, jint width, jint height);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(                         JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(                        JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(                 JNIEnv* env, jclass type, jint macro, jint set);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
-
 };
 
 #ifndef DYNAMIC_ES3
@@ -296,5 +296,15 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storag
 	is_internal_storage_path_set = true;
 
 	ALOGV("INFO Internal / external storage path set to `%s`\n", internal_storage_path);
+
+}
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* env, jclass type, jint macro, jint set) {
+	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
+
+	event_pointer_click_type = set;
+	event_last_release       = set;
+
+	//event_macros[macro] = set; /// TODO
 
 }

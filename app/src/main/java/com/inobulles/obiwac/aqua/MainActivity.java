@@ -11,9 +11,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.security.Key;
 
 public class MainActivity extends /* AppCompatActivity */ Activity {
 	public static final String TAG = "AQUA";
@@ -21,14 +24,10 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	private static View view;
 	public  static AssetManager assets;
 
-	private static boolean first_resume;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		assets = getAssets();
-
-		first_resume = false;
 
 		view = new View(getApplication());
 		setContentView(view);
@@ -82,14 +81,6 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		super.onResume();
 		//view.onResume();
 
-		/*if (first_resume) {
-			Lib.start();
-
-		} else {
-			first_resume = true;
-
-		}*/
-
 	}
 
 	@Override
@@ -126,7 +117,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 				
 			} default: {
 				Log.e("AQUA", String.format("WOOWOWOWOWO NEW TOUCGH EVENT DETECTED %d %d %d %d %d", pointer_index, pointer_id, masked_action, x, y));
-				break;
+				return super.onTouchEvent(event);
 
 			}
 
@@ -134,6 +125,33 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		
 //		invalidate();
 		return true;
+
+	}
+
+	private boolean on_key(int key_code, KeyEvent event, int release) {
+		switch (key_code) {
+			case KeyEvent.KEYCODE_HEADSETHOOK: {
+				Lib.event_macro(0, release == 0 ? 1 : 0);
+				return true;
+
+			} default: {
+				return false;
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return on_key(keyCode, event, 0) || super.onKeyDown(keyCode, event);
+
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		return on_key(keyCode, event, 1) || super.onKeyUp(keyCode, event);
 
 	}
 
