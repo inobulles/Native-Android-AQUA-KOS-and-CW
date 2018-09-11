@@ -15,8 +15,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.security.Key;
 
 public class MainActivity extends /* AppCompatActivity */ Activity {
 	public static final String TAG = "AQUA";

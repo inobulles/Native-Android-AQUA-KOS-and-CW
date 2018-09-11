@@ -22,14 +22,34 @@ unsigned long long platform_system(unsigned long long command) {
 #define DEVICE_NULL     0
 #define DEVICE_TEXTURE  1
 #define DEVICE_MATH     4
+#define DEVICE_CLOCK    5
 
 unsigned long long is_device_supported(unsigned long long __device) {
 	const char* device = (const char*) __device;
 
-	if (strcmp(device, "math") == 0) return DEVICE_MATH;
-	else                             return DEVICE_NULL;
+	if      (strcmp(device, "math")  == 0) return DEVICE_MATH;
+	else if (strcmp(device, "clock") == 0) return DEVICE_CLOCK;
+	else                                   return DEVICE_NULL;
 
 }
+
+typedef struct {
+	uint64_t hour;
+	uint64_t minute;
+	uint64_t second;
+
+	uint64_t day;
+	uint64_t month;
+	uint64_t year;
+
+	uint64_t week_day;
+	uint64_t year_day;
+
+} time_device_t;
+
+static struct tm*    kos_tm_struct = (struct tm*) 0;
+static time_t        kos_time      = 0;
+static time_device_t previous_time_device;
 
 #define KOS_DEVICE_COMMAND_WARNING(device_name) ALOGE("WARNING The command you have passed to the " device_name " device (%s) is unrecognized\n", extra);
 static unsigned long long previous_math_device_sqrt_result;
@@ -54,6 +74,35 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("math")
+
+			}
+
+			break;
+
+		} case DEVICE_CLOCK: {
+			if (!kos_tm_struct) {
+				printf("KOS initializing the tm struct ...\n");
+				kos_time = time(NULL);
+				kos_tm_struct = localtime(&kos_time);
+
+			}
+
+			if (strcmp(extra, "current") == 0) {
+				previous_time_device.hour     = (uint64_t) kos_tm_struct->tm_hour;
+				previous_time_device.minute   = (uint64_t) kos_tm_struct->tm_min;
+				previous_time_device.second   = (uint64_t) kos_tm_struct->tm_sec;
+
+				previous_time_device.day      = (uint64_t) kos_tm_struct->tm_mday;
+				previous_time_device.month    = (uint64_t) kos_tm_struct->tm_mon;
+				previous_time_device.year     = (uint64_t) kos_tm_struct->tm_year;
+
+				previous_time_device.week_day = (uint64_t) kos_tm_struct->tm_wday;
+				previous_time_device.year_day = (uint64_t) kos_tm_struct->tm_yday;
+
+				result = (unsigned long long*) &previous_time_device;
+
+			} else {
+				KOS_DEVICE_COMMAND_WARNING("clock")
 
 			}
 
