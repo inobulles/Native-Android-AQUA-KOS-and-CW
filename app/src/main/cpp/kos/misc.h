@@ -27,9 +27,10 @@ unsigned long long platform_system(unsigned long long command) {
 unsigned long long is_device_supported(unsigned long long __device) {
 	const char* device = (const char*) __device;
 
-	if      (strcmp(device, "math")  == 0) return DEVICE_MATH;
-	else if (strcmp(device, "clock") == 0) return DEVICE_CLOCK;
-	else                                   return DEVICE_NULL;
+	if      (strcmp(device, "math")    == 0) return DEVICE_MATH;
+	else if (strcmp(device, "texture") == 0) return DEVICE_TEXTURE;
+	else if (strcmp(device, "clock")   == 0) return DEVICE_CLOCK;
+	else                                     return DEVICE_NULL;
 
 }
 
@@ -126,11 +127,12 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 
 void send_device(unsigned long long device, unsigned long long __extra, unsigned long long __data) {
 	const char*         extra = (const char*)         __extra;
+	unsigned long long* data  = (unsigned long long*) __data;
 
 	switch (device) {
 		case DEVICE_TEXTURE: {
-			/*if (strcmp(extra, "sharp") == 0) SHARP_TEXTURES = *data; /// TODO
-			else*/ KOS_DEVICE_COMMAND_WARNING("texture")
+			if (strcmp(extra, "sharp") == 0) SHARP_TEXTURES = *data;
+			else KOS_DEVICE_COMMAND_WARNING("texture")
 
 			break;
 
@@ -145,8 +147,6 @@ void send_device(unsigned long long device, unsigned long long __extra, unsigned
 		}
 
 	}
-
-	unsigned long long* data  = (unsigned long long*) __data;
 
 }
 
