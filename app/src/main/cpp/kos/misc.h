@@ -81,12 +81,8 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 			break;
 
 		} case DEVICE_CLOCK: {
-			if (!kos_tm_struct) {
-				printf("KOS initializing the tm struct ...\n");
-				kos_time = time(NULL);
-				kos_tm_struct = localtime(&kos_time);
-
-			}
+			kos_time = time(NULL);
+			kos_tm_struct = localtime(&kos_time);
 
 			if (strcmp(extra, "current") == 0) {
 				previous_time_device.hour     = (uint64_t) kos_tm_struct->tm_hour;
