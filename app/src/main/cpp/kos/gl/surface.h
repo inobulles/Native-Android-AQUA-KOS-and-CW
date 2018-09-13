@@ -61,8 +61,8 @@ void surface_scroll(unsigned long long ____this, signed long long _x, signed lon
 
 	int i;
 	for (i = 0; i < ACTUAL_SURFACE_VERTEX_COUNT; i++) {
-		__this->texture_coords[i].x = (GLfloat) (texture_coords[i * 2] * width + x);
-		__this->texture_coords[i].y = (GLfloat) (texture_coords[i * 2] * height + y);
+		__this->texture_coords[i].x = (GLfloat) (texture_coords[i * 2]     * width  + x);
+		__this->texture_coords[i].y = (GLfloat) (texture_coords[i * 2 + 1] * height + y);
 
 	}
 
