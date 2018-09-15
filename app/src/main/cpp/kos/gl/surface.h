@@ -214,4 +214,48 @@ void surface_set_layer(unsigned long long ____this, signed long long layer) {
 
 }
 
+// gradient functions
+
+#define KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS unsigned long long ____this, unsigned long long red, unsigned long long green, unsigned long long blue, unsigned long long alpha
+#define SURFACE_GRADIENT_FUNCTIONS 1
+
+#define KOS_SURF_SET_COLOUR_FOR_VERTEX(index) { \
+		__this->colours[index].red   = red; \
+		__this->colours[index].green = green; \
+		__this->colours[index].blue  = blue; \
+		__this->colours[index].alpha = alpha; \
+	}
+
+void surface_gradient_left(KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS) {
+	surface_t* __this = (surface_t*) ____this;
+
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(0)
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(1)
+
+}
+
+void surface_gradient_right(KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS) {
+	surface_t* __this = (surface_t*) ____this;
+
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(3)
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(2)
+
+}
+
+void surface_gradient_top(KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS) {
+	surface_t* __this = (surface_t*) ____this;
+
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(0)
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(3)
+
+}
+
+void surface_gradient_bottom(KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS) {
+	surface_t* __this = (surface_t*) ____this;
+
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(1)
+	KOS_SURF_SET_COLOUR_FOR_VERTEX(2)
+
+}
+
 #endif

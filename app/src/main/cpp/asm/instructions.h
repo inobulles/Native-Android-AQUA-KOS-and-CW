@@ -251,7 +251,7 @@ static inline void mul1_instruction(program_t* __this, unsigned_t type, unsigned
 }
 
 static inline void div1_instruction(program_t* __this, unsigned_t type, unsigned_t data) {
-	signed_t divisor = get_value(__this, type, data);
+	signed_t divisor  = get_value(__this, type, data);
 	signed_t dividend = __this->main_thread.registers[REGISTER_FAMILY_a];
 	
 	//~ if (type == TOKEN_REGISTER) dividend = __this->main_thread.registers[REGISTER_FAMILY_a]; // if just a register, __this needs to be just rax
