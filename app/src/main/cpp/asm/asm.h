@@ -160,7 +160,7 @@ static inline unsigned_t sign_extend(unsigned_t value) { /// TODO
 
 /// TODO prettify the get_value / set value functions
 
-static inline signed_t get_value(program_t* __this, unsigned_t type, unsigned_t data) { // get value from an argument's type and data values
+static inline unsigned_t get_value(program_t* __this, unsigned_t type, unsigned_t data) { // get value from an argument's type and data values
 	switch (type) {
 		case TOKEN_REGISTER: {
 			if (data <= REGISTER_LAST_GENERAL_PURPOSE) { // check if general purpose register
