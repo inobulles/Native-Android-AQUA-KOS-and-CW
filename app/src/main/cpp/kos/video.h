@@ -64,5 +64,6 @@ void* new_rectangle(unsigned long long x, unsigned long long y, unsigned long lo
 void draw_rectangle(void* __this) { printf("WARNING Deprecated function `draw_rectangle`\n"); }
 
 #include "predefined_textures.h"
+#include "gl/screenshot.h"
 
 #endif
