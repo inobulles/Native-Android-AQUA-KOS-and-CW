@@ -24,8 +24,9 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(                       JNIEnv* env, jobject obj, jint width, jint height);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(                         JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(                        JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(                 JNIEnv* env, jclass type, jint macro, jint set);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(                 JNIEnv* env, jobject obj, jint macro, jint set);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1bitmap           (JNIEnv* env, jobject obj, jbyteArray bytes);
 };
 
 #ifndef DYNAMIC_ES3
@@ -203,21 +204,16 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	init_callback_function(&java_init_lib, "init_lib", CALLBACK_NO_PARAMS);
 	CALLBACK_VOID_NO_PARAMS(java_init_lib);
 
-	init_callback_function(&java_new_font, "new_font", "(ILjava/lang/String;)I");
+	init_callback_function(&java_new_font,    "new_font",    "(ILjava/lang/String;)I");
 	init_callback_function(&java_font_remove, "font_remove", "(I)V");
 
-	init_callback_function(&java_get_font_width, "get_font_width", CALLBACK_FONT_AND_TEXT);
+	init_callback_function(&java_get_font_width,  "get_font_width",  CALLBACK_FONT_AND_TEXT);
 	init_callback_function(&java_get_font_height, "get_font_height", CALLBACK_FONT_AND_TEXT);
 
-	init_callback_function(&java_create_texture_from_font, "create_texture_from_font",
-						   "(ILjava/lang/String;)[B");
+	init_callback_function(&java_create_texture_from_font, "create_texture_from_font", CALLBACK_FONT_AND_TEXT);
 
-	init_callback_function(&java_read_external_slash_internal_storage_path,
-						   "read_external_slash_internal_storage_path",
-						   "(Ljava/lang/String;)Ljava/lang/String;");
-	init_callback_function(&java_read_external_slash_internal_storage_path_bytes,
-						   "read_external_slash_internal_storage_path_bytes",
-						   "(Ljava/lang/String;)J");
+	init_callback_function(&java_read_external_slash_internal_storage_path,       "read_external_slash_internal_storage_path",       "(Ljava/lang/String;)Ljava/lang/String;");
+	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
 
 	// asset manager stuff
 
@@ -237,9 +233,9 @@ static int loop(void) {
 
 	}
 
-	if (program_run_loop_phase(current_de->program)) {
+	if (program_run_loop_phase(         current_de->program)) {
 		ALOGV("DE return code is %d\n", current_de->program->error_code);
-		return rom_free_last() ? current_de->program->error_code : -1;
+		return rom_free_last() ?        current_de->program->error_code : -1;
 
 	} else {
 		return -1;
@@ -338,12 +334,35 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storag
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* env, jclass type, jint macro, jint set) {
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* env, jobject obj, jint macro, jint set) {
 	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
 
 	event_pointer_click_type = set;
 	event_last_release       = set;
 
 	//event_macros[macro] = set; /// TODO
+
+}
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1bitmap(JNIEnv* env, jobject obj, jbyteArray bytes) {
+	extern JNIEnv*    most_recent_text_env;
+	extern jbyteArray most_recent_byte_array;
+
+	extern jbyte*  most_recent_text_bitmap;
+	extern jsize   most_recent_text_bitmap_bytes;
+
+	extern texture_t most_recent_text_texture;
+
+	extern texture_t most_recent_text_width;
+	extern texture_t most_recent_text_height;
+
+	most_recent_text_env   = env;
+	most_recent_byte_array = bytes;
+
+	most_recent_text_bitmap       = env->GetByteArrayElements(bytes, NULL);
+	most_recent_text_bitmap_bytes = env->GetArrayLength(bytes);
+
+	most_recent_text_texture = __texture_create((unsigned long long*) most_recent_text_bitmap, 32, most_recent_text_width, most_recent_text_height, (unsigned long long) false);
+	most_recent_text_env->ReleaseByteArrayElements(most_recent_byte_array, most_recent_text_bitmap, 0);
 
 }

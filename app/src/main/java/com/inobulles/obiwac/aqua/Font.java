@@ -26,10 +26,15 @@ public class Font {
 
 	}
 
-	public int get_width( String text) { return (int) paint.measureText(text); }
+	public int get_width (String text) { return (int) paint.measureText(text); }
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
-	public byte[] draw(String text) {
+	public int draw(String text) {
+		if (text == null) {
+			text = "Hello world!";
+
+		}
+
 		long texture_width  = (long) get_width( text);
 		long texture_height = (long) get_height(text);
 
@@ -45,7 +50,8 @@ public class Font {
 		byte[] array = buffer.array();
 		bitmap.recycle();
 
-		return array;
+		Lib.give_text_bitmap(array);
+		return 0;
 
 	}
 

@@ -30,7 +30,7 @@ texture_t create_texture_from_screenshot(void) {
 	free(pixels);
 	free(data);
 
-	if (texture < 0) {
+	if (texture == -1ull) {
 		ALOGE("WARNING Could not create texture from screenshot\n");
 
 	}
