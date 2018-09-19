@@ -42,17 +42,71 @@ void mfree(void* pointer, unsigned long long bytes) {
 
 #include "alog.h"
 #include "asm/asm.h"
+#include "asm/thread.h"
 
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-static program_t*         current_de_program;
-static char*              rom_data;
-static unsigned long long rom_bytes;
+typedef struct {
+	program_t* program;
+
+	char*              rom_data;
+	unsigned long long rom_bytes;
+
+} de_t;
+
+#define MAX_DE_COUNT 16
+static signed long long de_index;
+
+static de_t* current_de;
+static de_t  des[MAX_DE_COUNT];
 
 signed long long load_rom(unsigned long long path) {
-	ALOGE("WARNING ROM loading (%s) is not supported on this platform\n", __func__);
-	return -1;
+	current_de = &des[++de_index];
+	current_de->rom_data = (char*) 0;
+
+	if (load_asset_bytes((const char*) path, &current_de->rom_data, &current_de->rom_bytes)) {
+		if (!default_assets) {
+			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
+			default_assets = true;
+
+			if (load_asset_bytes((const char*) path, &current_de->rom_data, &current_de->rom_bytes)) {
+				ALOGE("ERROR Could not load the ROM from assets neither\n");
+
+			}
+
+		} else {
+			ALOGE("ERROR Could not load the ROM\n");
+
+		}
+
+	}
+
+	if (current_de->rom_data == (char*) 0) {
+		de_index--;
+		return -1;
+
+	} else {
+		current_de->program = (program_t*) malloc(sizeof(program_t));
+		ALOGI("Starting run setup phase ...\n");
+
+		program_run_setup_phase(current_de->program);
+		return 0;
+
+	}
+
+}
+
+bool rom_free_last(void) {
+	program_free(current_de->program);
+
+	free(current_de->program);
+	free(current_de->rom_data);
+
+	current_de = &des[--de_index];
+	current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (reg_t) current_de->program->error_code;
+
+	return de_index < 0;
 
 }
 
@@ -118,25 +172,8 @@ void rom_init(JNIEnv* env, jobject obj) {
 	ALOGI("\nControl passed to the CW\n");
 	ALOGI("Entering DE ...\n");
 
-	program_t* de_program = (program_t*) malloc(sizeof(program_t));
-	current_de_program = de_program;
-
-	if (load_asset_bytes("root/rom.zed", &rom_data, &rom_bytes)) {
-		if (!default_assets) {
-			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
-			default_assets = true;
-
-			if (load_asset_bytes("root/rom.zed", &rom_data, &rom_bytes)) {
-				ALOGE("ERROR Could not load the ROM from assets either\n");
-
-			}
-
-		} else {
-			ALOGE("ERROR Could not load the ROM\n");
-
-		}
-
-	}
+#define DEFAULT_ROM_PATH "root/rom.zed"
+	load_rom((unsigned long long) DEFAULT_ROM_PATH);
 
 	ALOGI("Setting up predefined_textures ...\n");
 	int warning = kos_setup_predefined_textures();
@@ -145,10 +182,6 @@ void rom_init(JNIEnv* env, jobject obj) {
 		ALOGW("WARNING Problem occurred whilst setting up predefined textures (failed %d textures)\n", warning);
 
 	}
-
-	current_de_program->pointer = rom_data;
-	ALOGI("Starting run setup phase ...\n");
-	program_run_setup_phase(current_de_program);
 
 }
 
@@ -184,6 +217,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(NULL != asset_manager);
 
+	de_index = -1;
+
 	program_run_global_init_phase();
 	rom_init(env, obj);
 
@@ -195,12 +230,9 @@ static int loop(void) {
 
 	}
 
-	if (program_run_loop_phase(current_de_program)) {
-		ALOGV("DE return code is %d\n", current_de_program->error_code);
-		program_free(current_de_program);
-		free(current_de_program->base_pointer/*, rom_bytes*/);
-
-		return current_de_program->error_code;
+	if (program_run_loop_phase(current_de->program)) {
+		ALOGV("DE return code is %d\n", current_de->program->error_code);
+		return rom_free_last() ? current_de->program->error_code : -1;
 
 	} else {
 		return -1;
