@@ -88,6 +88,7 @@ signed long long load_rom(unsigned long long path) {
 
 	} else {
 		current_de->program = (program_t*) malloc(sizeof(program_t));
+		current_de->program->pointer = current_de->rom_data;
 		ALOGI("Starting run setup phase ...\n");
 
 		program_run_setup_phase(current_de->program);
