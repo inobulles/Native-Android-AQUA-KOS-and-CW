@@ -8,11 +8,11 @@
 
 unsigned char waiting_video_flip = 0;
 
-unsigned long long gl_width = 0;
+unsigned long long gl_width  = 0;
 unsigned long long gl_height = 0;
 
 unsigned long long gl_resize = 0;
-unsigned long long gl_fps = 0;
+unsigned long long gl_fps    = 0;
 
 unsigned long long video_fps(void) {
 	return gl_fps;
