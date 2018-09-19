@@ -61,16 +61,16 @@ static signed long long de_index;
 static de_t* current_de;
 static de_t  des[MAX_DE_COUNT];
 
-signed long long load_rom(unsigned long long path) {
+static signed long long __load_rom(const char* path) {
 	current_de = &des[++de_index];
 	current_de->rom_data = (char*) 0;
 
-	if (load_asset_bytes((const char*) path, &current_de->rom_data, &current_de->rom_bytes)) {
+	if (load_asset_bytes(path, &current_de->rom_data, &current_de->rom_bytes)) {
 		if (!default_assets) {
 			ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
 			default_assets = true;
 
-			if (load_asset_bytes((const char*) path, &current_de->rom_data, &current_de->rom_bytes)) {
+			if (load_asset_bytes(path, &current_de->rom_data, &current_de->rom_bytes)) {
 				ALOGE("ERROR Could not load the ROM from assets neither\n");
 
 			}
@@ -95,6 +95,12 @@ signed long long load_rom(unsigned long long path) {
 		return 0;
 
 	}
+
+}
+
+signed long long load_rom(unsigned long long _path) {
+	GET_PATH_FS(_path);
+	return __load_rom((const char*) path);
 
 }
 
@@ -174,7 +180,7 @@ void rom_init(JNIEnv* env, jobject obj) {
 	ALOGI("Entering DE ...\n");
 
 #define DEFAULT_ROM_PATH "root/rom.zed"
-	load_rom((unsigned long long) DEFAULT_ROM_PATH);
+	__load_rom(DEFAULT_ROM_PATH);
 
 	ALOGI("Setting up predefined_textures ...\n");
 	int warning = kos_setup_predefined_textures();
