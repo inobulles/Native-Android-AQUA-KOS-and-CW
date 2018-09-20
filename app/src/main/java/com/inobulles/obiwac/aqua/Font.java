@@ -5,9 +5,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 public class Font {
 	private Paint paint;
@@ -29,7 +32,9 @@ public class Font {
 	public int get_width (String text) { return (int) paint.measureText(text); }
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
-	public int draw(String text) {
+	public int draw(String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
+		Log.e("S", "STARTED_DRAWN\n");
+
 		if (text == null) {
 			text = "Hello world!";
 
@@ -43,15 +48,29 @@ public class Font {
 		bitmap.eraseColor(0);
 
 		canvas.drawText(text, 0, (int) texture_height - metrics.descent, paint);
+		GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1);
 
-		ByteBuffer buffer = ByteBuffer.allocate(bitmap.getRowBytes() * bitmap.getHeight());
-		bitmap.copyPixelsToBuffer(buffer);
+		IntBuffer texture = IntBuffer.allocate(1);
+		GLES20.glGenTextures(1, texture);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.get(0));
 
-		byte[] array = buffer.array();
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, TEXTURE_WRAP_TYPE); // x axis
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, TEXTURE_WRAP_TYPE); // y axis
+
+		if (SHARP_TEXTURES == 1) {
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+
+		} else {
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+		}
+
+		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 		bitmap.recycle();
 
-		Lib.give_text_bitmap(array);
-		return 0;
+		return texture.get(0);
 
 	}
 

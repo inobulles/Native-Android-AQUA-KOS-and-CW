@@ -173,14 +173,14 @@ public class Lib {
 	public static int get_font_width (int font, String text) { return get_font_dimension("width",  font, text); }
 	public static int get_font_height(int font, String text) { return get_font_dimension("height", font, text); }
 
-	public static int create_texture_from_font(int font, String text) {
+	public static int create_texture_from_font(int font, String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
 		try {
-			if (fonts[font] != null) return fonts[font].draw(text);
-			else                     return 1;
+			if (fonts[font] != null) return fonts[font].draw(text, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
+			else                     return -1;
 
 		} catch (IndexOutOfBoundsException exception) {
 			// font >= MAX_FONTS
-			return 1;
+			return -1;
 
 		}
 
@@ -194,6 +194,5 @@ public class Lib {
 	public static native void event(int pointer_index, int pointer_type, int x, int y, int quit, int release, int tray_offset);
 	public static native void event_macro(int macro, int set);
 	public static native void give_internal_storage_path(String path);
-	public static native void give_text_bitmap(byte[] bytes);
 
 }

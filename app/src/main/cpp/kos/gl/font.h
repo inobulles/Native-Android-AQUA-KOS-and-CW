@@ -38,17 +38,6 @@ void font_remove(font_t font) {
 
 }
 
-JNIEnv*    most_recent_text_env   = nullptr;
-jbyteArray most_recent_byte_array = nullptr;
-
-jbyte*  most_recent_text_bitmap       = nullptr;
-jsize   most_recent_text_bitmap_bytes = 0;
-
-unsigned long long most_recent_text_width;
-unsigned long long most_recent_text_height;
-
-texture_t most_recent_text_texture = 0;
-
 texture_t create_texture_from_font(font_t font, unsigned long long text) {
 	texture_t texture = 0;
 	jint      error   = 1;
@@ -57,19 +46,16 @@ texture_t create_texture_from_font(font_t font, unsigned long long text) {
 	unsigned long long height = get_font_height(font, text);
 
 	if (!(width <= 0 || height <= 0)) {
-		most_recent_text_width  = width;
-		most_recent_text_height = height;
-
-		error = CALLBACK_INT(java_create_texture_from_font, (jint) font, callback_env->NewStringUTF((const char*) text));
+		error = CALLBACK_INT(java_create_texture_from_font, (jint) font, callback_env->NewStringUTF((const char*) text), TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
 
 	}
 
-	if (error) {
+	if (error < 0) {
 		ALOGE("WARNING Java had a problem loading the font\n");
 
 	} else {
-		texture = most_recent_text_texture;
-		//most_recent_text_env->ReleaseByteArrayElements(most_recent_byte_array, most_recent_text_bitmap, 0);
+		ALOGE("%lld %s %lld\n", font, text, texture);
+		texture = (texture_t) error;
 
 	}
 
