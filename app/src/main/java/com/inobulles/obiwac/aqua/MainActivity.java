@@ -94,12 +94,12 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int tray_offset = 0;
-		int resource = getResources().getIdentifier("status_bar_height", "dimen", "android");
+		/*int resource = getResources().getIdentifier("status_bar_height", "dimen", "android");
 
 		if (resource > 0) {
 			tray_offset = getResources().getDimensionPixelSize(resource);
 
-		}
+		}*/
 
 		int x = (int) event.getX();
 		int y = (int) event.getY();
@@ -160,6 +160,30 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		return on_key(keyCode, event, 1) || super.onKeyUp(keyCode, event);
+
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+
+		if (hasFocus) {
+			getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_FULLSCREEN |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+			);
+
+		}
+
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
 
 	}
 
