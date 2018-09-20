@@ -50,14 +50,8 @@ texture_t create_texture_from_font(font_t font, unsigned long long text) {
 
 	}
 
-	if (error < 0) {
-		ALOGE("WARNING Java had a problem loading the font\n");
-
-	} else {
-		ALOGE("%lld %s %lld\n", font, text, texture);
-		texture = (texture_t) error;
-
-	}
+	if (error < 0) ALOGE("WARNING Java had a problem loading the font\n");
+	else           texture = (texture_t) error;
 
 	return texture;
 

@@ -33,8 +33,6 @@ public class Font {
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
 	public int draw(String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
-		Log.e("S", "STARTED_DRAWN\n");
-
 		if (text == null) {
 			text = "Hello world!";
 
