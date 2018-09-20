@@ -4,6 +4,7 @@ package com.inobulles.obiwac.aqua;
 import android.Manifest;
 import android.app.Activity;
 
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Build;
@@ -24,12 +25,14 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		assets = getAssets();
+		Log.e(TAG,"onCreate");
 
+		super.onCreate(savedInstanceState);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
+		assets = getAssets();
 		view = new View(getApplication());
 		setContentView(view);
-
 		File directory = Environment.getExternalStorageDirectory();
 
 		if (directory == null) Log.w(TAG, "WARNING Failed to get external path\n");
@@ -61,6 +64,8 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	protected void onDestroy() {
+		Log.e(TAG,"onDestroy");
+
 		super.onDestroy();
 		dispose_all();
 
@@ -68,14 +73,19 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	@Override
 	protected void onPause() {
+		Log.e(TAG,"onPause");
+		//dispose_all();
+
 		super.onPause();
-		/*view.onPause();
-		dispose_all();*/
+		//view.onPause();
 		
 	}
 
 	@Override
 	protected void onResume() {
+		Log.e(TAG,"onResume");
+		//Lib.start();
+
 		super.onResume();
 		//view.onResume();
 

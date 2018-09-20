@@ -117,8 +117,9 @@ bool rom_free_last(void) {
 
 }
 
-bool disable_gl = false;
+bool disable_gl       = false;
 bool already_disposed = true;
+bool init_gl          = true;
 
 void nothing(...) {
 
@@ -132,47 +133,52 @@ void rom_init(JNIEnv* env, jobject obj) {
 	disable_gl = false;
 	event_quit = false;
 
-	if (renderer) {
-		delete renderer;
-		renderer = NULL;
+	if (init_gl) {
+		init_gl = false;
+
+		if (renderer) {
+			delete renderer;
+			renderer = NULL;
+
+		}
+
+		ALOGI("OpenGL info\n");
+		ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
+		ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
+		ALOGI("\tVersion:                  %s\n", glGetString(GL_VERSION));
+		ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+		//	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
+
+		const char* version_string = (const char*) glGetString(GL_VERSION);
+
+		if (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) {
+			renderer = create_es3_renderer();
+
+		} else if (strstr(version_string, "OpenGL ES 2.")) {
+			renderer = create_es2_renderer();
+
+		} else {
+			ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
+
+		}
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_ALPHA);
+
+		//~ ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
+
+		//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
+		//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
+		//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+
+		//~ glEnable(GL_POINT_SMOOTH);
+		//~ glEnable(GL_LINE_SMOOTH);
+		//~ glEnable(GL_POLYGON_SMOOTH);
 
 	}
-
-	ALOGI("OpenGL info\n");
-	ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
-	ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
-	ALOGI("\tVersion:                  %s\n", glGetString(GL_VERSION));
-	ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-//	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
-
-	const char* version_string = (const char*) glGetString(GL_VERSION);
-
-	if (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) {
-		renderer = create_es3_renderer();
-
-	} else if (strstr(version_string, "OpenGL ES 2.")) {
-		renderer = create_es2_renderer();
-
-	} else {
-		ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
-
-	}
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_ALPHA);
-
-	//~ ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
-
-	//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
-	//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
-	//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
-
-	//~ glEnable(GL_POINT_SMOOTH);
-	//~ glEnable(GL_LINE_SMOOTH);
-	//~ glEnable(GL_POLYGON_SMOOTH);
 
 	// program stuff
 
@@ -243,8 +249,16 @@ static int loop(void) {
 
 }
 
+static bool already_started = false;
+
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, jobject obj) {
-	rom_init(env, obj);
+	if (already_started) {
+		rom_init(env, obj);
+
+	} else {
+		already_started = true;
+
+	}
 
 }
 
