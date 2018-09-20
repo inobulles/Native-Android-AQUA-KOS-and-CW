@@ -6,19 +6,7 @@
 #define ANDROID_FONT_H
 
 font_t new_font(unsigned long long _path, unsigned long long size) {
-	unsigned long long bytes;
-	char* buffer;
-
 	GET_PATH((const char*) _path);
-
-	if (load_asset_bytes(path, &buffer, &bytes)) {
-		ALOGE("WARNING Font file could not be opened (probably wrong path `%s`)\n", path);
-
-	} else {
-		free(buffer);
-
-	}
-
 	jint error = CALLBACK_INT(java_new_font, (jint) (((float) size / _UI64_MAX) * (float) video_width()), callback_env->NewStringUTF(path));
 
 	if (error < 0) {
