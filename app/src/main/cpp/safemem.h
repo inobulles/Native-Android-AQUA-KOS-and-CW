@@ -8,19 +8,28 @@
 #include <stdlib.h>
 #include <vector>
 
+#define CPP_MMAN_STYLE true
+
 static inline void* safe_malloc(unsigned long long bytes) {
+#if CPP_MMAN_STYLE
+	char* pointer =  new char[bytes];
+#else
 	void* pointer = malloc(bytes);
 
 	if (!pointer) {
 		ALOGE("WARNING Could not allocate %lld bytes (malloc)\n", bytes);
 
 	}
+#endif
 
 	return pointer;
 
 }
 
 static inline void safe_free(void* pointer) {
+#if CPP_MMAN_STYLE
+	delete[] pointer;
+#else
 	if (!pointer) {
 		ALOGE("WARNING Trying to free nullptr. Aborting ...\n");
 
@@ -28,6 +37,7 @@ static inline void safe_free(void* pointer) {
 		free(pointer);
 
 	}
+#endif
 
 }
 

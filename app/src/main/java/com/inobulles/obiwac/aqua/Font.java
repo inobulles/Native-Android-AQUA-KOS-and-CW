@@ -29,7 +29,7 @@ public class Font {
 
 	}
 
-	public int get_width (String text) { Log.e(MainActivity.TAG, String.format("%d\n", (int) paint.measureText(text)));return (int) paint.measureText(text); }
+	public int get_width (String text) { /*Log.e(MainActivity.TAG, String.format("%d\n", (int) paint.measureText(text)));*/return (int) paint.measureText(text); }
 	public int get_height(String text) { return (int) Math.ceil(metrics.descent - metrics.ascent); }
 
 	public int draw(String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
