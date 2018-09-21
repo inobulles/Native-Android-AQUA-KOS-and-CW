@@ -151,6 +151,8 @@ static inline void cnd_instruction(program_t* __this, unsigned_t type, unsigned_
 
 static inline void call_instruction(program_t* __this, unsigned_t type, unsigned_t data) {
 	if (type == TOKEN_PRERESERVED) {
+		ALOGE("CALLINSTRUCTION %lld\n", data);
+
 		__this->main_thread.registers[REGISTER_FAMILY_a] = ((unsigned_t (*) (unsigned_t, unsigned_t, unsigned_t, unsigned_t, unsigned_t)) __this->reserved[data])( \
 			__this->main_thread.registers[REGISTER_rdi], \
 			__this->main_thread.registers[REGISTER_rsi], \

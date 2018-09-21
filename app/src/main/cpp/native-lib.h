@@ -118,8 +118,8 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 		if (asset) {
 			assert(asset);
 
-			*bytes = (size_t) AAsset_getLength(asset);
-			*buffer = (char*) malloc(*bytes + 1);
+			*bytes  = (unsigned long long) AAsset_getLength(asset);
+			*buffer = (char*)              malloc(*bytes + 1);
 
 			AAsset_read(asset, *buffer, *bytes);
 			AAsset_close(asset);

@@ -9,7 +9,7 @@
 	} else
 
 unsigned long long fs_support(void) {
-	return 1;
+	return 0;
 
 }
 
@@ -30,7 +30,7 @@ unsigned long long fs_read(unsigned long long _path, unsigned long long data, un
 
 	}
 
-	return 0;
+	return 1;
 
 }
 
