@@ -88,7 +88,7 @@ static void surface_update_colours(surface_t* __this) {
 
 static void surface_update(surface_t* __this) {
 	surface_update_vertices(__this);
-	surface_update_colours(__this);
+	surface_update_colours (__this);
 
 }
 
@@ -220,10 +220,10 @@ void surface_set_layer(unsigned long long ____this, signed long long layer) {
 #define SURFACE_GRADIENT_FUNCTIONS 1
 
 #define KOS_SURF_SET_COLOUR_FOR_VERTEX(index) { \
-		__this->colours[index].red   = red; \
-		__this->colours[index].green = green; \
-		__this->colours[index].blue  = blue; \
-		__this->colours[index].alpha = alpha; \
+		__this->colours[index].red   = (float) red   / _UI64_MAX; \
+		__this->colours[index].green = (float) green / _UI64_MAX; \
+		__this->colours[index].blue  = (float) blue  / _UI64_MAX; \
+		__this->colours[index].alpha = (float) alpha / _UI64_MAX; \
 	}
 
 void surface_gradient_left(KOS_SURF_FULL_COLOUR_FUNCTION_PARAMS) {
