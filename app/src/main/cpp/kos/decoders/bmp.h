@@ -144,7 +144,7 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 
 void bmp_free(unsigned long long ____this) {
 	bitmap_image_t* __this = (bitmap_image_t*) ____this;
-	mfree(__this->data, __this->image_size * sizeof(unsigned long long));
+	//free(__this->data);//mfree(__this->data, __this->image_size * sizeof(unsigned long long)); // FIXME
 
 }
 

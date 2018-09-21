@@ -22,7 +22,7 @@ static inline void* safe_malloc(unsigned long long bytes) {
 	}
 #endif
 
-	return pointer;
+	return (void*) pointer;
 
 }
 
