@@ -10,7 +10,7 @@
 #include "gl.h"
 #include "kos/decoders/bmp.h"
 
-Renderer* renderer = NULL;
+Renderer*      renderer      = NULL;
 AAssetManager* asset_manager = NULL;
 
 const char* internal_storage_path;

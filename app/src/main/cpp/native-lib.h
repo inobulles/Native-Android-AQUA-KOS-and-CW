@@ -31,6 +31,8 @@
 #define LOG_TAG "AQUA"
 #include "alog.h"
 
+#include "safemem.h"
+
 #define CALLBACK_NO_PARAMS "()V"
 #define MAX_PATH_LENGTH 4096
 
