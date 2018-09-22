@@ -4,6 +4,7 @@ package com.inobulles.obiwac.aqua;
 import android.Manifest;
 import android.app.Activity;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -22,6 +23,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 	private static View view;
 	public  static AssetManager assets;
+	public  static PackageManager package_manager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,9 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
+		package_manager = getApplicationContext().getPackageManager();
 		assets = getAssets();
+
 		view = new View(getApplication());
 		setContentView(view);
 		File directory = Environment.getExternalStorageDirectory();

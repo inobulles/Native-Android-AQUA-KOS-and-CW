@@ -18,14 +18,15 @@ bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
 extern "C" {
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(                         JNIEnv* env, jobject obj, jobject java_asset_manager);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(                 JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(                        JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(                       JNIEnv* env, jobject obj, jint width, jint height);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(                         JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(                        JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(                 JNIEnv* env, jobject obj, jint macro, jint set);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all                 (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start                        (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize                       (JNIEnv* env, jobject obj, jint width, jint height);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step                         (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event                        (JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro                 (JNIEnv* env, jobject obj, jint macro, jint set);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
+
 };
 
 #ifndef DYNAMIC_ES3
@@ -219,6 +220,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	init_callback_function(&java_read_external_slash_internal_storage_path,       "read_external_slash_internal_storage_path",       "(Ljava/lang/String;)Ljava/lang/String;");
 	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
+
+	init_callback_function(&java_package_exists, "package_exists", "(Ljava/lang/String;)I");
 
 	// asset manager stuff
 

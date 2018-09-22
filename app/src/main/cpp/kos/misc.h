@@ -19,10 +19,11 @@ unsigned long long platform_system(unsigned long long command) {
 
 }
 
-#define DEVICE_NULL     0
-#define DEVICE_TEXTURE  1
-#define DEVICE_MATH     4
-#define DEVICE_CLOCK    5
+#define DEVICE_NULL    0
+#define DEVICE_TEXTURE 1
+#define DEVICE_MATH    4
+#define DEVICE_CLOCK   5
+#define DEVICE_ANDROID 6
 
 unsigned long long is_device_supported(unsigned long long __device) {
 	const char* device = (const char*) __device;
@@ -30,6 +31,7 @@ unsigned long long is_device_supported(unsigned long long __device) {
 	if      (strcmp(device, "math")    == 0) return DEVICE_MATH;
 	else if (strcmp(device, "texture") == 0) return DEVICE_TEXTURE;
 	else if (strcmp(device, "clock")   == 0) return DEVICE_CLOCK;
+	else if (strcmp(device, "android") == 0) return DEVICE_ANDROID;
 	else                                     return DEVICE_NULL;
 
 }
@@ -51,6 +53,8 @@ typedef struct {
 static struct tm*    kos_tm_struct = (struct tm*) 0;
 static time_t        kos_time      = 0;
 static time_device_t previous_time_device;
+
+static jint previous_package_existance;
 
 #define KOS_DEVICE_COMMAND_WARNING(device_name) ALOGE("WARNING The command you have passed to the " device_name " device (%s) is unrecognized\n", extra);
 static unsigned long long previous_math_device_sqrt_result;
@@ -100,6 +104,21 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("clock")
+
+			}
+
+			break;
+
+		} case DEVICE_ANDROID: {
+			ALOGE("DEVICE_ANDROID %s\n", extra);
+
+			if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
+				extra += 4;
+				previous_package_existance = CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
+				result = (unsigned long long*) &previous_package_existance;
+
+			} else {
+				KOS_DEVICE_COMMAND_WARNING("android")
 
 			}
 

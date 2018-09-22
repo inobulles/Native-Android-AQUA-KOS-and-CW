@@ -67,6 +67,8 @@ static callback_method_t java_create_texture_from_font;
 static callback_method_t java_read_external_slash_internal_storage_path;
 static callback_method_t java_read_external_slash_internal_storage_path_bytes;
 
+static callback_method_t java_package_exists;
+
 static void init_callback_function(callback_method_t* __this, const char* name, const char* params) {
 	__this->found = false;
 	__this->method = callback_env->GetStaticMethodID(callback_class, name, params);

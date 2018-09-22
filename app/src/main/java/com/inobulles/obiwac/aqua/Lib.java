@@ -1,6 +1,9 @@
 
 package com.inobulles.obiwac.aqua;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
@@ -10,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 import static com.inobulles.obiwac.aqua.MainActivity.TAG;
 
@@ -183,6 +187,19 @@ public class Lib {
 			return -1;
 
 		}
+
+	}
+
+	public static int package_exists(String package_name) {
+		Intent intent = MainActivity.package_manager.getLaunchIntentForPackage(package_name);
+
+		if (intent == null) {
+			return 0;
+
+		}
+
+		List<ResolveInfo> list = MainActivity.package_manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		return list.size() > 0 ? 1 : 0;
 
 	}
 
