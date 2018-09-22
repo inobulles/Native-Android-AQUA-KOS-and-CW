@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends /* AppCompatActivity */ Activity {
+public class MainActivity extends Activity {
 	public static String TAG = "AQUA";
 
 	public static AssetManager   assets;
@@ -50,9 +50,10 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 				String[] components = line.split(":");
 
 				switch (components[0]) {
-					case "orientation": orientation =   components[1];  break;
-					case "permission":  permissions.add(components[1]); break;
-					case "tag":         TAG =           components[1];  break;
+					case "orientation": orientation =   components[1];                                        break;
+					case "permission":  permissions.add(components[1]);                                       break;
+					case "tag":         TAG =           components[1];                                        break;
+					default: Log.e(TAG, String.format("WARNING Unknown meta element (%s)\n", components[0])); break;
 
 				}
 
@@ -244,12 +245,12 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 		if (hasFocus) {
 			getWindow().getDecorView().setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-				View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-				View.SYSTEM_UI_FLAG_FULLSCREEN |
-				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE          : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN      : 0) |
+				(Build.VERSION.SDK_INT > 14 ? View.SYSTEM_UI_FLAG_HIDE_NAVIGATION        : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_FULLSCREEN             : 0) |
+				(Build.VERSION.SDK_INT > 19 ? View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY       : 0)
 			);
 
 		}
