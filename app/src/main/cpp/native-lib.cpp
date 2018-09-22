@@ -111,7 +111,7 @@ bool rom_free_last(void) {
 	free(current_de->program);
 	free(current_de->rom_data);
 
-	current_de = &des[--de_index];
+	if (de_index-- > 0) current_de = &des[de_index];
 	current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (reg_t) current_de->program->error_code;
 
 	return de_index < 0;
@@ -200,10 +200,10 @@ void rom_init(JNIEnv* env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
-	callback_env = env;
-	jclass _class = env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	callback_env   =          env;
+	jclass _class  =          env->FindClass("com/inobulles/obiwac/aqua/Lib");
 	callback_class = (jclass) env->NewGlobalRef(_class);
-	callback_lib = env->NewGlobalRef(callback_class);
+	callback_lib   =          env->NewGlobalRef(callback_class);
 
 #define CALLBACK_FONT_AND_TEXT "(ILjava/lang/String;)I"
 
@@ -244,7 +244,7 @@ static int loop(void) {
 
 	if (program_run_loop_phase(         current_de->program)) {
 		ALOGV("DE return code is %d\n", current_de->program->error_code);
-		return rom_free_last() ?        current_de->program->error_code : -1;
+		return rom_free_last() ?        current_de->program->error_code : 0;
 
 	} else {
 		return -1;
@@ -284,7 +284,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 		return_value = loop();
 		waiting_video_flip = 0;
 
-		if (return_value >= 0) {
+		if (return_value != -1) {
 			break;
 
 		}
@@ -313,7 +313,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 	while (!waiting_video_flip) {
 		int return_value = loop();
 
-		if (return_value >= 0) {
+		if (return_value != -1) {
 			exit(return_value);
 
 		}

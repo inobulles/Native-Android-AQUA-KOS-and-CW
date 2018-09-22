@@ -9,7 +9,7 @@
 	} else
 
 unsigned long long fs_support(void) {
-	return 0;
+	return 0; /// TODO set to 1
 
 }
 

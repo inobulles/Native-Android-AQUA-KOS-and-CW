@@ -459,11 +459,6 @@ static unsigned_t param6;
 int usleep(int usec);
 
 int program_run_loop_phase(program_t* __this) {
-	if (__this->error_code) {
-		return 0;
-
-	}
-
 	uint64_t token;
 	
 	unsigned long long type;

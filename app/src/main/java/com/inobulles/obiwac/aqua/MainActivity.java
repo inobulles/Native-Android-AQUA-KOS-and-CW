@@ -32,7 +32,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
-		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
 		package_manager = getApplicationContext().getPackageManager();
 		assets = getAssets();
