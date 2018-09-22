@@ -49,9 +49,12 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 			while ((line = meta_reader.readLine()) != null) {
 				String[] components = line.split(":");
 
-				if      (components[0].equals("orientation")) orientation =   components[1];
-				else if (components[0].equals("permission"))  permissions.add(components[1]);
-				else if (components[0].equals("tag"))         TAG =           components[1];
+				switch (components[0]) {
+					case "orientation": orientation =   components[1];  break;
+					case "permission":  permissions.add(components[1]); break;
+					case "tag":         TAG =           components[1];  break;
+
+				}
 
 			}
 
