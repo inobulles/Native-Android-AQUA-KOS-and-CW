@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends /* AppCompatActivity */ Activity {
-	public static final String TAG = "AQUA";
+	public static String TAG = "AQUA";
 
-	public  static AssetManager   assets;
-	public  static PackageManager package_manager;
+	public static AssetManager   assets;
+	public static PackageManager package_manager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 				if      (components[0].equals("orientation")) orientation =   components[1];
 				else if (components[0].equals("permission"))  permissions.add(components[1]);
+				else if (components[0].equals("tag"))         TAG =           components[1];
 
 			}
 
