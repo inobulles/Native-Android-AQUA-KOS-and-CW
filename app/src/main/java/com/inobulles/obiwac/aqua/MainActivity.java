@@ -17,12 +17,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends /* AppCompatActivity */ Activity {
 	public static final String TAG = "AQUA";
 
-	private static View           view;
 	public  static AssetManager   assets;
 	public  static PackageManager package_manager;
 
@@ -32,32 +36,91 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		onWindowFocusChanged(true);
+
+		BufferedReader meta_reader = null;
+		String       orientation = "landscape";
+		List<String> permissions = new ArrayList<>();
+
+		try {
+			meta_reader = new BufferedReader(new InputStreamReader(getAssets().open("root/meta.meta")));
+			String line;
+
+			while ((line = meta_reader.readLine()) != null) {
+				String[] components = line.split(":");
+
+				if      (components[0].equals("orientation")) orientation =   components[1];
+				else if (components[0].equals("permission"))  permissions.add(components[1]);
+
+			}
+
+		} catch (IOException exception) {
+			Log.e(TAG, "WARNING Could not load meta file (meta.meta)\n");
+
+			permissions.add("read external storage");
+			permissions.add("write external storage");
+
+		} finally {
+			if (meta_reader != null) {
+				try                           { meta_reader.close();         }
+				catch (IOException exception) { exception.printStackTrace(); }
+
+			}
+
+		}
+
+		switch (orientation) {
+			case "landscape": setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);    break;
+			case "portrait":  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);     break;
+			case "full":      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);         break;
+			default:          Log.e(TAG, String.format("WARNING Unknown orientation `%s`\n", orientation)); break;
+
+		}
 
 		package_manager = getApplicationContext().getPackageManager();
 		assets = getAssets();
 
-		view = new View(getApplication());
-		setContentView(view);
+		setContentView(new View(getApplication()));
 		File directory = Environment.getExternalStorageDirectory();
 
 		if (directory == null) Log.w(TAG, "WARNING Failed to get external path\n");
 		else Lib.give_internal_storage_path(directory.toString());
 
 		if (Build.VERSION.SDK_INT >= 23) {
-			int read_permission  = PackageManager.PERMISSION_DENIED;
-			int write_permission = PackageManager.PERMISSION_DENIED;
+			String   manifest_permission;
+			String[] manifest_permissions = new String[permissions.size()];
+			int current = 0;
 
-			while (read_permission != PackageManager.PERMISSION_GRANTED && write_permission != PackageManager.PERMISSION_GRANTED) {
-				read_permission  = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-				write_permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-				if (read_permission != PackageManager.PERMISSION_GRANTED || write_permission != PackageManager.PERMISSION_GRANTED) {
-					this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+			for (String permission : permissions) {
+				switch (permission) {
+					case "read external storage":  manifest_permission = Manifest.permission.READ_EXTERNAL_STORAGE;  break;
+					case "write external storage": manifest_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE; break;
+					default:                       manifest_permission = permission;                                 break;
 
 				}
 
+				manifest_permissions[current++] = manifest_permission;
+
 			}
+
+			boolean asking_permissions = true;
+			while  (asking_permissions) {
+				asking_permissions = false;
+
+				for (String permission : manifest_permissions) {
+					if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+						asking_permissions = true;
+
+					}
+
+				}
+
+				this.requestPermissions(manifest_permissions, 100);
+
+			}
+
+		} else {
+			Log.e(TAG, String.format("WARNING Can not set permissions as Build.VERSION.SDK_INT (%d) < 23. Put permissions in `AndroidManifest.xml`\n", Build.VERSION.SDK_INT));
 
 		}
 
@@ -86,9 +149,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	protected void onPause() {
 		Log.e(TAG,"onPause");
 		//dispose_all();
-
 		super.onPause();
-		//view.onPause();
 		
 	}
 
@@ -96,9 +157,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	protected void onResume() {
 		Log.e(TAG,"onResume");
 		//Lib.start();
-
 		super.onResume();
-		//view.onResume();
 
 	}
 
@@ -112,12 +171,6 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int tray_offset = 0;
-		/*int resource = getResources().getIdentifier("status_bar_height", "dimen", "android");
-
-		if (resource > 0) {
-			tray_offset = getResources().getDimensionPixelSize(resource);
-
-		}*/
 
 		int x = (int) event.getX();
 		int y = (int) event.getY();
