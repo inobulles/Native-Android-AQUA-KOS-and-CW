@@ -71,7 +71,7 @@ public class Lib {
 
 	}
 
-	public static long read_external_slash_internal_storage_path_bytes(String path) {
+	private static long read_external_slash_internal_storage_path_bytes(String path) {
 		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		if (put_file_in_buffer(path)) return -1;
@@ -79,7 +79,7 @@ public class Lib {
 
 	}
 
-	public static String read_external_slash_internal_storage_path(String path) {
+	private static String read_external_slash_internal_storage_path(String path) {
 		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		if (!path.equals(buffer_path)) {
@@ -110,7 +110,7 @@ public class Lib {
 
 	}
 
-	public static int new_font(int size, String path) {
+	private static int new_font(int size, String path) {
 		int index = -1;
 
 		if (fonts == null) {
@@ -140,7 +140,7 @@ public class Lib {
 
 	}
 
-	public static void font_remove(int font) {
+	private static void font_remove(int font) {
 		try {
 			fonts[font].dispose();
 			fonts[font] = null;
@@ -174,10 +174,10 @@ public class Lib {
 
 	}
 
-	public static int get_font_width (int font, String text) { return get_font_dimension("width",  font, text); }
-	public static int get_font_height(int font, String text) { return get_font_dimension("height", font, text); }
+	private static int get_font_width (int font, String text) { return get_font_dimension("width",  font, text); }
+	private static int get_font_height(int font, String text) { return get_font_dimension("height", font, text); }
 
-	public static int create_texture_from_font(int font, String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
+	private static int create_texture_from_font(int font, String text, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
 		try {
 			if (fonts[font] != null) return fonts[font].draw(text, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
 			else                     return -1;
@@ -199,7 +199,7 @@ public class Lib {
 
 	private static Intent most_recent_package_intent;
 
-	public static int package_exists(String package_name) {
+	private static int package_exists(String package_name) {
 		most_recent_package_intent = MainActivity.package_manager.getLaunchIntentForPackage(package_name);
 
 		if (most_recent_package_intent == null) {
@@ -212,7 +212,7 @@ public class Lib {
 
 	}
 
-	public static void package_open(String package_name) {
+	private static void package_open(String package_name) {
 		if (package_exists(package_name) == 0) {
 			Log.e(MainActivity.TAG, String.format("ERROR Package `%s` does not seem to exist\n", package_name));
 			return;

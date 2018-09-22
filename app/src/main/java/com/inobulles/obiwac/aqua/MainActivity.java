@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +32,7 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
 		package_manager = getApplicationContext().getPackageManager();
 		assets = getAssets();
@@ -98,6 +99,13 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 
 		super.onResume();
 		//view.onResume();
+
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Log.e(TAG, "onConfigurationChanged");
+		super.onConfigurationChanged(newConfig);
 
 	}
 
