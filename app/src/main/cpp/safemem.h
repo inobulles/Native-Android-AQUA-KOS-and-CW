@@ -28,7 +28,7 @@ static inline void* safe_malloc(unsigned long long bytes) {
 
 static inline void safe_free(void* pointer) {
 #if CPP_MMAN_STYLE
-	delete[] pointer;
+	delete[] (char*) pointer;
 #else
 	if (!pointer) {
 		ALOGE("WARNING Trying to free nullptr. Aborting ...\n");

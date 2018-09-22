@@ -18,6 +18,7 @@ bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
 extern "C" {
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag               (JNIEnv* env, jobject obj, jstring tag);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all                 (JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start                        (JNIEnv* env, jobject obj);
@@ -123,6 +124,17 @@ bool already_disposed = true;
 bool init_gl          = true;
 
 void nothing(...) {
+
+}
+
+#ifndef __LOG_TAG
+#define __LOG_TAG "AQUA"
+char* LOG_TAG = (char*) __LOG_TAG;
+#endif
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag(JNIEnv* env, jobject obj, jstring tag) {
+	jboolean is_copy = 0;
+	LOG_TAG = (char*) env->GetStringUTFChars(tag, &is_copy);
 
 }
 

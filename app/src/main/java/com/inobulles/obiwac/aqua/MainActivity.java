@@ -74,6 +74,8 @@ public class MainActivity extends Activity {
 
 		}
 
+		Lib.give_log_tag(TAG);
+
 		switch (orientation) {
 			case "landscape": setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);    break;
 			case "portrait":  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);     break;

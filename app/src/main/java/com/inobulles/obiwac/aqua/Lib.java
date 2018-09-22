@@ -223,6 +223,7 @@ public class Lib {
 
 	}
 
+	public static native void give_log_tag(String tag);
 	public static native void init(AssetManager asset_manager);
 	public static native void dispose_all();
 	public static native void start();

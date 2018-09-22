@@ -26,9 +26,8 @@
 #endif
 #endif
 
+extern char* LOG_TAG;
 #define VERBOSE_OUTPUT 1
-
-#define LOG_TAG "AQUA"
 #include "alog.h"
 
 #include "safemem.h"
