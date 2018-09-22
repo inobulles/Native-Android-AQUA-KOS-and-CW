@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -21,13 +22,14 @@ import java.io.File;
 public class MainActivity extends /* AppCompatActivity */ Activity {
 	public static final String TAG = "AQUA";
 
-	private static View view;
-	public  static AssetManager assets;
+	private static View           view;
+	public  static AssetManager   assets;
 	public  static PackageManager package_manager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.e(TAG,"onCreate");
+		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
@@ -58,6 +60,11 @@ public class MainActivity extends /* AppCompatActivity */ Activity {
 			}
 
 		}
+
+	}
+
+	public void start_activity(Intent intent) {
+		getApplicationContext().startActivity(intent);
 
 	}
 

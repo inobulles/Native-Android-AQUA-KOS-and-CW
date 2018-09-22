@@ -190,16 +190,36 @@ public class Lib {
 
 	}
 
-	public static int package_exists(String package_name) {
-		Intent intent = MainActivity.package_manager.getLaunchIntentForPackage(package_name);
+	private static MainActivity main_activity;
 
-		if (intent == null) {
+	public static void give_activity(MainActivity activity) {
+		main_activity = activity;
+
+	}
+
+	private static Intent most_recent_package_intent;
+
+	public static int package_exists(String package_name) {
+		most_recent_package_intent = MainActivity.package_manager.getLaunchIntentForPackage(package_name);
+
+		if (most_recent_package_intent == null) {
 			return 0;
 
 		}
 
-		List<ResolveInfo> list = MainActivity.package_manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		List<ResolveInfo> list = MainActivity.package_manager.queryIntentActivities(most_recent_package_intent, PackageManager.MATCH_DEFAULT_ONLY);
 		return list.size() > 0 ? 1 : 0;
+
+	}
+
+	public static void package_open(String package_name) {
+		if (package_exists(package_name) == 0) {
+			Log.e(MainActivity.TAG, String.format("ERROR Package `%s` does not seem to exist\n", package_name));
+			return;
+
+		}
+
+		main_activity.start_activity(most_recent_package_intent);
 
 	}
 

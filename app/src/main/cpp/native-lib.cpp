@@ -222,6 +222,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 	init_callback_function(&java_read_external_slash_internal_storage_path_bytes, "read_external_slash_internal_storage_path_bytes", "(Ljava/lang/String;)J");
 
 	init_callback_function(&java_package_exists, "package_exists", "(Ljava/lang/String;)I");
+	init_callback_function(&java_package_open,   "package_open",   "(Ljava/lang/String;)V");
 
 	// asset manager stuff
 

@@ -110,8 +110,6 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 			break;
 
 		} case DEVICE_ANDROID: {
-			ALOGE("DEVICE_ANDROID %s\n", extra);
-
 			if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
 				extra += 4;
 				previous_package_existance = CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
@@ -148,6 +146,12 @@ void send_device(unsigned long long device, unsigned long long __extra, unsigned
 		case DEVICE_TEXTURE: {
 			if (strcmp(extra, "sharp") == 0) SHARP_TEXTURES = *data;
 			else KOS_DEVICE_COMMAND_WARNING("texture")
+
+			break;
+
+		} case DEVICE_ANDROID: {
+			if (strcmp(extra, "package open") == 0) CALLBACK_VOID(java_package_open, callback_env->NewStringUTF((const char*) data));
+			else KOS_DEVICE_COMMAND_WARNING("android");
 
 			break;
 
