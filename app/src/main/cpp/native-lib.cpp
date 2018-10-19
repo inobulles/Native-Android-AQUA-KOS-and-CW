@@ -8,6 +8,7 @@
 #include "native-lib.h"
 #include "renderer.h"
 #include "gl.h"
+
 #include "kos/decoders/bmp.h"
 
 Renderer*      renderer      = NULL;

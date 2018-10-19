@@ -9,13 +9,13 @@
 	} else
 
 unsigned long long fs_support(void) {
-	return 0; /// TODO set to 1
+	return 1; /// TODO set to 1
 
 }
 
 unsigned long long fs_read(unsigned long long _path, unsigned long long data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
-		GET_PATH_FS(_path)
+		GET_PATH(_path)
 
 		if (load_asset_bytes(path, (char**) data, (unsigned long long*) length)) {
 //			*data   = (char*) 0;
@@ -48,7 +48,7 @@ unsigned long long fs_write(unsigned long long _path, unsigned long long data, u
 
 		if (!default_assets) {
 			char* final_path;
-			GET_PATH_FS(_path)
+			GET_PATH(_path)
 			SET_FINAL_PATH
 
 			FILE* file = fopen(final_path, "wb");
