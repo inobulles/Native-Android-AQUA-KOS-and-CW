@@ -8,7 +8,7 @@
 #include <dirent.h>
 #include "../native-lib.h"
 
-//#define FS_LIST_FUNCTIONS 1
+#define FS_LIST_FUNCTIONS 1
 #define FS_LIST_D_NAME_VALID (strcmp(directory->d_name, "..") != 0 && strcmp(directory->d_name, ".") != 0)
 
 unsigned long long fs_list_count(unsigned long long _path) {
