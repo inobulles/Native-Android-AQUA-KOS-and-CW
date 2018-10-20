@@ -2,9 +2,11 @@
 #ifndef __AQUA__ANDROID_KOS_FS_H
 #define __AQUA__ANDROID_KOS_FS_H
 
+#include "../native-lib.h"
+
 #define FS_SUPPORT_CHECK \
 	if (!fs_support()) { \
-		printf("WARNING FS is not supported on this platform\n"); \
+		ALOGW("WARNING FS is not supported on this platform\n"); \
 		\
 	} else
 
@@ -76,5 +78,7 @@ unsigned long long fs_write(unsigned long long _path, unsigned long long data, u
 	return 1;
 
 }
+
+#include "fs_list.h"
 
 #endif
