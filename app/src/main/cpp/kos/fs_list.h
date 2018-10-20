@@ -88,4 +88,15 @@ char** fs_list(unsigned long long _path) {
 
 }
 
+void fs_list_free(unsigned long long list, unsigned long long count) {
+	unsigned long long i;
+	for (i = 0; i < count; i++) {
+		free(((char**) list)[i]);
+
+	}
+
+	free((char**) list);
+
+}
+
 #endif //ANDROID_FS_LIST_H
