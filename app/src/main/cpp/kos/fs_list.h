@@ -35,4 +35,57 @@ unsigned long long fs_list_count(unsigned long long _path) {
 
 }
 
+#include <sys/stat.h>
+
+#define FS_LIST_ENTRY_UNKNOWN   0
+#define FS_LIST_ENTRY_FILE      1
+#define FS_LIST_ENTRY_DIRECTORY 2
+
+char** fs_list(unsigned long long _path) {
+	GET_PATH((char*) _path);
+
+	unsigned long long count   = fs_list_count(_path);
+	unsigned long long current = 0;
+	char**             result  = (char**) malloc(count * sizeof(char*));
+
+	DIR* dp = opendir(path);
+	struct dirent* directory;
+
+	if (dp) {
+		while ((directory = readdir(dp)) != NULL) {
+			if (FS_LIST_D_NAME_VALID) {
+				unsigned long long bytes = strlen(directory->d_name) + 1;
+				result[current] = (char*) malloc(bytes * sizeof(char) + sizeof(unsigned long long));
+				memcpy((result[current] + sizeof(unsigned long long)), directory->d_name, bytes);
+
+#define RESULT_FILE_TYPE *((unsigned long long*) result[current])
+				RESULT_FILE_TYPE = FS_LIST_ENTRY_UNKNOWN;
+
+				if (directory->d_type == DT_UNKNOWN) {
+					struct stat path_stat;
+					stat(directory->d_name, &path_stat);
+
+					if      (S_ISDIR(path_stat.st_mode)) RESULT_FILE_TYPE = FS_LIST_ENTRY_DIRECTORY;
+					else if (S_ISREG(path_stat.st_mode)) RESULT_FILE_TYPE = FS_LIST_ENTRY_FILE;
+
+				}
+
+				else if (directory->d_type == DT_DIR)    RESULT_FILE_TYPE = FS_LIST_ENTRY_DIRECTORY;
+				else if (directory->d_type == DT_REG)    RESULT_FILE_TYPE = FS_LIST_ENTRY_FILE;
+
+			}
+
+		}
+
+		closedir(dp);
+		return result;
+
+	} else {
+		ALOGW("WARNING Directory `%s` could not be opened (for listing)\n", path);
+		return (char**) 0;
+
+	}
+
+}
+
 #endif //ANDROID_FS_LIST_H
