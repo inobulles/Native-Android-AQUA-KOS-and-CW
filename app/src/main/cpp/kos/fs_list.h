@@ -12,7 +12,8 @@
 #define FS_LIST_D_NAME_VALID (strcmp(directory->d_name, "..") != 0 && strcmp(directory->d_name, ".") != 0)
 
 unsigned long long fs_list_count(unsigned long long _path) {
-	GET_PATH((char*) _path);
+	return 5;
+	/*GET_PATH((char*) _path);
 	unsigned long long count = 0;
 
 	DIR* dp = opendir(path);
@@ -31,7 +32,7 @@ unsigned long long fs_list_count(unsigned long long _path) {
 		ALOGW("WARNING Directory `%s` could not be opened (for list counting)\n", path);
 		return (unsigned long long) -1;
 
-	}
+	}*/
 
 }
 
@@ -43,6 +44,26 @@ unsigned long long fs_list_count(unsigned long long _path) {
 
 char** fs_list(unsigned long long _path) {
 	GET_PATH((char*) _path);
+
+	unsigned long long count   = fs_list_count(_path);
+	unsigned long long current = 0;
+	char**             result  = (char**) malloc(count * sizeof(char*));
+
+	for (int t = 0; t < count; t++) {
+		const char* name = "TEST";
+
+		unsigned long long bytes = strlen(name) + 1;
+		result[current] = (char*) malloc(bytes * sizeof(char) + sizeof(unsigned long long));
+		memcpy((result[current] + sizeof(unsigned long long)), name, bytes);
+
+#define RESULT_FILE_TYPE *((unsigned long long*) result[current])
+		RESULT_FILE_TYPE = FS_LIST_ENTRY_FILE;
+
+	}
+
+	return result;
+
+	/*GET_PATH((char*) _path);
 
 	unsigned long long count   = fs_list_count(_path);
 	unsigned long long current = 0;
@@ -84,7 +105,7 @@ char** fs_list(unsigned long long _path) {
 		ALOGW("WARNING Directory `%s` could not be opened (for listing)\n", path);
 		return (char**) 0;
 
-	}
+	}*/
 
 }
 

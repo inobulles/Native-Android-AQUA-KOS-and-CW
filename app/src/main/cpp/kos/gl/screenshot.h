@@ -8,7 +8,7 @@
 #define CREATE_TEXTURE_FROM_SCREENSHOT_FUNCTION 1
 
 texture_t create_texture_from_screenshot(void) {
-	unsigned long long bpp   = 32;
+	/*unsigned long long bpp   = 32;
 	unsigned long long bytes = video_width() * video_height() * (bpp / 8);
 
 	unsigned char* pixels = (unsigned char*) malloc(bytes);
@@ -35,7 +35,9 @@ texture_t create_texture_from_screenshot(void) {
 
 	}
 
-	return texture;
+	return texture;*/
+
+	return 0;
 
 }
 
