@@ -47,17 +47,15 @@ char** fs_list(unsigned long long _path) {
 
 	unsigned long long count   = fs_list_count(_path);
 	unsigned long long current = 0;
-	char**             result  = (char**) malloc(count * sizeof(char*));
+	char**             result  = new char*[count * sizeof(char*)];
 
 	for (int t = 0; t < count; t++) {
 		const char* name = "TEST";
 
 		unsigned long long bytes = strlen(name) + 1;
-		result[current] = (char*) malloc(bytes * sizeof(char) + sizeof(unsigned long long));
+		result[current] = new char[bytes * sizeof(char) + sizeof(unsigned long long)];
 		memcpy((result[current] + sizeof(unsigned long long)), name, bytes);
-
-#define RESULT_FILE_TYPE *((unsigned long long*) result[current])
-		RESULT_FILE_TYPE = FS_LIST_ENTRY_FILE;
+		*((unsigned long long*) result[current]) = FS_LIST_ENTRY_FILE;
 
 	}
 
@@ -112,11 +110,11 @@ char** fs_list(unsigned long long _path) {
 void fs_list_free(unsigned long long list, unsigned long long count) {
 	unsigned long long i;
 	for (i = 0; i < count; i++) {
-		free(((char**) list)[i]);
+		delete[] ((char**) list)[i];
 
 	}
 
-	free((char**) list);
+	delete[] (char**) list;
 
 }
 
