@@ -244,19 +244,6 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	de_index = -1;
 
-	for (int i = 0; i < 5000; i++) {
-		ALOGE("%d\n", i);
-
-		font_remove(new_font((unsigned long long) "fonts/main.ttf", _UI64_MAX / 20));
-		bitmap_image_t bmp;
-		bmp_load((unsigned long long) &bmp, (unsigned long long) "test.bmp");
-		bmp_free((unsigned long long) &bmp);
-		char** list = fs_list((unsigned long long) ".");
-		unsigned long long len = fs_list_count((unsigned long long) ".");
-		fs_list_free((unsigned long long) list, len);
-
-	}
-
 	program_run_global_init_phase();
 	rom_init(env, obj);
 

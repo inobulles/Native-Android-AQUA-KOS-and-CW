@@ -11,7 +11,7 @@
 #define FS_LIST_FUNCTIONS 1
 #define FS_LIST_D_NAME_VALID (strcmp(directory->d_name, "..") != 0 && strcmp(directory->d_name, ".") != 0)
 
-unsigned long long fs_list_count(unsigned long long _path) {
+unsigned long long fs_list_count(unsigned long long _path) { /// TODO new/delete
 	return 5;
 	/*GET_PATH((char*) _path);
 	unsigned long long count = 0;
@@ -42,7 +42,7 @@ unsigned long long fs_list_count(unsigned long long _path) {
 #define FS_LIST_ENTRY_FILE      1
 #define FS_LIST_ENTRY_DIRECTORY 2
 
-char** fs_list(unsigned long long _path) {
+char** fs_list(unsigned long long _path) { /// TODO new/delete
 	GET_PATH((char*) _path);
 
 	unsigned long long count   = fs_list_count(_path);

@@ -39,8 +39,8 @@ public class MainActivity extends Activity {
 		onWindowFocusChanged(true);
 
 		BufferedReader meta_reader = null;
-		String       orientation = "landscape";
-		List<String> permissions = new ArrayList<>();
+		String         orientation = "landscape";
+		List<String>   permissions = new ArrayList<>();
 
 		try {
 			meta_reader = new BufferedReader(new InputStreamReader(getAssets().open("root/meta.meta")));
@@ -152,11 +152,25 @@ public class MainActivity extends Activity {
 
 	}
 
+	protected boolean first_pause = false;
+
+	protected void restart() {
+		Log.e(TAG, "restart");
+		first_pause = false;
+
+		Intent intent = getIntent();
+		finish();
+		startActivity(intent);
+
+	}
+
 	@Override
 	protected void onPause() {
 		Log.e(TAG,"onPause");
-		//dispose_all();
 		super.onPause();
+
+		if  (first_pause) restart();
+		else first_pause = true;
 		
 	}
 
