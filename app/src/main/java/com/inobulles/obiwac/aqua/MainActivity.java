@@ -145,10 +145,13 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		Log.e(TAG,"onDestroy");
-
+		Log.e(TAG, "onDestroy");
 		super.onDestroy();
-		dispose_all();
+
+		if (!first_pause) {
+			dispose_all();
+
+		}
 
 	}
 
@@ -160,18 +163,22 @@ public class MainActivity extends Activity {
 
 		Intent intent = getIntent();
 		finish();
+
+		try                                    { Thread.sleep(1000);    }
+		catch (InterruptedException exception) { exception.printStackTrace(); }
+
 		startActivity(intent);
 
 	}
 
 	@Override
 	protected void onPause() {
-		Log.e(TAG,"onPause");
+		Log.e(TAG,String.format("onPause %b", first_pause));
 		super.onPause();
 
 		if  (first_pause) restart();
 		else first_pause = true;
-		
+
 	}
 
 	@Override
