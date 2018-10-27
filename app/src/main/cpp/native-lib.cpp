@@ -318,7 +318,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jo
 
 }
 
-bool cw_pause = false;
+bool cw_pause                       = false;
+bool text_input_has_string_response = false;
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj) {
 	if (!cw_pause) {
@@ -343,8 +344,14 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 		} else {
 			cw_pause = false;
 
-			extern const char* text_input_response;
-			current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
+			if (text_input_has_string_response) {
+				extern const char* text_input_response;
+				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
+
+			} else {
+				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = 0;
+
+			}
 
 		}
 
@@ -388,7 +395,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* e
 const char* text_input_response;
 
 JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
-	text_input_has_response = has_response;
+	text_input_has_string_response = has_response;
+	text_input_has_response        = true;
 
 	if (has_response) {
 		jboolean is_copy = (jboolean) false;
