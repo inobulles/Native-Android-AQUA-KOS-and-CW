@@ -15,8 +15,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import static com.inobulles.obiwac.aqua.MainActivity.TAG;
-
 public class Lib {
 	static {
 		System.loadLibrary("native-lib");
@@ -27,7 +25,7 @@ public class Lib {
 	private static Font fonts[];
 
 	private static void init_lib() {
-		Log.v(MainActivity.TAG, "`init_lib` called\n");
+		Log.v(InstanceActivity.TAG, "`init_lib` called\n");
 		fonts = new Font[MAX_FONTS];
 
 		int i;
@@ -43,7 +41,7 @@ public class Lib {
 	private static BufferedReader buffer_buffered_reader;
 
 	private static boolean put_file_in_buffer(String path) {
-		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+		Log.e(InstanceActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		if (buffer_buffered_reader != null) {
 			try {
@@ -64,7 +62,7 @@ public class Lib {
 			return false;
 
 		} catch (FileNotFoundException exception) {
-			Log.w(TAG, String.format("WARNING File `%s` most probably does not exist\n", buffer_path));
+			Log.w(InstanceActivity.TAG, String.format("WARNING File `%s` most probably does not exist\n", buffer_path));
 			return true;
 
 		}
@@ -72,7 +70,7 @@ public class Lib {
 	}
 
 	private static long read_external_slash_internal_storage_path_bytes(String path) {
-		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+		Log.e(InstanceActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		if (put_file_in_buffer(path)) return -1;
 		else                          return buffer_file.length();
@@ -80,7 +78,7 @@ public class Lib {
 	}
 
 	private static String read_external_slash_internal_storage_path(String path) {
-		Log.e(MainActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
+		Log.e(InstanceActivity.TAG, String.format("WARNING This function (%s) is deprecated\n", new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		if (!path.equals(buffer_path)) {
 			if (!put_file_in_buffer(path)) {
@@ -105,7 +103,7 @@ public class Lib {
 
 		}
 
-		Log.e(MainActivity.TAG, String.format("Failed to load file `%s`\n", path));
+		Log.e(InstanceActivity.TAG, String.format("Failed to load file `%s`\n", path));
 		return "(null)";
 
 	}
@@ -114,7 +112,7 @@ public class Lib {
 		int index = -1;
 
 		if (fonts == null) {
-			Log.e(MainActivity.TAG, "WARNING You have not called `init_lib`\n");
+			Log.e(InstanceActivity.TAG, "WARNING You have not called `init_lib`\n");
 			init_lib();
 
 		}
@@ -130,7 +128,7 @@ public class Lib {
 		}
 
 		if (index < 0) {
-			Log.w(TAG, String.format("WARNING You have too many fonts allocated (MAX_FONTS = %d) (use `font_remove` to remove them)\n", MAX_FONTS));
+			Log.w(InstanceActivity.TAG, String.format("WARNING You have too many fonts allocated (MAX_FONTS = %d) (use `font_remove` to remove them)\n", MAX_FONTS));
 			return -1;
 
 		}
@@ -155,7 +153,7 @@ public class Lib {
 	private static int get_font_dimension(String dimension, int font, String text) {
 		try {
 			if (fonts[font] == null) {
-				Log.w(TAG, String.format("WARNING Cannot get font %s, as font %d does not exist\n", dimension, font));
+				Log.w(InstanceActivity.TAG, String.format("WARNING Cannot get font %s, as font %d does not exist\n", dimension, font));
 				return -1;
 
 			} else {
@@ -190,9 +188,9 @@ public class Lib {
 
 	}
 
-	private static MainActivity main_activity;
+	private static InstanceActivity main_activity;
 
-	public static void give_activity(MainActivity activity) {
+	public static void give_activity(InstanceActivity activity) {
 		main_activity = activity;
 
 	}
@@ -200,21 +198,21 @@ public class Lib {
 	private static Intent most_recent_package_intent;
 
 	private static int package_exists(String package_name) {
-		most_recent_package_intent = MainActivity.package_manager.getLaunchIntentForPackage(package_name);
+		most_recent_package_intent = InstanceActivity.package_manager.getLaunchIntentForPackage(package_name);
 
 		if (most_recent_package_intent == null) {
 			return 0;
 
 		}
 
-		List<ResolveInfo> list = MainActivity.package_manager.queryIntentActivities(most_recent_package_intent, PackageManager.MATCH_DEFAULT_ONLY);
+		List<ResolveInfo> list = InstanceActivity.package_manager.queryIntentActivities(most_recent_package_intent, PackageManager.MATCH_DEFAULT_ONLY);
 		return list.size() > 0 ? 1 : 0;
 
 	}
 
 	private static void package_open(String package_name) {
 		if (package_exists(package_name) == 0) {
-			Log.e(MainActivity.TAG, String.format("ERROR Package `%s` does not seem to exist\n", package_name));
+			Log.e(InstanceActivity.TAG, String.format("ERROR Package `%s` does not seem to exist\n", package_name));
 			return;
 
 		}

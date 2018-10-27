@@ -15,7 +15,7 @@ public class Font {
 	private Paint.FontMetrics metrics;
 
 	Font(String path, int size) {
-		Typeface face = Typeface.createFromAsset(MainActivity.assets, path);
+		Typeface face = Typeface.createFromAsset(InstanceActivity.assets, path);
 		paint = new Paint();
 
 		paint.setAntiAlias(true);

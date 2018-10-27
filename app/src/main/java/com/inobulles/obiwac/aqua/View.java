@@ -20,7 +20,7 @@ class View extends GLSurfaceView {
 	private static class Renderer implements GLSurfaceView.Renderer {
 		public void onDrawFrame     (GL10 gl)                        { Lib.step(); }
 		public void onSurfaceChanged(GL10 gl, int width, int height) { Lib.resize(width, height); }
-		public void onSurfaceCreated(GL10 gl, EGLConfig config)      { Lib.init(MainActivity.assets); }
+		public void onSurfaceCreated(GL10 gl, EGLConfig config)      { Lib.init(InstanceActivity.assets); }
 
 	}
 
