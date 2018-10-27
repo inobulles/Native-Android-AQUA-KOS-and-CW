@@ -25,7 +25,7 @@ import java.util.List;
 public class InstanceActivity extends Activity {
 	public static String TAG = "AQUA";
 
-	public static AssetManager assets;
+	public static AssetManager   assets;
 	public static PackageManager package_manager;
 
 	@Override
