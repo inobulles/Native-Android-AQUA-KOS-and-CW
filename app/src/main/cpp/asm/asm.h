@@ -100,11 +100,31 @@ static __pointer__program_t* __pointer___this;
 
 // error macros
 
-#define kill(...)    {                              printf("FATAL ERROR "); printf(__VA_ARGS__); printf("Aborting ...\n"); printf("TODO Abort\n"); while (1); } /// TODO ALOGE on Android KOS
-#define warn(...)    { __pointer___this->warning++; printf("WARNING     "); printf(__VA_ARGS__); } /// TODO ALOGW on Android KOS
-#define info(...)    {                              printf("INFO        "); printf(__VA_ARGS__); } /// TODO ALOGI on Android KOS
-#define verbose(...) { if (__pointer___this->verbose_mode) {                printf(__VA_ARGS__); } } /// TODO ALOGV on Android KOS
-#define debug(...)   {                              printf("DEBUG       "); printf(__VA_ARGS__); } /// TODO ALOGD on Android KOS
+#ifndef ALOGE
+#define ALOGE printf
+#endif
+
+#ifndef ALOGW
+#define ALOGW printf
+#endif
+
+#ifndef ALOGI
+#define ALOGI printf
+#endif
+
+#ifndef ALOGD
+#define ALOGD printf
+#endif
+
+#ifndef ALOGV
+#define ALOGV printf
+#endif
+
+#define kill(...)    {                              ALOGE("FATAL ERROR "); ALOGE(__VA_ARGS__); ALOGE("Aborting ...\n"); ALOGE("TODO Abort\n"); while (1); }
+#define warn(...)    { __pointer___this->warning++; ALOGW("WARNING     "); ALOGW(__VA_ARGS__); }
+#define info(...)    {                              ALOGI("INFO        "); ALOGI(__VA_ARGS__); }
+#define verbose(...) { if (__pointer___this->verbose_mode) {               ALOGV(__VA_ARGS__); } }
+#define debug(...)   {                              ALOGD("DEBUG       "); ALOGD(__VA_ARGS__); }
 
 // structures
 
