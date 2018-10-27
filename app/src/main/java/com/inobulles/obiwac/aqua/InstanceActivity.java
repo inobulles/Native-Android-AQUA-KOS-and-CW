@@ -30,7 +30,6 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.e(TAG,"onCreate");
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
@@ -143,7 +142,6 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		Log.e(TAG, "onDestroy");
 		super.onDestroy();
 
 		if (!first_pause) {
@@ -159,7 +157,6 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		Log.e(TAG,String.format("onPause %b", first_pause));
 		super.onPause();
 
 		if  (first_pause) finish();
@@ -169,15 +166,12 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	protected void onResume() {
-		Log.e(TAG,"onResume");
-		//Lib.start();
 		super.onResume();
 
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		Log.e(TAG, "onConfigurationChanged");
 		super.onConfigurationChanged(newConfig);
 
 	}
@@ -216,7 +210,6 @@ public class InstanceActivity extends Activity {
 
 		}
 
-//		invalidate();
 		return true;
 
 	}
@@ -254,12 +247,12 @@ public class InstanceActivity extends Activity {
 
 		if (hasFocus) {
 			getWindow().getDecorView().setSystemUiVisibility(
-					(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE          : 0) |
-							(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION : 0) |
-							(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN      : 0) |
-							(Build.VERSION.SDK_INT > 14 ? View.SYSTEM_UI_FLAG_HIDE_NAVIGATION        : 0) |
-							(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_FULLSCREEN             : 0) |
-							(Build.VERSION.SDK_INT > 19 ? View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY       : 0)
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE          : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN      : 0) |
+				(Build.VERSION.SDK_INT > 14 ? View.SYSTEM_UI_FLAG_HIDE_NAVIGATION        : 0) |
+				(Build.VERSION.SDK_INT > 16 ? View.SYSTEM_UI_FLAG_FULLSCREEN             : 0) |
+				(Build.VERSION.SDK_INT > 19 ? View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY       : 0)
 			);
 
 		}
