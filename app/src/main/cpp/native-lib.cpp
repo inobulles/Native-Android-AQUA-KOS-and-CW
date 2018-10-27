@@ -19,6 +19,7 @@ bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
 extern "C" {
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag               (JNIEnv* env, jobject obj, jstring tag);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all                 (JNIEnv* env, jobject obj);
@@ -165,16 +166,9 @@ void rom_init(JNIEnv* env, jobject obj) {
 
 		const char* version_string = (const char*) glGetString(GL_VERSION);
 
-		if (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) {
-			renderer = create_es3_renderer();
-
-		} else if (strstr(version_string, "OpenGL ES 2.")) {
-			renderer = create_es2_renderer();
-
-		} else {
-			ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
-
-		}
+		if      (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) renderer = create_es3_renderer();
+		else if (strstr(version_string, "OpenGL ES 2."))                    renderer = create_es2_renderer();
+		else                                                                ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -236,6 +230,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobj
 
 	init_callback_function(&java_package_exists, "package_exists", "(Ljava/lang/String;)I");
 	init_callback_function(&java_package_open,   "package_open",   "(Ljava/lang/String;)V");
+
+	init_callback_function(&java_open_text_input, "open_text_input", CALLBACK_NO_PARAMS);
 
 	// asset manager stuff
 
@@ -322,20 +318,35 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jo
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj) {
-	while (!waiting_video_flip) {
-		int return_value = loop();
+bool cw_pause = false;
 
-		if (return_value != -1) {
-			exit(return_value);
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj) {
+	if (!cw_pause) {
+		while (!waiting_video_flip) {
+			int return_value = loop();
+
+			if (return_value != -1) {
+				exit(return_value);
+
+			}
 
 		}
 
-	}
+		if (renderer) {
+			waiting_video_flip = 0;
+			gl_fps = renderer->render();
 
-	if (renderer) {
-		waiting_video_flip = 0;
-		gl_fps = renderer->render();
+		}
+
+	} else {
+		if (!text_input_has_response) {
+		} else {
+			cw_pause = false;
+
+			extern const char* text_input_response;
+			current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
+
+		}
 
 	}
 
@@ -371,5 +382,18 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* e
 	event_last_release       = set;
 
 	//event_macros[macro] = set; /// TODO
+
+}
+
+const char* text_input_response;
+
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
+	text_input_has_response = has_response;
+
+	if (has_response) {
+		jboolean is_copy = (jboolean) false;
+		text_input_response = env->GetStringUTFChars(response, &is_copy);
+
+	}
 
 }

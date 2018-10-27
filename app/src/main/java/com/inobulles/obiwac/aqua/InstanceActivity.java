@@ -28,6 +28,8 @@ public class InstanceActivity extends Activity {
 	public static AssetManager   assets;
 	public static PackageManager package_manager;
 
+	public TextInput text_input;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { /// TODO put the meta file reading in MainActivity, and find some way to pass it to the InstanceActivity
 		Lib.give_activity(this);
@@ -127,6 +129,8 @@ public class InstanceActivity extends Activity {
 			Log.e(TAG, String.format("WARNING Can not set permissions as Build.VERSION.SDK_INT (%d) < 23. Put permissions in `AndroidManifest.xml`\n", Build.VERSION.SDK_INT));
 
 		}
+
+		text_input = new TextInput(InstanceActivity.this);
 
 	}
 

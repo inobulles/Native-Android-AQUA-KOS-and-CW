@@ -193,6 +193,7 @@ public class Lib {
 	public static void give_activity(InstanceActivity activity) {
 		main_activity = activity;
 
+
 	}
 
 	private static Intent most_recent_package_intent;
@@ -221,6 +222,22 @@ public class Lib {
 
 	}
 
+	public static void text_input_response(String text) {
+		give_text_input_response(text != null, text);
+
+	}
+
+	public static void open_text_input() {
+		main_activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				main_activity.text_input.create();
+			}
+		});
+
+	}
+
+	public static native void give_text_input_response(boolean has_response, String response);
 	public static native void give_log_tag(String tag);
 	public static native void init(AssetManager asset_manager);
 	public static native void dispose_all();

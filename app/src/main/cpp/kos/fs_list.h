@@ -12,7 +12,7 @@
 #define FS_LIST_D_NAME_VALID (strcmp(directory->d_name, "..") != 0 && strcmp(directory->d_name, ".") != 0)
 
 unsigned long long fs_list_count(unsigned long long _path) { /// TODO new/delete
-	return 5;
+	return 0;
 	/*GET_PATH((char*) _path);
 	unsigned long long count = 0;
 

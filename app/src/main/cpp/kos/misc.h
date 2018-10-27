@@ -3,6 +3,7 @@
 #define __AQUA__ANDROID_KOS_MISC_H
 
 #include "lib/macros.h"
+#include "../asm/asm.h"
 
 #define SYS_PRIVILEGES 0
 
@@ -19,20 +20,22 @@ unsigned long long platform_system(unsigned long long command) {
 
 }
 
-#define DEVICE_NULL    0
-#define DEVICE_TEXTURE 1
-#define DEVICE_MATH    4
-#define DEVICE_CLOCK   5
-#define DEVICE_ANDROID 6
+#define DEVICE_NULL            0
+#define DEVICE_TEXTURE         1
+#define DEVICE_MATH            4
+#define DEVICE_CLOCK           5
+#define DEVICE_ANDROID         6
+#define DEVICE_KEYBOARD_DIALOG 7
 
 unsigned long long is_device_supported(unsigned long long __device) {
 	const char* device = (const char*) __device;
 
-	if      (strcmp(device, "math")    == 0) return DEVICE_MATH;
-	else if (strcmp(device, "texture") == 0) return DEVICE_TEXTURE;
-	else if (strcmp(device, "clock")   == 0) return DEVICE_CLOCK;
-	else if (strcmp(device, "android") == 0) return DEVICE_ANDROID;
-	else                                     return DEVICE_NULL;
+	if      (strcmp(device, "math")            == 0) return DEVICE_MATH;
+	else if (strcmp(device, "texture")         == 0) return DEVICE_TEXTURE;
+	else if (strcmp(device, "clock")           == 0) return DEVICE_CLOCK;
+	else if (strcmp(device, "android")         == 0) return DEVICE_ANDROID;
+	else if (strcmp(device, "keyboard dialog") == 0) return DEVICE_KEYBOARD_DIALOG;
+	else                                             return DEVICE_NULL;
 
 }
 
@@ -59,6 +62,9 @@ static jint previous_package_existance;
 #define KOS_DEVICE_COMMAND_WARNING(device_name) ALOGE("WARNING The command you have passed to the " device_name " device (%s) is unrecognized\n", extra);
 static unsigned long long previous_math_device_sqrt_result;
 #define FLOAT_ONE 1000000
+
+#include <unistd.h>
+bool text_input_has_response = false;
 
 unsigned long long* get_device(unsigned long long device, unsigned long long __extra) {
 	const char* extra = (const char*) __extra;
@@ -117,6 +123,20 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("android")
+
+			}
+
+			break;
+
+		} case DEVICE_KEYBOARD_DIALOG: {
+			if (strcmp(extra, "open") == 0) {
+				CALLBACK_VOID_NO_PARAMS(java_open_text_input);
+				text_input_has_response = false;
+				extern bool cw_pause;
+				cw_pause = true;
+
+			} else {
+				KOS_DEVICE_COMMAND_WARNING("keyboard dialog")
 
 			}
 
