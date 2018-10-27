@@ -29,7 +29,7 @@ public class InstanceActivity extends Activity {
 	public static PackageManager package_manager;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) { /// TODO put the meta file reading in MainActivity, and find some way to pass it to the InstanceActivity
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
