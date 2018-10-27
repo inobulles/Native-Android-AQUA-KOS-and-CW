@@ -2,13 +2,22 @@
 package com.inobulles.obiwac.aqua;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import java.util.List;
+
 public class MainActivity extends Activity {
+	protected Runnable current_runnable;
+
 	protected void create_thread() {
-		new Thread(new Runnable() {
+		current_runnable = new Runnable() {
 			@Override
 			public void run() {
 				Intent intent = new Intent(MainActivity.this, InstanceActivity.class);
@@ -17,7 +26,9 @@ public class MainActivity extends Activity {
 
 			}
 
-		}).start();
+		};
+
+		new Thread(current_runnable).start();
 
 	}
 
@@ -25,6 +36,17 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		create_thread();
+
+	}
+
+	protected boolean first_pause = true;
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		if (!first_pause) create_thread();
+		else first_pause = false;
 
 	}
 

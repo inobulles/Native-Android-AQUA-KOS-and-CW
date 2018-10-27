@@ -153,13 +153,18 @@ public class InstanceActivity extends Activity {
 
 	}
 
+	protected void kill() {
+		finish();
+
+	}
+
 	protected boolean first_pause = false;
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 
-		if  (first_pause) finish();
+		if  (first_pause) kill();
 		else first_pause = true;
 
 	}
@@ -173,6 +178,7 @@ public class InstanceActivity extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		kill();
 
 	}
 
