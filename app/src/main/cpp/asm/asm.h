@@ -178,6 +178,30 @@ static inline unsigned_t sign_extend(unsigned_t value) { /// TODO
 	
 }
 
+static inline unsigned_t* access_address(program_t* __this, unsigned_t address) {
+	return   (unsigned_t*) address;
+
+	/*
+#include "heap_size.h"
+	extern unsigned char heap_space[MAX_HEAP_SPACE];
+
+	unsigned_t stack_address = (unsigned_t) __this->main_thread.stack;
+	unsigned_t heap_address  = (unsigned_t) heap_space;
+
+	unsigned_t stack_size = __this->main_thread.stack_size * sizeof(zed_stack_t);
+	unsigned_t heap_size  = MAX_HEAP_SPACE;
+
+	if (address < stack_address && address > stack_address + stack_size && \
+		address < heap_address  && address > heap_address  + heap_size) {
+		ALOGA("INVALID ADDRESS %llu\n", address);
+
+	} else {
+		return (unsigned_t*) address;
+
+	}*/
+
+}
+
 /// TODO prettify the get_value / set value functions
 
 static inline unsigned_t get_value(program_t* __this, unsigned_t type, unsigned_t data) { // get value from an argument's type and data values
@@ -204,7 +228,7 @@ static inline unsigned_t get_value(program_t* __this, unsigned_t type, unsigned_
 
 		}
 
-		case TOKEN_ADDRESS:     return *((unsigned_t*) __this->main_thread.registers[data]); // return the first `unsigned_t` value at the address of the register
+		case TOKEN_ADDRESS:     return *access_address(__this, __this->main_thread.registers[data]); // return the first `unsigned_t` value at the address of the register
 		case TOKEN_NUMBER:      return data;
 
 		case TOKEN_RESERVED:    return __this->reserved_positions[data - __this->meta->label_position_offset];
@@ -243,7 +267,7 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 
 		}
 
-		case TOKEN_ADDRESS: *((unsigned_t*) __this->main_thread.registers[data]) = set; break; // set the first `unsigned_t` value at the address of the register
+		case TOKEN_ADDRESS: *access_address(__this, __this->main_thread.registers[data]) = set; break; // set the first `unsigned_t` value at the address of the register
 		case TOKEN_RESERVED: {
 			warn("`type` argument of `%s` is `TOKEN_RESERVED`\n", __func__);
 			__this->reserved_positions[data]  = set;

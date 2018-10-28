@@ -25,7 +25,7 @@ void Renderer::resize(int w, int h) {
 
 	//if (!disable_gl) {
 		glViewport(0, 0, w, h);
-		ALOGA("%d %d\n", w, h);
+		ALOGA("RESIZE %d %d\n", w, h);
 
 	//}
 

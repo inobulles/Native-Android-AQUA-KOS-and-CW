@@ -248,7 +248,7 @@ static int loop(void) {
 
 	}
 
-	if (program_run_loop_phase(         current_de->program)) {
+	if (program_run_loop_phase         (current_de->program)) {
 		ALOGV("DE return code is %d\n", current_de->program->error_code);
 		return rom_free_last() ?        current_de->program->error_code : 0;
 
