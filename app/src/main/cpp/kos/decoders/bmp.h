@@ -132,11 +132,13 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 	unsigned char*     data8 = (unsigned char*)      __this->data;
 	unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
 
-	int y;
+	memcpy(data8, char_data, info_header.image_bytes);
+
+	/*nt y;
 	for (y = 0; y < info_header.height; y++) {
 		memcpy(data8 + (info_header.height - y + 1) * pitch, char_data + y * pitch, pitch);
 
-	}
+	}*/
 
 	free(char_data);
 	free(original);

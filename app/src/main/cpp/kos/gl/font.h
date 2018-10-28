@@ -18,8 +18,8 @@ font_t new_font(unsigned long long _path, unsigned long long size) {
 
 }
 
-unsigned long long get_font_width (font_t font, unsigned long long text) { return 100;/*(unsigned long long) CALLBACK_INT(java_get_font_width,  (jint) font, callback_env->NewStringUTF((const char*) text));*/ } /// TODO
-unsigned long long get_font_height(font_t font, unsigned long long text) { return 100;/*(unsigned long long) CALLBACK_INT(java_get_font_height, (jint) font, callback_env->NewStringUTF((const char*) text));*/ } /// TODO
+unsigned long long get_font_width (font_t font, unsigned long long text) { return (unsigned long long) CALLBACK_INT(java_get_font_width,  (jint) font, callback_env->NewStringUTF((const char*) text)); }
+unsigned long long get_font_height(font_t font, unsigned long long text) { return (unsigned long long) CALLBACK_INT(java_get_font_height, (jint) font, callback_env->NewStringUTF((const char*) text)); }
 
 void font_remove(font_t font) {
 	CALLBACK_VOID(java_font_remove, font);
@@ -27,8 +27,6 @@ void font_remove(font_t font) {
 }
 
 texture_t create_texture_from_font(font_t font, unsigned long long text) {
-	return 0; // TODO
-
 	texture_t texture = 0;
 	jint      error   = 1;
 
