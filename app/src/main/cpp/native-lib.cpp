@@ -302,7 +302,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jo
 	gl_height = (unsigned long long) height;
 
 	if (renderer) {
-		renderer->resize(width, height);
+		//renderer->resize(width, height);
 
 	}
 
