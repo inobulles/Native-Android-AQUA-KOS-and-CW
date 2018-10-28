@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -86,7 +87,7 @@ public class InstanceActivity extends Activity {
 		package_manager = getApplicationContext().getPackageManager();
 		assets = getAssets();
 
-		setContentView(new View(getApplication()));
+		create_view_thread();
 		File directory = Environment.getExternalStorageDirectory();
 
 		if (directory == null) Log.w(TAG, "WARNING Failed to get external path\n");
@@ -134,6 +135,27 @@ public class InstanceActivity extends Activity {
 
 	}
 
+	protected ViewThread view_thread = null;
+
+	protected void create_view_thread() {
+		if (view_thread != null) {
+			view_thread.stop();
+
+		}
+
+		view_thread = new ViewThread() {
+			@Override
+			public void view_run() {
+				setContentView(new View(getApplication()));
+
+			}
+
+		};
+
+		runOnUiThread(view_thread);
+
+	}
+
 	public void start_activity(Intent intent) {
 		getApplicationContext().startActivity(intent);
 
@@ -141,6 +163,12 @@ public class InstanceActivity extends Activity {
 
 	private void dispose_all() {
 		Lib.dispose_all();
+
+	}
+
+	protected void resize() {
+		//dispose_all();
+		create_view_thread();
 
 	}
 
@@ -153,7 +181,7 @@ public class InstanceActivity extends Activity {
 
 		}
 
-		System.exit(0);
+		//System.exit(0);
 
 	}
 
@@ -168,7 +196,7 @@ public class InstanceActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 
-		if  (first_pause) kill();
+		if  (first_pause) resize();
 		else first_pause = true;
 
 	}
@@ -182,7 +210,7 @@ public class InstanceActivity extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		kill();
+		//kill();
 
 	}
 

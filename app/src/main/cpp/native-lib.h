@@ -127,7 +127,9 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 			*bytes  = (unsigned long long) AAsset_getLength(asset);
 			*buffer = (char*)              malloc(*bytes + 1);
 
-			AAsset_read(asset, *buffer, *bytes);
+			ALOGE("%lld\n", *bytes);
+
+			AAsset_read (asset, *buffer, *bytes);
 			AAsset_close(asset);
 
 			(*buffer)[*bytes] = '\0';

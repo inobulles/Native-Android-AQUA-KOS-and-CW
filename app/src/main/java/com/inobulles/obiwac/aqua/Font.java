@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
@@ -21,6 +22,7 @@ public class Font {
 		paint.setAntiAlias(true);
 		paint.setTextSize(size);
 		paint.setColor(Color.WHITE);
+		paint.setStyle(Paint.Style.FILL);
 		paint.setTypeface(face);
 
 		metrics = paint.getFontMetrics();
@@ -41,9 +43,20 @@ public class Font {
 
 		Bitmap bitmap = Bitmap.createBitmap((int) texture_width, (int) texture_height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
-		bitmap.eraseColor(0);
+		bitmap.eraseColor(Color.TRANSPARENT);
 
 		canvas.drawText(text, 0, (int) texture_height - metrics.descent, paint);
+
+		/*int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+		bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+		long i;
+		for (i = 0; i < pixels.length; i++) {
+			pixels[(int) i] = (pixels[(int) i] & 0xFF000000);
+
+		}
+
+		bitmap.setPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());*/
 		GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1);
 
 		IntBuffer texture = IntBuffer.allocate(1);
@@ -66,7 +79,7 @@ public class Font {
 		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 		bitmap.recycle();
 
-		return texture.get(0);
+		return texture.get();
 
 	}
 

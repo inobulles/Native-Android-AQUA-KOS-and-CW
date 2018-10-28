@@ -32,7 +32,6 @@ public class TextInput {
 	}
 
 	TextInput(Context context) {
-		this.activity     = activity;
 		has_yet_responded = false;
 
 		input = new EditText(context);

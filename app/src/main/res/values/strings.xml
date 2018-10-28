@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AQUA</string>
+    <string name="something_went_horribly_wrong">Something went horribly wrong</string>
 </resources>

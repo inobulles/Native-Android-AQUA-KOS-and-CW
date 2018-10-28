@@ -14,7 +14,7 @@
 		android:theme             = "@style/Theme.AppCompat"
 		android:screenOrientation = "fullSensor"
 		android:configChanges     = "keyboard|keyboardHidden|navigation|orientation|screenSize">
-		<activity android:name = ".MainActivity">
+		<activity android:name = ".InstanceActivity">
 			<intent-filter>
 				<action   android:name = "android.intent.action.MAIN"       />
 				<category android:name = "android.intent.category.LAUNCHER" />
@@ -22,7 +22,7 @@
 				<category android:name = "android.intent.category.DEFAULT"  />
 			</intent-filter>
 		</activity>
-		<activity android:name = ".InstanceActivity">
+		<activity android:name = ".MainActivity">
 			<intent-filter>
 				<action android:name = "android.intent.action.VIEW" />
 			</intent-filter>

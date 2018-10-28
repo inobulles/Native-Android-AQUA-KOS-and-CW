@@ -118,7 +118,7 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 		} case DEVICE_ANDROID: {
 			if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
 				extra += 4;
-				previous_package_existance = CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
+				previous_package_existance = 0;// TODO CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
 				result = (unsigned long long*) &previous_package_existance;
 
 			} else {

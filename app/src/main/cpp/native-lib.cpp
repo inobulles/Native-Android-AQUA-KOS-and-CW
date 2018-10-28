@@ -284,7 +284,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 	already_disposed = true;
 
 	ALOGI("Forcing program to exit ...\n");
-	disable_gl = true;
+	//disable_gl = true;
 
 	event_quit = 1;
 	int return_value;
@@ -302,6 +302,8 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 
 	ALOGI("Freeing other things (return_value = %d) ...\n", return_value);
 	kos_free_predefined_textures();
+
+	free_all_shit();
 
 }
 
