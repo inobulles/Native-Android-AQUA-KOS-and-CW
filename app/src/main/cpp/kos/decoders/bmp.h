@@ -114,10 +114,7 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 		unsigned long long x = (i / components) %  __this->width;
 		unsigned long long y =  i               / (__this->width * components);
 
-		if (i < __this->width * 2 * components) {
-			ALOGA("%lld %lld\n", x, y);
-		}
-		unsigned long long flipped_i = y * pitch + x * components;
+		unsigned long long flipped_i = (__this->height - y - 1) * pitch + x * components;
 
 		if (__this->bpp == 32) {
 			unsigned char a = char_data[i];
