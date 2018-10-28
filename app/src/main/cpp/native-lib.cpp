@@ -147,6 +147,12 @@ void rom_init(JNIEnv* env, jobject obj) {
 	disable_gl = false;
 	event_quit = false;
 
+	if (renderer) {
+		delete renderer;
+		renderer = NULL;
+
+	}
+
 	ALOGI("OpenGL info\n");
 	ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
 	ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
