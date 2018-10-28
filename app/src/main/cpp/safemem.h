@@ -33,7 +33,7 @@ static inline void safe_free(void* pointer) {
 	long i;
 	for (i = 0; i < allocated_pointer_list.size(); i++) {
 		if (allocated_pointer_list.at((unsigned long) i) == pointer) {
-			ALOGE("REMOVED %ld (%p) FROM ALLOCATED_POINTER_VECTOR\n", i, pointer);
+			//ALOGE("REMOVED %ld (%p) FROM ALLOCATED_POINTER_VECTOR\n", i, pointer);
 			allocated_pointer_list.erase(std::next(allocated_pointer_list.begin(), i));
 
 #if CPP_MMAN_STYLE
@@ -60,7 +60,7 @@ static inline void safe_free(void* pointer) {
 static inline void free_all_shit(void) {
 	unsigned long long i;
 	for (i = 0; i < allocated_pointer_list.size(); i++) {
-		ALOGE("ARE YOU OUTTA YA MIND ??? %llu", (unsigned long long) allocated_pointer_list.at(i));
+		//ALOGE("ARE YOU CRAZY? YOU OUTTA YA MIND ??? %llu", (unsigned long long) allocated_pointer_list.at(i));
 		delete[] (char*) allocated_pointer_list.at(i);
 
 	}

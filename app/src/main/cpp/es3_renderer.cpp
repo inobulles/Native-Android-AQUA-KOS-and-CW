@@ -95,6 +95,8 @@ static inline void vertex_attribute_pointer(GLuint index, int vector_size, void*
 extern GLfloat projection_matrix[16];
 
 void es3_renderer::draw_surface(surface_t* __this) {
+	return;
+
 	glUniform1i(has_texture_location, (GLint) __this->has_texture);
 //	glUniformMatrix4fv(projection_matrix_location, 1, GL_FALSE, (GLfloat*) projection_matrix);
 
@@ -108,7 +110,7 @@ void es3_renderer::draw_surface(surface_t* __this) {
 
 	if (__this->has_texture) {
 		glActiveTexture(GL_TEXTURE0); // NOTE that you can have up to 32 active textures without having to rebind
-		glBindTexture(  GL_TEXTURE_2D, (GLuint) __this->texture);
+		glBindTexture  (GL_TEXTURE_2D, (GLuint) __this->texture);
 		glUniform1i(sampler_location, 0);
 
 	}

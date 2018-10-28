@@ -138,21 +138,24 @@ public class InstanceActivity extends Activity {
 	protected ViewThread view_thread = null;
 
 	protected void create_view_thread() {
-		if (view_thread != null) {
-			view_thread.stop();
+		if (view_thread == null) {
+			/*if (view_thread != null) {
+				view_thread.stop();
+
+			}*/
+
+			view_thread = new ViewThread() {
+				@Override
+				public void view_run() {
+					setContentView(new View(getApplication()));
+
+				}
+
+			};
+
+			runOnUiThread(view_thread);
 
 		}
-
-		view_thread = new ViewThread() {
-			@Override
-			public void view_run() {
-				setContentView(new View(getApplication()));
-
-			}
-
-		};
-
-		runOnUiThread(view_thread);
 
 	}
 

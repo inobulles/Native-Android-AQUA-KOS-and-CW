@@ -23,10 +23,11 @@ Renderer::~Renderer(void) {}
 void Renderer::resize(int w, int h) {
 	last_frame_ns = 0;
 
-	if (!disable_gl) {
+	//if (!disable_gl) {
 		glViewport(0, 0, w, h);
+		ALOGA("%d %d\n", w, h);
 
-	}
+	//}
 
 }
 

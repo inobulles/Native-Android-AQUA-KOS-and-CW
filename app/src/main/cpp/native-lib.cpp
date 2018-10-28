@@ -11,7 +11,7 @@
 
 #include "kos/decoders/bmp.h"
 
-Renderer*      renderer      = NULL;
+Renderer*      renderer      = nullptr;
 AAssetManager* asset_manager = NULL;
 
 const char* internal_storage_path;
@@ -151,40 +151,37 @@ void rom_init(JNIEnv* env, jobject obj) {
 	if (init_gl) {
 		init_gl = false;
 
-		if (renderer) {
-			delete renderer;
-			renderer = NULL;
+		if (renderer == nullptr) {
+			ALOGI("OpenGL info\n");
+			ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
+			ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
+			ALOGI("\tVersion:                  %s\n", glGetString(GL_VERSION));
+			ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+			//	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
+
+			const char* version_string = (const char*) glGetString(GL_VERSION);
+
+			if      (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) renderer = create_es3_renderer();
+			else if (strstr(version_string, "OpenGL ES 2."))                    renderer = create_es2_renderer();
+			else                                                                ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_ALPHA);
+
+			//~ ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
+
+			//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
+			//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
+			//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+
+			//~ glEnable(GL_POINT_SMOOTH);
+			//~ glEnable(GL_LINE_SMOOTH);
+			//~ glEnable(GL_POLYGON_SMOOTH);
 
 		}
-
-		ALOGI("OpenGL info\n");
-		ALOGI("\tVendor:                   %s\n", glGetString(GL_VENDOR));
-		ALOGI("\tRenderer:                 %s\n", glGetString(GL_RENDERER));
-		ALOGI("\tVersion:                  %s\n", glGetString(GL_VERSION));
-		ALOGI("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-		//	ALOGI("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
-
-		const char* version_string = (const char*) glGetString(GL_VERSION);
-
-		if      (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) renderer = create_es3_renderer();
-		else if (strstr(version_string, "OpenGL ES 2."))                    renderer = create_es2_renderer();
-		else                                                                ALOGE("ERROR Unsupported OpenGL ES version (%s)\n", version_string);
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_ALPHA);
-
-		//~ ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
-
-		//~ glHint(GL_POINT_SMOOTH, GL_NICEST);
-		//~ glHint(GL_LINE_SMOOTH, GL_NICEST);
-		//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
-
-		//~ glEnable(GL_POINT_SMOOTH);
-		//~ glEnable(GL_LINE_SMOOTH);
-		//~ glEnable(GL_POLYGON_SMOOTH);
 
 	}
 

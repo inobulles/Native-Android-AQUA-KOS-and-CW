@@ -92,6 +92,8 @@ static inline void vertex_attribute_pointer(GLuint index, int vector_size, void*
 extern GLfloat projection_matrix[16];
 
 void es2_renderer::draw_surface(surface_t* __this) {
+	return;
+
 	glUniform1i(has_texture_location, (GLint) __this->has_texture);
 
 	vertex_attribute_pointer(0, 3, __this->vertices);
