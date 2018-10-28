@@ -103,44 +103,42 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 	buffer  = original;
 	buffer += header.offset;
 
-	unsigned char* char_data = (unsigned char*) buffer;//(unsigned char*) malloc(info_header.image_bytes);
-	unsigned char  temp;
+	unsigned char*     char_data  = (unsigned char*) buffer;
+	unsigned long long components = __this->bpp / 8;
 
-	int i;
-	for (i = 0; i < info_header.image_bytes; i += __this->bpp / 8) {
+	__this->data             = (unsigned long long*) malloc(info_header.image_bytes);
+	unsigned long long pitch = (unsigned long long)  info_header.width * components;
+
+	unsigned long long i;
+	for (i = 0; i < info_header.image_bytes; i += components) {
+		unsigned long long x = (i / components) %  __this->width;
+		unsigned long long y =  i               / (__this->width * components);
+
+		if (i < __this->width * 2 * components) {
+			ALOGA("%lld %lld\n", x, y);
+		}
+		unsigned long long flipped_i = y * pitch + x * components;
+
 		if (__this->bpp == 32) {
 			unsigned char a = char_data[i];
 			unsigned char r = char_data[i + 1];
 			unsigned char g = char_data[i + 2];
 			unsigned char b = char_data[i + 3];
 
-			char_data[i]     = b;
-			char_data[i + 1] = g;
-			char_data[i + 2] = r;
-			char_data[i + 3] = a;
+			((char*) __this->data)[flipped_i]     = b;
+			((char*) __this->data)[flipped_i + 1] = g;
+			((char*) __this->data)[flipped_i + 2] = r;
+			((char*) __this->data)[flipped_i + 3] = a;
 
 		} else {
-			temp             = char_data[i];
-			char_data[i]     = char_data[i + 2];
-			char_data[i + 2] = temp;
+			((char*) __this->data)[flipped_i]     = char_data[i + 2];
+			((char*) __this->data)[flipped_i + 1] = char_data[i + 1];
+			((char*) __this->data)[flipped_i + 2] = char_data[i];
 
 		}
 
 	}
 
-	__this->data             = (unsigned long long*) malloc(info_header.image_bytes);
-	unsigned char*     data8 = (unsigned char*)      __this->data;
-	unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
-
-	memcpy(data8, char_data, info_header.image_bytes); /// TODO
-
-	/*nt y;
-	for (y = 0; y < info_header.height; y++) {
-		memcpy(data8 + (info_header.height - y + 1) * pitch, char_data + y * pitch, pitch);
-
-	}*/
-
-	free(char_data);
 	free(original);
 
 }
