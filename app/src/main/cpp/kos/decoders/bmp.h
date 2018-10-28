@@ -132,7 +132,7 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 	unsigned char*     data8 = (unsigned char*)      __this->data;
 	unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
 
-	memcpy(data8, char_data, info_header.image_bytes);
+	memcpy(data8, char_data, info_header.image_bytes); /// TODO
 
 	/*nt y;
 	for (y = 0; y < info_header.height; y++) {
@@ -147,7 +147,7 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 
 void bmp_free(unsigned long long ____this) {
 	bitmap_image_t* __this = (bitmap_image_t*) ____this;
-	free(__this->data);//mfree(__this->data, __this->image_size * sizeof(unsigned long long)); // FIXME
+	free(__this->data);
 
 }
 

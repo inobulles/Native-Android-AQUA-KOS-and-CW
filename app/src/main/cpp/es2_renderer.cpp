@@ -1,5 +1,6 @@
 
 #include "native-lib.h"
+#include "kos/lib/structs.h"
 #include <EGL/egl.h>
 
 static char* VERTEX_SHADER;
@@ -104,7 +105,7 @@ void es2_renderer::draw_surface(surface_t* __this) {
 
 	if (__this->has_texture) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(  GL_TEXTURE_2D, (GLuint) __this->texture);
+		glBindTexture  (GL_TEXTURE_2D, (GLuint) __this->texture);
 		glUniform1i(sampler_location, 0);
 
 	}
