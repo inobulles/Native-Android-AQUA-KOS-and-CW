@@ -119,7 +119,7 @@ public class Lib {
 
 		int i;
 		for (i = 0; i < MAX_FONTS; i++) {
-			if (fonts[i] == null) { /// TODO
+			if (fonts[i] == null) {
 				index = i;
 				break;
 

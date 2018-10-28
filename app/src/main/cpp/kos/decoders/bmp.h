@@ -111,10 +111,7 @@ void bmp_load(unsigned long long ____this, unsigned long long _path) {
 
 	unsigned long long i;
 	for (i = 0; i < info_header.image_bytes; i += components) {
-		unsigned long long x = (i / components) %  __this->width;
-		unsigned long long y =  i               / (__this->width * components);
-
-		unsigned long long flipped_i = (__this->height - y - 1) * pitch + x * components;
+		unsigned long long flipped_i = (__this->height - (i / (__this->width * components)) - 1) * pitch + ((i / components) %  __this->width) * components;
 
 		if (__this->bpp == 32) {
 			unsigned char a = char_data[i];

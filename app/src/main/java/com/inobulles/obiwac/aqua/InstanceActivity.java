@@ -32,7 +32,7 @@ public class InstanceActivity extends Activity {
 	public TextInput text_input;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) { /// TODO put the meta file reading in MainActivity, and find some way to pass it to the InstanceActivity
+	protected void onCreate(Bundle savedInstanceState) {
 		Lib.give_activity(this);
 
 		super.onCreate(savedInstanceState);
@@ -40,7 +40,7 @@ public class InstanceActivity extends Activity {
 
 		BufferedReader meta_reader = null;
 		String         orientation = "landscape";
-		List<String> permissions = new ArrayList<>();
+		List<String>   permissions = new ArrayList<>();
 
 		try {
 			meta_reader = new BufferedReader(new InputStreamReader(getAssets().open("root/meta.meta")));
