@@ -132,6 +132,12 @@ public class InstanceActivity extends Activity {
 		}
 
 		text_input = new TextInput(InstanceActivity.this);
+		directory  = new File(directory + File.separator + "root" + File.separator + "root");
+
+		if (!directory.exists() && !directory.isDirectory() && !directory.mkdirs()) {
+			Log.w(TAG, "WARNING Could not create `root/root` directory\n");
+
+		}
 
 	}
 
@@ -152,7 +158,6 @@ public class InstanceActivity extends Activity {
 				}
 
 			};
-
 			runOnUiThread(view_thread);
 
 		}

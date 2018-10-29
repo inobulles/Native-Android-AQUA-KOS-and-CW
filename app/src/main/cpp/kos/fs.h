@@ -44,17 +44,21 @@ void fs_free(unsigned long long data, unsigned long long length) {
 
 }
 
+#define FS_WRITE_CHECK_DEFAULT_ASSETS false
+
 unsigned long long fs_write(unsigned long long _path, unsigned long long data, unsigned long long length) {
 	FS_SUPPORT_CHECK {
 		extern bool default_assets;
 
+#if FS_WRITE_CHECK_DEFAULT_ASSETS
 		if (!default_assets) {
+#endif
 			char* final_path;
 			GET_PATH(_path)
 			SET_FINAL_PATH
 
 			FILE* file = fopen(final_path, "wb");
-			free(              final_path);
+			free              (final_path);
 
 			if (!file) {
 				ALOGE("WARNING File `%s` could not be opened (for writing)\n", path);
@@ -66,12 +70,13 @@ unsigned long long fs_write(unsigned long long _path, unsigned long long data, u
 			fclose(file);
 
 			return 0;
-
+#if FS_WRITE_CHECK_DEFAULT_ASSETS
 		} else {
 			ALOGE("WARNING `default_assets` is set\n");
 			return 1;
 
 		}
+#endif
 
 	}
 

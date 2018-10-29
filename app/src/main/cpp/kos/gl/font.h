@@ -22,7 +22,7 @@ unsigned long long get_font_width (font_t font, unsigned long long text) { retur
 unsigned long long get_font_height(font_t font, unsigned long long text) { return (unsigned long long) CALLBACK_INT(java_get_font_height, (jint) font, callback_env->NewStringUTF((const char*) text)); }
 
 void font_remove(font_t font) {
-	//CALLBACK_VOID(java_font_remove, font);
+	//CALLBACK_VOID(java_font_remove, font); // This was replaced by Lib.clear_fonts, called in InstanceActivity.dispose_all
 
 }
 
