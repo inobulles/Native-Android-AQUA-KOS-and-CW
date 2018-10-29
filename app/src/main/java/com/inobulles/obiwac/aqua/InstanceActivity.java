@@ -166,6 +166,7 @@ public class InstanceActivity extends Activity {
 
 	private void dispose_all() {
 		Lib.dispose_all();
+		Lib.clear_fonts();
 
 	}
 
@@ -177,12 +178,8 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		dispose_all();
 		super.onDestroy();
-
-		if (!first_pause) {
-			dispose_all();
-
-		}
 
 		//System.exit(0);
 

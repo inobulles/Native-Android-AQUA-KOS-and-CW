@@ -283,7 +283,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 	event_quit = 1;
 	int return_value;
 
-	while (1) {
+	while (true) {
 		return_value = loop();
 		waiting_video_flip = 0;
 

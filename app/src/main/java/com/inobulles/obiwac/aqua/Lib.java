@@ -21,13 +21,17 @@ public class Lib {
 
 	}
 
-	private static final int MAX_FONTS = 1024;
+	private static final int MAX_FONTS = 4096;
 	private static Font fonts[];
 
 	private static void init_lib() {
 		Log.v(InstanceActivity.TAG, "`init_lib` called\n");
 		fonts = new Font[MAX_FONTS];
+		clear_fonts();
 
+	}
+
+	public static void clear_fonts() {
 		int i;
 		for (i = 0; i < MAX_FONTS; i++) {
 			fonts[i] = null;
