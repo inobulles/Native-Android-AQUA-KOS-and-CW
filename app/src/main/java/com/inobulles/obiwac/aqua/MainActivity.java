@@ -2,16 +2,9 @@
 package com.inobulles.obiwac.aqua;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-
-import java.util.List;
 
 public class MainActivity extends Activity {
 	protected Runnable current_runnable;

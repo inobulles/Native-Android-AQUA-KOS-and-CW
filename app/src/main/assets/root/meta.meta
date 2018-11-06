@@ -1,5 +1,5 @@
-orientation:landscape
+orientation:full
 permission:write external storage
 permission:read external storage
-tag:Arthur
-standalone:true
+tag:AQUA
+standalone:false

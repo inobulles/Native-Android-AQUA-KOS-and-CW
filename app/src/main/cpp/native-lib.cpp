@@ -18,9 +18,9 @@ const char* internal_storage_path;
 bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
-#define PKG_ORG inobulles // inobulles
-#define PKG_PER obiwac    // obiwac
-#define PKG_APP aqua      // aqua
+#define PKG_ORG inobulles
+#define PKG_PER obiwac
+#define PKG_APP aqua
 
 #define   str(x) __str(x)
 #define __str(x) #x

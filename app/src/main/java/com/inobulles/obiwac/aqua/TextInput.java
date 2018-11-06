@@ -3,13 +3,8 @@ package com.inobulles.obiwac.aqua;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.opengl.GLSurfaceView;
 import android.text.InputType;
-import android.util.Log;
 import android.widget.EditText;
-
-import java.lang.ref.Reference;
-import java.lang.reflect.Method;
 
 public class TextInput {
 	private InstanceActivity activity;
