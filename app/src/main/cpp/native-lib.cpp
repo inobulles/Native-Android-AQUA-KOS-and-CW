@@ -18,18 +18,25 @@ const char* internal_storage_path;
 bool is_internal_storage_path_set = false;
 bool default_assets = false;
 
-extern "C" {
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag               (JNIEnv* env, jobject obj, jstring tag, jboolean standalone);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all                 (JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start                        (JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize                       (JNIEnv* env, jobject obj, jint width, jint height);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step                         (JNIEnv* env, jobject obj);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event                        (JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro                 (JNIEnv* env, jobject obj, jint macro, jint set);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path);
+#define PKG_ORG inobulles // inobulles
+#define PKG_PER obiwac    // obiwac
+#define PKG_APP aqua      // aqua
 
+#define str(x) #x
+
+#define JNI_FUNCTION_NAME(name) Java_com_##PKG_ORG##_##PKG_PER##_##PKG_APP##_Lib_##name
+
+extern "C" {
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)               (JNIEnv* env, jobject obj, jstring tag, jboolean standalone);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)                 (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(start)                        (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)                       (JNIEnv* env, jobject obj, jint width, jint height);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)                         (JNIEnv* env, jobject obj);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event)                        (JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event_1macro)                 (JNIEnv* env, jobject obj, jint macro, jint set);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1internal_1storage_1path)(JNIEnv* env, jobject obj, jstring path);
 };
 
 #ifndef DYNAMIC_ES3
@@ -133,7 +140,7 @@ void nothing(...) {
 char* LOG_TAG = (char*) __LOG_TAG;
 #endif
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag(JNIEnv* env, jobject obj, jstring tag, jboolean standalone) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)(JNIEnv* env, jobject obj, jstring tag, jboolean standalone) {
 	default_assets = (bool) standalone;
 
 	jboolean is_copy = 0;
@@ -202,9 +209,9 @@ void rom_init(JNIEnv* env, jobject obj) {
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init(JNIEnv* env, jobject obj, jobject java_asset_manager) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env   =          env;
-	jclass _class  =          env->FindClass("com/inobulles/obiwac/aqua/Lib");
+	jclass _class  =          env->FindClass("com/" str(PKG_ORG) "/" str(PKG_PER) "/" str(PKG_APP) "/Lib");
 	callback_class = (jclass) env->NewGlobalRef(_class);
 	callback_lib   =          env->NewGlobalRef(callback_class);
 
@@ -260,7 +267,7 @@ static int loop(void) {
 
 static bool already_started = false;
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, jobject obj) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(start)(JNIEnv* env, jobject obj) {
 	if (already_started) {
 		rom_init(env, obj);
 
@@ -271,7 +278,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start(JNIEnv* env, job
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* env, jobject obj) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)(JNIEnv* env, jobject obj) {
 	if (already_disposed) {
 		return;
 
@@ -303,7 +310,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all(JNIEnv* e
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint width, jint height) {
 	gl_resize = 1;
 
 	gl_width  = (unsigned long long) width;
@@ -319,7 +326,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_resize(JNIEnv* env, jo
 bool cw_pause                       = false;
 bool text_input_has_string_response = false;
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobject obj) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 	if (!cw_pause) {
 		while (!waiting_video_flip) {
 			int return_value = loop();
@@ -357,7 +364,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_step(JNIEnv* env, jobj
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event)(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset) {
 	extern int notification_tray_offset;
 	notification_tray_offset = (int) tray_offset;
 
@@ -372,7 +379,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event(JNIEnv* env, job
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storage_1path(JNIEnv* env, jobject obj, jstring path) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1internal_1storage_1path)(JNIEnv* env, jobject obj, jstring path) {
 	internal_storage_path = env->GetStringUTFChars(path, 0);
 	is_internal_storage_path_set = true;
 
@@ -380,7 +387,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1internal_1storag
 
 }
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* env, jobject obj, jint macro, jint set) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event_1macro)(JNIEnv* env, jobject obj, jint macro, jint set) {
 	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
 
 	event_pointer_click_type = set;
@@ -392,7 +399,7 @@ JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_event_1macro(JNIEnv* e
 
 const char* text_input_response;
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
 	text_input_has_string_response = has_response;
 	text_input_has_response        = true;
 
