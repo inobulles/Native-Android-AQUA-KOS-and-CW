@@ -31,6 +31,8 @@ public class InstanceActivity extends Activity {
 
 	public TextInput text_input;
 
+	public boolean standalone = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Lib.give_activity(this);
@@ -42,6 +44,8 @@ public class InstanceActivity extends Activity {
 		String         orientation = "landscape";
 		List<String>   permissions = new ArrayList<>();
 
+		standalone = false;
+
 		try {
 			meta_reader = new BufferedReader(new InputStreamReader(getAssets().open("root/meta.meta")));
 			String line;
@@ -52,7 +56,8 @@ public class InstanceActivity extends Activity {
 				switch (components[0]) {
 					case "orientation": orientation =   components[1];                                        break;
 					case "permission":  permissions.add(components[1]);                                       break;
-					case "tag":         TAG =           components[1];                                        break;
+					case "tag":         TAG         =   components[1];                                        break;
+					case "standalone":  standalone  =   components[1].compareTo("true") == 0;                 break;
 					default: Log.e(TAG, String.format("WARNING Unknown meta element (%s)\n", components[0])); break;
 
 				}
@@ -145,11 +150,6 @@ public class InstanceActivity extends Activity {
 
 	protected void create_view_thread() {
 		if (view_thread == null) {
-			/*if (view_thread != null) {
-				view_thread.stop();
-
-			}*/
-
 			view_thread = new ViewThread() {
 				@Override
 				public void view_run() {
@@ -175,23 +175,13 @@ public class InstanceActivity extends Activity {
 
 	}
 
-	protected void resize() {
-		//dispose_all();
-		create_view_thread();
-
-	}
+	protected void resize() { create_view_thread(); }
+	protected void kill()   { finish(); }
 
 	@Override
 	protected void onDestroy() {
 		dispose_all();
 		super.onDestroy();
-
-		//System.exit(0);
-
-	}
-
-	protected void kill() {
-		finish();
 
 	}
 
@@ -206,18 +196,8 @@ public class InstanceActivity extends Activity {
 
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		//kill();
-
-	}
+	@Override protected void onResume()                                      { super.onResume(); }
+	@Override public    void onConfigurationChanged(Configuration newConfig) { super.onConfigurationChanged(newConfig); }
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -272,17 +252,8 @@ public class InstanceActivity extends Activity {
 
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		return on_key(keyCode, event, 0) || super.onKeyDown(keyCode, event);
-
-	}
-
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		return on_key(keyCode, event, 1) || super.onKeyUp(keyCode, event);
-
-	}
+	@Override public boolean onKeyDown(int keyCode, KeyEvent event) { return on_key(keyCode, event, 0) || super.onKeyDown(keyCode, event); }
+	@Override public boolean onKeyUp  (int keyCode, KeyEvent event) { return on_key(keyCode, event, 1) || super.onKeyUp(keyCode, event); }
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -303,9 +274,6 @@ public class InstanceActivity extends Activity {
 	}
 
 	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-
-	}
+	public void onBackPressed() { super.onBackPressed(); }
 
 }

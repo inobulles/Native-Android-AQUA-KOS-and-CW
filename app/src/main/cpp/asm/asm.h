@@ -77,7 +77,7 @@ typedef   signed long long        signed_t;
 // environment macros
 
 #define DEFAULT_STACK_SIZE (1ll << 16)
-#define CURRENT_VERSION 1ll
+#define CURRENT_VERSION 2ll
 
 // global variables
 
@@ -120,11 +120,11 @@ static __pointer__program_t* __pointer___this;
 #define ALOGV printf
 #endif
 
-#define kill(...)    {                              ALOGE("FATAL ERROR "); ALOGE(__VA_ARGS__); ALOGE("Aborting ...\n"); ALOGE("TODO Abort\n"); while (1); }
-#define warn(...)    { __pointer___this->warning++; ALOGW("WARNING     "); ALOGW(__VA_ARGS__); }
-#define info(...)    {                              ALOGI("INFO        "); ALOGI(__VA_ARGS__); }
-#define verbose(...) { if (__pointer___this->verbose_mode) {               ALOGV(__VA_ARGS__); } }
-#define debug(...)   {                              ALOGD("DEBUG       "); ALOGD(__VA_ARGS__); }
+#define kill(...)    {                              ALOGE("FATAL ERROR " __VA_ARGS__); ALOGE("Aborting ...\n"); ALOGE("TODO Abort\n"); while (1); }
+#define warn(...)    { __pointer___this->warning++; ALOGW("WARNING     " __VA_ARGS__); }
+#define info(...)    {                              ALOGI("INFO        " __VA_ARGS__); }
+#define verbose(...) { if (__pointer___this->verbose_mode) {       ALOGV(__VA_ARGS__); } }
+#define debug(...)   {                              ALOGD("DEBUG       " __VA_ARGS__); }
 
 // structures
 
@@ -178,6 +178,16 @@ static inline unsigned_t sign_extend(unsigned_t value) { /// TODO
 	
 }
 
+static inline uint8_t* access_byte_address(program_t* __this, unsigned_t address) {
+    if (__this->meta->version < 2) {
+        warn("The compiler with which the ROM has been compiled does not support byte addressing, yet it is still using them. This could potentially be dangerous.\n");
+        
+    }
+    
+    return   (uint8_t*) address;
+    
+}
+
 static inline unsigned_t* access_address(program_t* __this, unsigned_t address) {
 	return   (unsigned_t*) address;
 
@@ -228,7 +238,8 @@ static inline unsigned_t get_value(program_t* __this, unsigned_t type, unsigned_
 
 		}
 
-		case TOKEN_ADDRESS:     return *access_address(__this, __this->main_thread.registers[data]); // return the first `unsigned_t` value at the address of the register
+		case TOKEN_ADDRESS:     return              *access_address     (__this, __this->main_thread.registers[data]); // return the first `unsigned_t` value at the address of the register
+		case TOKEN_BYTE_ADDR:   return (unsigned_t) *access_byte_address(__this, __this->main_thread.registers[data]);
 		case TOKEN_NUMBER:      return data;
 
 		case TOKEN_RESERVED:    return __this->reserved_positions[data - __this->meta->label_position_offset];
@@ -267,7 +278,9 @@ static inline void set_value(program_t* __this, unsigned_t type, unsigned_t data
 
 		}
 
-		case TOKEN_ADDRESS: *access_address(__this, __this->main_thread.registers[data]) = set; break; // set the first `unsigned_t` value at the address of the register
+		case TOKEN_ADDRESS:   *access_address     (__this, __this->main_thread.registers[data]) =           set; break; // set the first `unsigned_t` value at the address of the register
+		case TOKEN_BYTE_ADDR: *access_byte_address(__this, __this->main_thread.registers[data]) = (uint8_t) set; break;
+		
 		case TOKEN_RESERVED: {
 			warn("`type` argument of `%s` is `TOKEN_RESERVED`\n", __func__);
 			__this->reserved_positions[data]  = set;
