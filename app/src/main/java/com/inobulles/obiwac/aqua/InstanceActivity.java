@@ -79,7 +79,7 @@ public class InstanceActivity extends Activity {
 
 		}
 
-		Lib.give_log_tag(TAG);
+		Lib.give_log_tag(TAG, standalone);
 
 		switch (orientation) {
 			case "landscape": setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);    break;

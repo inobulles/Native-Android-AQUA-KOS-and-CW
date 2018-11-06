@@ -20,7 +20,7 @@ bool default_assets = false;
 
 extern "C" {
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1text_1input_1response  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
-	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag               (JNIEnv* env, jobject obj, jstring tag);
+	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag               (JNIEnv* env, jobject obj, jstring tag, jboolean standalone);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_init                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_dispose_1all                 (JNIEnv* env, jobject obj);
 	JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_start                        (JNIEnv* env, jobject obj);
@@ -133,7 +133,9 @@ void nothing(...) {
 char* LOG_TAG = (char*) __LOG_TAG;
 #endif
 
-JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag(JNIEnv* env, jobject obj, jstring tag) {
+JNIEXPORT void JNICALL Java_com_inobulles_obiwac_aqua_Lib_give_1log_1tag(JNIEnv* env, jobject obj, jstring tag, jboolean standalone) {
+	default_assets = (bool) standalone;
+
 	jboolean is_copy = 0;
 	LOG_TAG = (char*) env->GetStringUTFChars(tag, &is_copy);
 

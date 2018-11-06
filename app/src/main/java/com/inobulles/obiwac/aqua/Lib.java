@@ -242,7 +242,7 @@ public class Lib {
 	}
 
 	public static native void give_text_input_response(boolean has_response, String response);
-	public static native void give_log_tag(String tag);
+	public static native void give_log_tag(String tag, boolean standalone);
 	public static native void init(AssetManager asset_manager);
 	public static native void dispose_all();
 	public static native void start();
