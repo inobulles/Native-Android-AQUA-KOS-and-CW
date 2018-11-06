@@ -22,7 +22,7 @@ public class Lib {
 	}
 
 	private static final int MAX_FONTS = 4096;
-	private static Font fonts[];
+	public  static Font fonts[];
 
 	private static void init_lib() {
 		Log.v(InstanceActivity.TAG, "`init_lib` called\n");

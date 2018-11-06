@@ -170,8 +170,11 @@ public class InstanceActivity extends Activity {
 	}
 
 	private void dispose_all() {
-		Lib.dispose_all();
-		Lib.clear_fonts();
+		if (Lib.fonts != null) {
+			Lib.dispose_all();
+			Lib.clear_fonts();
+
+		}
 
 	}
 
