@@ -22,9 +22,10 @@ bool default_assets = false;
 #define PKG_PER obiwac    // obiwac
 #define PKG_APP aqua      // aqua
 
-#define str(x) #x
+#define   str(x) __str(x)
+#define __str(x) #x
 
-#define JNI_FUNCTION_NAME(name) Java_com_##PKG_ORG##_##PKG_PER##_##PKG_APP##_Lib_##name
+#define JNI_FUNCTION_NAME(name) Java_com_inobulles_obiwac_aqua_Lib_##name
 
 extern "C" {
 	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
