@@ -25,7 +25,10 @@ bool default_assets = false;
 #define   str(x) __str(x)
 #define __str(x) #x
 
-#define JNI_FUNCTION_NAME(name) Java_com_inobulles_obiwac_aqua_Lib_##name
+#define   glue(x, y) __glue(x, y)
+#define __glue(x, y) x##y
+
+#define JNI_FUNCTION_NAME(name) glue(glue(glue(glue(Java_com_, PKG_ORG), glue(_, PKG_PER)), glue(_, PKG_APP)), glue(_Lib_, name))
 
 extern "C" {
 	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
