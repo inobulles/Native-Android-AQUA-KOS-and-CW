@@ -91,6 +91,11 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 				kos_bda_implementation.previous_math_device_sqrt_result = (unsigned long long) (sqrt((double) data->x / FLOAT_ONE) * FLOAT_ONE);
 				result = &kos_bda_implementation.previous_math_device_sqrt_result;
 
+			} else if (strcmp(extra, "sin") == 0) {
+				math_device_generic_t* data = (math_device_generic_t*) extra;
+				kos_bda_implementation.previous_math_device_sin_result = (unsigned long long) (sin((double) data->x / FLOAT_ONE) * FLOAT_ONE);
+				result = &kos_bda_implementation.previous_math_device_sin_result;
+			
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("math")
 
