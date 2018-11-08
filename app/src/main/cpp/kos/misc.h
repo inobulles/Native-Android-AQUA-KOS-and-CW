@@ -64,12 +64,21 @@ bool text_input_has_response = false;
 
 typedef struct {
 	time_device_t      previous_time_device;
-	unsigned long long previous_math_device_sqrt_result;
 	jint               previous_package_existance;
+	
+	unsigned long long previous_math_device_sqrt_result;
+	unsigned long long previous_math_device_sin_result;
 
 } kos_bda_extension_t;
 
+#define KOS_BDA_EXTENSION
 kos_bda_extension_t kos_bda_implementation;
+
+typedef struct {
+	char signature[sizeof(uint64_t)];
+	uint64_t x;
+	
+} math_device_generic_t;
 
 unsigned long long* get_device(unsigned long long device, unsigned long long __extra) {
 	const char* extra = (const char*) __extra;
@@ -78,13 +87,7 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 	switch (device) {
 		case DEVICE_MATH: {
 			if (strcmp(extra, "sqrt") == 0) {
-				typedef struct {
-					char signature[sizeof(uint64_t)];
-					uint64_t x;
-
-				} math_device_sqrt_t;
-
-				math_device_sqrt_t* data = (math_device_sqrt_t*) extra;
+				math_device_generic_t* data = (math_device_generic_t*) extra;
 				kos_bda_implementation.previous_math_device_sqrt_result = (unsigned long long) (sqrt((double) data->x / FLOAT_ONE) * FLOAT_ONE);
 				result = &kos_bda_implementation.previous_math_device_sqrt_result;
 
