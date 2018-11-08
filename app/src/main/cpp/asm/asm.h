@@ -11,8 +11,8 @@
 // compatibilty checks
 
 #ifndef _UI64_MAX
-	#define _UI64_MAX 0xFFFFFFFFFFFFFFFF
-	#define _SI64_MAX (0xFFFFFFFFFFFFFFFF / 2)
+	#define _UI64_MAX  0xFFFFFFFFFFFFFFFFull
+	#define _SI64_MAX (0xFFFFFFFFFFFFFFFFll / 2)
 
 	#define _UI64_MAX_MARGIN (_UI64_MAX >> 8)
 	#define _SI64_MAX_MARGIN (_SI64_MAX >> 8)
@@ -80,6 +80,16 @@ typedef   signed long long        signed_t;
 #define CURRENT_VERSION 2ll
 
 // global variables
+#define BDA_SIGNATURE 0xBDA5
+
+typedef struct {
+	unsigned long long signature;
+
+#ifdef KOS_BDA_EXTENSION
+kos_bda_extension_t extension;
+#endif
+
+} zed_bda_t;
 
 typedef struct {
 	void* pointer;
@@ -162,6 +172,8 @@ typedef struct {
 	
 	uint64_t reserved_positions_count; uint64_t* reserved_positions;
 	uint16_t* base_pointer; uint64_t* base_pointer_64; int error_code;
+
+	zed_bda_t* bda;
 	
 } program_t;
 
@@ -317,7 +329,6 @@ void program_free(program_t* ____this) {
 	verbose("Freeing program ...\n");
 	
 	// free environment
-
 	verbose("\tKilling main thread ...\n");
 	
 	// free data section
@@ -333,6 +344,10 @@ void program_free(program_t* ____this) {
 	// free reserved positions section
 	verbose("\tFreeing ____this->reserved_positions ...\n");
 	mfree(____this->reserved_positions, ____this->reserved_positions_count * sizeof(uint64_t));
+
+	// free bda
+	verbose("\tFreeing ____this->bda ...\n");
+	heap_mfree((unsigned long long) ____this->bda, sizeof(zed_bda_t));
 	
 }
 
@@ -382,7 +397,12 @@ void program_run_setup_phase(program_t* ____this) {
 	if (___this->meta->invalidated)                kill("The program ROM has been invalidated (meta->invalidated = %lld). This program can not be executed ...\n", ___this->meta->invalidated);
 	//~ if (___this->meta->length  > ___this->length)  kill("The program's extracted code length (%lld) is greater than the current code length (%lld)\n", ___this->meta->length, ___this->length);
 	if (___this->meta->version > ___this->version) warn("The program's version (%lld) is greater than the current version (%lld)\n", ___this->meta->version, ___this->version);
-	
+
+	// allocate bda
+	verbose("Allocating bda ...\n")
+	___this->bda = (zed_bda_t*) heap_malloc(sizeof(zed_bda_t));
+	___this->bda->signature = BDA_SIGNATURE;
+
 	// set modes
 	verbose("Setting modes ...\n");
 	

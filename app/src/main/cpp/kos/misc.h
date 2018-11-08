@@ -55,16 +55,21 @@ typedef struct {
 
 static struct tm*    kos_tm_struct = (struct tm*) 0;
 static time_t        kos_time      = 0;
-static time_device_t previous_time_device;
-
-static jint previous_package_existance;
 
 #define KOS_DEVICE_COMMAND_WARNING(device_name) ALOGE("WARNING The command you have passed to the " device_name " device (%s) is unrecognized\n", extra);
-static unsigned long long previous_math_device_sqrt_result;
 #define FLOAT_ONE 1000000
 
 #include <unistd.h>
 bool text_input_has_response = false;
+
+typedef struct {
+	time_device_t      previous_time_device;
+	unsigned long long previous_math_device_sqrt_result;
+	jint               previous_package_existance;
+
+} kos_bda_extension_t;
+
+kos_bda_extension_t kos_bda_implementation;
 
 unsigned long long* get_device(unsigned long long device, unsigned long long __extra) {
 	const char* extra = (const char*) __extra;
@@ -80,8 +85,8 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 				} math_device_sqrt_t;
 
 				math_device_sqrt_t* data = (math_device_sqrt_t*) extra;
-				previous_math_device_sqrt_result = (unsigned long long) (sqrt((double) data->x / FLOAT_ONE) * FLOAT_ONE);
-				result = &previous_math_device_sqrt_result;
+				kos_bda_implementation.previous_math_device_sqrt_result = (unsigned long long) (sqrt((double) data->x / FLOAT_ONE) * FLOAT_ONE);
+				result = &kos_bda_implementation.previous_math_device_sqrt_result;
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("math")
@@ -95,18 +100,18 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 			kos_tm_struct = localtime(&kos_time);
 
 			if (strcmp(extra, "current") == 0) {
-				previous_time_device.hour     = (uint64_t) kos_tm_struct->tm_hour;
-				previous_time_device.minute   = (uint64_t) kos_tm_struct->tm_min;
-				previous_time_device.second   = (uint64_t) kos_tm_struct->tm_sec;
+				kos_bda_implementation.previous_time_device.hour     = (uint64_t) kos_tm_struct->tm_hour;
+				kos_bda_implementation.previous_time_device.minute   = (uint64_t) kos_tm_struct->tm_min;
+				kos_bda_implementation.previous_time_device.second   = (uint64_t) kos_tm_struct->tm_sec;
 
-				previous_time_device.day      = (uint64_t) kos_tm_struct->tm_mday;
-				previous_time_device.month    = (uint64_t) kos_tm_struct->tm_mon;
-				previous_time_device.year     = (uint64_t) kos_tm_struct->tm_year;
+				kos_bda_implementation.previous_time_device.day      = (uint64_t) kos_tm_struct->tm_mday;
+				kos_bda_implementation.previous_time_device.month    = (uint64_t) kos_tm_struct->tm_mon;
+				kos_bda_implementation.previous_time_device.year     = (uint64_t) kos_tm_struct->tm_year;
 
-				previous_time_device.week_day = (uint64_t) kos_tm_struct->tm_wday;
-				previous_time_device.year_day = (uint64_t) kos_tm_struct->tm_yday;
+				kos_bda_implementation.previous_time_device.week_day = (uint64_t) kos_tm_struct->tm_wday;
+				kos_bda_implementation.previous_time_device.year_day = (uint64_t) kos_tm_struct->tm_yday;
 
-				result = (unsigned long long*) &previous_time_device;
+				result = (unsigned long long*) &kos_bda_implementation.previous_time_device;
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("clock")
@@ -118,8 +123,8 @@ unsigned long long* get_device(unsigned long long device, unsigned long long __e
 		} case DEVICE_ANDROID: {
 			if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
 				extra += 4;
-				previous_package_existance = CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
-				result = (unsigned long long*) &previous_package_existance;
+				kos_bda_implementation.previous_package_existance = CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
+				result = (unsigned long long*) &kos_bda_implementation.previous_package_existance;
 
 			} else {
 				KOS_DEVICE_COMMAND_WARNING("android")

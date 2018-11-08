@@ -20,7 +20,7 @@ public abstract class ViewThread implements Runnable {
 
 	}
 
-	public void stop() {
+	private void stop() {
 		set_stopped(true);
 
 	}
