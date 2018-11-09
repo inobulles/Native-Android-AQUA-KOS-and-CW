@@ -80,6 +80,7 @@ typedef   signed long long        signed_t;
 #define CURRENT_VERSION 2ll
 
 // global variables
+
 #define BDA_SIGNATURE 0xBDA5
 
 typedef struct {
