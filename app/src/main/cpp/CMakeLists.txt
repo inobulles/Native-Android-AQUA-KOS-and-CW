@@ -30,7 +30,7 @@ if (${ANDROID_PLATFORM_LEVEL} LESS 12)
 elseif (${ANDROID_PLATFORM_LEVEL} LESS 18)
 	add_definitions("-DDYNAMIC_ES3")
 	
-	set(GL3_STUB_SRC gl3_stub.c)
+	set(GL3_STUB_SRC kos/src/android/gl3_stub.c)
 	set(OPENGL_LIB GLESv2)
 	
 else ()
@@ -40,14 +40,12 @@ endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 
 #set_target_properties(native-lib PROPERTIES LINKER_LANGUAGE CXX)
 
-add_library(native-lib SHARED
+add_library(entry SHARED
             ${GL3_STUB_SRC}
-            native-lib.cpp
-            es2_renderer.cpp
-            es3_renderer.cpp)
+            entry.cpp)
 
 # Include libraries needed for native-lib lib
-target_link_libraries(native-lib
+target_link_libraries(entry
             ${OPENGL_LIB}
             android
             EGL
