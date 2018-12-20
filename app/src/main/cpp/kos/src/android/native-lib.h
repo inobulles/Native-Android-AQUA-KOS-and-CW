@@ -11,7 +11,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
-#include "kos/lib/structs.h"
+#include "../lib/structs.h"
 
 #if DYNAMIC_ES3
 #include "gl3_stub.h"

@@ -116,4 +116,107 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject
 
 }
 
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(start)(JNIEnv* env, jobject obj) {
+	ALOGA("start\n");
+
+}
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)(JNIEnv* env, jobject obj) {
+	ALOGA("dispose\n");
+
+}
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint width, jint height) {
+	ALOGA("resize\n");
+
+}
+
+bool cw_pause                       = false;
+bool text_input_has_string_response = false;
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
+	if (!cw_pause) {
+		while (!waiting_video_flip) {
+			int return_value = loop();
+
+			if (return_value != -1) {
+				exit(return_value);
+
+			}
+
+		}
+
+		if (renderer) {
+			waiting_video_flip = 0;
+			gl_fps = renderer->render();
+
+		}
+
+	} else {
+		if (!text_input_has_response) {
+		} else {
+			cw_pause = false;
+
+			if (text_input_has_string_response) {
+				extern const char* text_input_response;
+				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
+
+			} else {
+				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = 0;
+
+			}
+
+		}
+
+	}
+
+}
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event)(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset) {
+	extern int notification_tray_offset;
+	notification_tray_offset = (int) tray_offset;
+
+	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
+	event_last_release = release;
+
+	event_quit = quit;
+	event_pointer_click_type = pointer_type;
+
+	event_pointer_x = x;
+	event_pointer_y = y;
+
+}
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1internal_1storage_1path)(JNIEnv* env, jobject obj, jstring path) {
+	internal_storage_path = env->GetStringUTFChars(path, 0);
+	is_internal_storage_path_set = true;
+
+	ALOGV("INFO Internal / external storage path set to `%s`\n", internal_storage_path);
+
+}
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event_1macro)(JNIEnv* env, jobject obj, jint macro, jint set) {
+	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
+
+	event_pointer_click_type = set;
+	event_last_release       = set;
+
+	//event_macros[macro] = set; /// TODO
+
+}
+
+const char* text_input_response;
+
+JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
+	text_input_has_string_response = has_response;
+	text_input_has_response        = true;
+
+	if (has_response) {
+		jboolean is_copy = (jboolean) false;
+		text_input_response = env->GetStringUTFChars(response, &is_copy);
+
+	}
+
+}
+
 #endif //ANDROID_FUNCTIONS_H

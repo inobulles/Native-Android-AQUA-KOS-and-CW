@@ -1,1 +1,3 @@
-#include "kos/glue.h"
+
+#define KOS_CURRENT KOS_ANDROID
+#include "kos/src/android/root.h"
