@@ -33,8 +33,14 @@ static signed long long __load_rom(unsigned long long __path) {
 	void*                 __pointer_current_program_previous = __pointer_current_program;
 	__pointer__program_t* __pointer___this_previous          = __pointer___this;
 	
-	program_t de_program;
-	current_de_program = (program_t*) &de_program;
+	#if KOS_USES_JNI
+		program_t* de_program = (program_t*) malloc(sizeof(program_t));
+	#else
+		program_t __de_program;
+		program_t* de_program = &__de_program;
+	#endif
+	
+	current_de_program = de_program;
 	
 	FILE* fp = fopen(path, "rb");
 		
@@ -46,30 +52,30 @@ static signed long long __load_rom(unsigned long long __path) {
 	}
 
 	fseek(fp, 0, SEEK_END);
-	unsigned long long bytes = ftell(fp);
+	unsigned long long bytes = (unsigned long long) ftell(fp);
 	rewind(fp);
 
 	char* rom = (char*) malloc(bytes);
 	fread(rom, sizeof(char), bytes, fp);
 
-	de_program.pointer = rom;
+	de_program->pointer = rom;
 
 	printf("Starting run setup phase ...\n");
-	program_run_setup_phase(&de_program);
+	program_run_setup_phase(de_program);
 
 	#if KOS_USES_JNI
 		return 0;
+	#else
+		while (!program_run_loop_phase(de_program));
+		
+		program_free(de_program);
+		mfree(rom, bytes);
+		
+		__pointer_current_program = __pointer_current_program_previous;
+		__pointer___this          = __pointer___this_previous;
+		
+		return de_program->error_code;
 	#endif
-
-	while (!program_run_loop_phase(&de_program));
-	
-	program_free(&de_program);
-	mfree(rom, bytes);
-	
-	__pointer_current_program = __pointer_current_program_previous;
-	__pointer___this          = __pointer___this_previous;
-	
-	return de_program.error_code;
 	
 }
 
@@ -102,7 +108,7 @@ int main(int argc, char** argv) {
 	
 	printf("%s\n", path);
 	
-	int error_code = __load_rom((unsigned long long) path);
+	int error_code = (int) __load_rom((unsigned long long) path);
 
 	#if !KOS_USES_JNI
 		printf("DE return code is %d\n", error_code);

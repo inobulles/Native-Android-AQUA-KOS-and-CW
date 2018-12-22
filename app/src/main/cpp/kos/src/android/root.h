@@ -2,8 +2,8 @@
 // Created by obiwac on 20/12/18.
 //
 
-#ifndef ANDROID_FUNCTIONS_H
-#define ANDROID_FUNCTIONS_H
+#ifndef ANDROID_ROOT_H
+#define ANDROID_ROOT_H
 
 #include <jni.h>
 #include <stdlib.h>
@@ -157,7 +157,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event)(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset) {
-	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
+	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 1;
 	event_last_release = release;
 
 	event_quit = quit;
@@ -177,7 +177,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1internal_1storage_1path)(JNIEnv* 
 }
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event_1macro)(JNIEnv* env, jobject obj, jint macro, jint set) {
-	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
+	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 1;
 
 	event_pointer_click_type = set;
 	event_last_release       = set;
@@ -190,7 +190,7 @@ const char* text_input_response;
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)(JNIEnv* env, jobject obj, jboolean has_response, jstring response) {
 	text_input_has_string_response = has_response;
-	text_input_has_response        = true;
+	text_input_has_response        = 1;
 
 	if (has_response) {
 		jboolean is_copy = (jboolean) false;

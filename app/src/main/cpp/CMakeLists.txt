@@ -27,7 +27,7 @@ if (${ANDROID_PLATFORM_LEVEL} LESS 12)
 	message(FATAL_ERROR "ERROR OpenGL 2 is not supported before API level 11 (currently using ${ANDROID_PLATFORM_LEVEL}).")
 	return()
 	
-elseif (${ANDROID_PLATFORM_LEVEL} LESS 18)
+elseif (${ANDROID_PLATFORM_LEVEL} LESS 128) # LESS 18
 	add_definitions("-DDYNAMIC_ES3")
 	
 	set(GL3_STUB_SRC kos/src/android/gl3_stub.c)
@@ -38,13 +38,13 @@ else ()
 
 endif (${ANDROID_PLATFORM_LEVEL} LESS 12)
 
-#set_target_properties(native-lib PROPERTIES LINKER_LANGUAGE CXX)
+#set_target_properties(entry PROPERTIES LINKER_LANGUAGE CXX)
 
 add_library(entry SHARED
             ${GL3_STUB_SRC}
             entry.cpp)
 
-# Include libraries needed for native-lib lib
+# Include libraries needed for entry lib
 target_link_libraries(entry
             ${OPENGL_LIB}
             android

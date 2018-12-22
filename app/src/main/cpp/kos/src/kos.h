@@ -156,6 +156,7 @@
 			}
 		#endif
 		
+		printf("Initializing fonts ...\n");
 		kos_init_fonts();
 		
 		#if KOS_USES_SDL2 && KOS_USES_OPENGL
