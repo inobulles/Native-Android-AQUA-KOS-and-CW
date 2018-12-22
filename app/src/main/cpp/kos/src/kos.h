@@ -184,8 +184,16 @@
 			printf("\tShading language version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 			//~ printf("\tExtensions:               %s\n", glGetString(GL_EXTENSIONS));
 			
-			KOS_BEST_GL_VERSION
-			printf("Using OpenGL version %d.%d\n", kos_best_gl_version_major, kos_best_gl_version_minor);
+			#if KOS_USES_OPENGL_DESKTOP
+				KOS_BEST_GL_VERSION
+				printf("Using OpenGL version %d.%d\n", kos_best_gl_version_major, kos_best_gl_version_minor);
+			#elif KOS_USES_OPENGLES
+				const char* version_string = (const char*) glGetString(GL_VERSION);
+		
+				if      (strstr(version_string, "OpenGL ES 3.") && gl3_stub_init()) printf("Using OpenGL ES version 3.X\n");
+				else if (strstr(version_string, "OpenGL ES 2."))                    printf("Using OpenGL ES version 2.X\n");
+				else                                                                printf("ERROR Unsuppoted OpenGL ES version (%s)\n", version_string);
+			#endif
 		#endif
 		
 		#if KOS_USES_SDL2
