@@ -25,14 +25,14 @@
 		#include "xwm/xwm.h"
 	#endif
 	
-	static int  kos_setup_predefined_textures(kos_t* this);
-	static void kos_free_predefined_textures (kos_t* this);
+	static int  kos_setup_predefined_textures(kos_t* __this);
+	static void kos_free_predefined_textures (kos_t* __this);
 	
 	static unsigned char has_to_close_xwm = 0;
 	
 	void request_global_free(void);
 	
-	void kos_quit(kos_t* this) {
+	void kos_quit(kos_t* __this) {
 		#ifdef __HAS_X11
 			if (has_to_close_xwm) {
 				close_xwm();
@@ -40,21 +40,21 @@
 			}
 		#endif
 		
-		kos_free_predefined_textures(this);
+		kos_free_predefined_textures(__this);
 		kos_destroy_fonts();
 		
 		#if KOS_USES_SDL2
 			#if KOS_USES_OPENGL
-				SDL_GL_DeleteContext(this->context);
+				SDL_GL_DeleteContext(__this->context);
 			#endif
-			SDL_DestroyWindow(this->window);
+			SDL_DestroyWindow(__this->window);
 			SDL_Quit();
 
 			printf("Destroyed all SDL subsystems\n");
 		#endif
 		
 		#if KOS_USES_BCM && KOS_USES_OPENGLES
-			bcm_ogles_exit(this);
+			bcm_ogles_exit(__this);
 		#endif
 
 		printf("Freeing requests and CURL ...\n");
@@ -62,7 +62,7 @@
 		
 	}
 	
-	int kos_init(kos_t* this) {
+	int kos_init(kos_t* __this) {
 		has_to_close_xwm = 0;
 		
 		#ifdef __HAS_X11
@@ -84,15 +84,15 @@
 			printf("INFO KOS has Discord, the `discord` device will thus be enabled\n");
 		#endif
 		
-		current_kos = this;
+		current_kos = __this;
 		
 		#if KOS_USES_SDL2
-			this->window  = NULL;
-			this->context = NULL;
+			__this->window  = NULL;
+			__this->context = NULL;
 		#endif
 		
-		this->width  = KOS_ORIGINAL_WIDTH;
-		this->height = KOS_ORIGINAL_HEIGHT;
+		__this->width  = KOS_ORIGINAL_WIDTH;
+		__this->height = KOS_ORIGINAL_HEIGHT;
 		
 		#if KOS_USES_SDL2
 			if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -107,7 +107,7 @@
 			bcm_host_init();
 			
 			#if KOS_USES_OPENGLES
-				bcm_ogles_init(this);
+				bcm_ogles_init(__this);
 			#endif
 		#endif
 		
@@ -125,8 +125,8 @@
 					printf("WARNING Could not get X11 default screen of display\n");
 					
 				} else {
-					this->width  = WidthOfScreen (screen);
-					this->height = HeightOfScreen(screen);
+					__this->width  = WidthOfScreen (screen);
+					__this->height = HeightOfScreen(screen);
 					
 				}
 				
@@ -136,9 +136,9 @@
 		#endif
 		
 		#if KOS_USES_SDL2
-			this->window = SDL_CreateWindow("AQUA 3.X SDL2 KOS", \
+			__this->window = SDL_CreateWindow("AQUA 3.X SDL2 KOS", \
 				SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, \
-				this->width, this->height, \
+				__this->width, __this->height, \
 				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		#endif
 		
@@ -147,7 +147,7 @@
 			SDL_Cursor*   cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
 			SDL_SetCursor(cursor);
 			
-			if (this->window == NULL) {
+			if (__this->window == NULL) {
 				printf("ERROR SDL2 window could not be created (%s)\n", SDL_GetError());
 				KOS_ERROR
 				
@@ -157,9 +157,9 @@
 		kos_init_fonts();
 		
 		#if KOS_USES_SDL2 && KOS_USES_OPENGL
-			this->context = SDL_GL_CreateContext(this->window);
+			__this->context = SDL_GL_CreateContext(__this->window);
 			
-			if (this->context == NULL) {
+			if (__this->context == NULL) {
 				printf("ERROR SDL2 GL context could not be created (%s)\n", SDL_GetError());
 				KOS_ERROR
 				
@@ -196,23 +196,26 @@
 			
 			glEnable(GL_TEXTURE_2D);
 			glEnable(GL_DEPTH_TEST);
+
+			#if !KOS_USES_SHADER_PIPELINE
+				glEnable(GL_ALPHA_TEST);
+				glAlphaFunc(GL_GREATER, 0.0f);
+
+				glHint(GL_POINT_SMOOTH,   GL_NICEST);
+				glHint(GL_LINE_SMOOTH,    GL_NICEST);
+				//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+
+				glEnable(GL_POINT_SMOOTH);
+				glEnable(GL_LINE_SMOOTH);
+				//~ glEnable(GL_POLYGON_SMOOTH);
+
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+			#endif
+
+			glViewport(0, 0, __this->width, __this->height);
 			
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			
-			glHint(GL_POINT_SMOOTH,   GL_NICEST);
-			glHint(GL_LINE_SMOOTH,    GL_NICEST);
-			//~ glHint(GL_POLYGON_SMOOTH, GL_NICEST);
-			
-			glEnable(GL_POINT_SMOOTH);
-			glEnable(GL_LINE_SMOOTH);
-			//~ glEnable(GL_POLYGON_SMOOTH);
-			
-			glMatrixMode(GL_PROJECTION);
-			glViewport(0, 0, this->width, this->height);
-			glLoadIdentity();
-			
-			#if KOS_3D_VISUALIZATION
+			#if KOS_3D_VISUALIZATION && !KOS_USES_SHADER_PIPELINE
 				float fov   = tan(65.0f / 4);
 				float ratio = 1.0f;
 				
@@ -234,38 +237,42 @@
 				glEnable(GL_CULL_FACE);
 				glCullFace(GL_BACK);
 				glFrontFace(GL_CCW);
-				
-				glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
-				glTranslatef(0.0f, 0.0f, -100.0f);
+
+				#if !KOS_USES_SHADER_PIPELINE
+					glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
+					glTranslatef(0.0f, 0.0f, -100.0f);
+				#endif
 			#endif
-			
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
+
+			#if !KOS_USES_SHADER_PIPELINE
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+			#endif
 		#endif
 		
 		#if KOS_USES_SDL2
 			if (SDL_GL_SetSwapInterval(1) < 0) {
-				printf("WARNING Failed to enable VSync (this may cause problems down the line)\n");
-				this->warning_count++;
+				printf("WARNING Failed to enable VSync (__this may cause problems down the line)\n");
+				__this->warning_count++;
 				
 			}
 		#endif
 		
 		printf("Setting up predefined textures ...\n");
 		
-		if (kos_setup_predefined_textures(this)) {
+		if (kos_setup_predefined_textures(__this)) {
 			printf("WARNING Failed to setup predefined textures\n");
-			this->warning_count++;
+			__this->warning_count++;
 			
 		}
 		
-		//~ if (gl_load_shaders(&this->shader_program, (char*) temp_gl_2_vertex_shader, (char*) temp_gl_2_fragment_shader)) {
+		//~ if (gl_load_shaders(&__this->shader_program, (char*) temp_gl_2_vertex_shader, (char*) temp_gl_2_fragment_shader)) {
 			//~ printf("ERROR Failed to create GL shader program\n");
 			//~ KOS_ERROR
 			
 		//~ }
 		
-		//~ glUseProgram(this->shader_program);
+		//~ glUseProgram(__this->shader_program);
 		
 		#if KOS_USES_OPENGL
 			GLint                                   default_fbo;
@@ -273,7 +280,7 @@
 			printf("INFO Default OpenGL FBO: %d\n", default_fbo);
 		#endif
 		
-		printf("Finished KOS initialization with %d errors\n", this->warning_count);
+		printf("Finished KOS initialization with %d errors\n", __this->warning_count);
 		return 0;
 		
 	}

@@ -44,8 +44,8 @@
 	
 	#define BMP_MAGIC 0x4D42
 	
-	void bmp_load(bitmap_image_t* this, unsigned long long _path) {
-		this->data = (void*) 0;
+	void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
+		__this->data = (unsigned long long*) 0;
 		
 		char* buffer;
 		GET_PATH((char*) _path);
@@ -73,20 +73,20 @@
 		
 		fread((char*) &info_header, sizeof(bitmap_info_header_t), 1, file);
 		
-		this->image_size = info_header.image_bytes / sizeof(unsigned long long);
-		this->width  = info_header.width;
-		this->height = info_header.height;
+		__this->image_size = info_header.image_bytes / sizeof(unsigned long long);
+		__this->width  = info_header.width;
+		__this->height = info_header.height;
 		
 		unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
 		unsigned char temp;
 		
 		fseek(file, header.offset, SEEK_SET);
 		fread(char_data, info_header.image_bytes, 1, file);
-		this->bpp = info_header.bpp;
+		__this->bpp = info_header.bpp;
 		
 		int i;
-		for (i = 0; i < info_header.image_bytes; i += this->bpp / 8) {
-			if (this->bpp == 32) {
+		for (i = 0; i < info_header.image_bytes; i += __this->bpp / 8) {
+			if (__this->bpp == 32) {
 				unsigned char a = char_data[i];
 				unsigned char r = char_data[i + 1];
 				unsigned char g = char_data[i + 2];
@@ -106,8 +106,8 @@
 			
 		}
 		
-		this->data               = (unsigned long long*) malloc(info_header.image_bytes);
-		unsigned char* data8     = (unsigned char*)      this->data;
+		__this->data               = (unsigned long long*) malloc(info_header.image_bytes);
+		unsigned char* data8     = (unsigned char*)      __this->data;
 		unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
 		
 		int y;
@@ -121,8 +121,8 @@
 	
 	}
 	
-	void bmp_free(bitmap_image_t* this) {
-		free(this->data/*, this->image_size * sizeof(unsigned long long)*/);
+	void bmp_free(bitmap_image_t* __this) {
+		free(__this->data/*, __this->image_size * sizeof(unsigned long long)*/);
 	
 	}
 	

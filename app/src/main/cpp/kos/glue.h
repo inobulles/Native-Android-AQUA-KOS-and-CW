@@ -71,7 +71,7 @@ static signed long long __load_rom(unsigned long long __path) {
 	
 }
 
-static char* a_out_execution_command = "./a.out";
+static const char* a_out_execution_command = "./a.out";
 
 signed long long load_rom(unsigned long long path) {
 	char command_buffer[4096];
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
 	
 	a_out_execution_command = argv[0];
 	
-	if (argc <= 1) path = ROM_PATH;
+	if (argc <= 1) path = (char*) ROM_PATH;
 	else           path = argv[1];
 	
 	printf("%s\n", path);

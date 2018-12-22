@@ -55,11 +55,6 @@ extern "C" {
 	}
 #endif
 
-void mfree(void* pointer, unsigned long long bytes) {
-	free(pointer);
-
-}
-
 #include "alog.h"
 
 #include <android/asset_manager.h>
@@ -112,7 +107,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(asset_manager != NULL);
 
-	main(2, (void*[]) {"./a.out", "assets/root/rom.zed"});
+	main(2, (char*[]) {(char*) "./a.out", (char*) "assets/root/rom.zed"});
 
 }
 

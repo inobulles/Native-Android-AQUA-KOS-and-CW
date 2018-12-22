@@ -38,10 +38,10 @@
 		
 	}
 	
-	void texture_remove(texture_t this) {
+	void texture_remove(texture_t __this) {
 		switch (kos_best_gl_version_major) {
 			case 1: break;
-			case 2: gl2_texture_remove(this); break;
+			case 2: gl2_texture_remove(__this); break;
 			case 3: break;
 			case 4: break;
 			case 5: break;

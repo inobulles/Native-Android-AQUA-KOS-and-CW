@@ -50,8 +50,8 @@
 		
 	}
 	
-	void gl2_texture_remove(texture_t this) {
-		glDeleteTextures(1, (GLuint*) &this);
+	void gl2_texture_remove(texture_t __this) {
+		glDeleteTextures(1, (GLuint*) &__this);
 		
 	}
 	

@@ -28,17 +28,17 @@
 		
 	}
 	
-	static void socket_socket(socket_t* this) {
-		this->__internal_pointer =                   (__internal_socket_t*) malloc(sizeof(__internal_socket_t));
-		((__internal_socket_t*) this->__internal_pointer)->buffer = (char*) malloc(SOCKET_DEFAULT_BUFFER_SIZE);
-		memset(((__internal_socket_t*) this->__internal_pointer)->buffer, '\0',    SOCKET_DEFAULT_BUFFER_SIZE);
+	static void socket_socket(socket_t* __this) {
+		__this->__internal_pointer =                   (__internal_socket_t*) malloc(sizeof(__internal_socket_t));
+		((__internal_socket_t*) __this->__internal_pointer)->buffer = (char*) malloc(SOCKET_DEFAULT_BUFFER_SIZE);
+		memset(((__internal_socket_t*) __this->__internal_pointer)->buffer, '\0',    SOCKET_DEFAULT_BUFFER_SIZE);
 		
 	}
 	
-	static int socket_actor(socket_t* this, int type) {
-		__internal_socket_t* sock = (__internal_socket_t*) this->__internal_pointer;
+	static int socket_actor(socket_t* __this, int type) {
+		__internal_socket_t* sock = (__internal_socket_t*) __this->__internal_pointer;
 		
-		this->type = type;
+		__this->type = type;
 		sock->type = type;
 		
 		sock->address_length = sizeof(sock->address);
@@ -55,19 +55,20 @@
 		
 	}
 	
-	void socket_close(socket_t* this) {
-		free(this->__internal_pointer                                  /* sizeof(__internal_socket_t) */);
-		free(((__internal_socket_t*) this->__internal_pointer)->buffer /* SOCKET_DEFAULT_BUFFER_SIZE  */);
+	void socket_close(socket_t* __this) {
+		free(__this->__internal_pointer                                  /* sizeof(__internal_socket_t) */);
+		free(((__internal_socket_t*) __this->__internal_pointer)->buffer /* SOCKET_DEFAULT_BUFFER_SIZE  */);
 		
 	}
 	
-	void socket_client(socket_t* this, ip_address_t host_ip, unsigned long long port) {
-		this->port = port;
+	void socket_client(socket_t* __this, ip_address_t host_ip, unsigned long long port) {
+		__this->port = port;
 		
-		socket_socket(this);
-		__internal_socket_t* sock = (__internal_socket_t*) this->__internal_pointer;
-		
-		if (socket_actor(this, SOCKET_CLIENT)) {
+		socket_socket(__this);
+		__internal_socket_t* sock = (__internal_socket_t*) __this->__internal_pointer;
+
+		int temp_error;
+		if (socket_actor(__this, SOCKET_CLIENT)) {
 			goto error;
 			
 		}
@@ -83,7 +84,7 @@
 			
 		}
 		
-		int temp_error = connect(sock->socket, (struct sockaddr*) &sock->address, sizeof(sock->address));
+		temp_error = connect(sock->socket, (struct sockaddr*) &sock->address, sizeof(sock->address));
 		if (temp_error != 0) {
 			printf("WARNING Failed to connect (%d)\n", temp_error);
 			goto error;
@@ -93,28 +94,30 @@
 		return;
 		
 		error: {
-			socket_close(this);
+			socket_close(__this);
 			
-			this->error = 1;
+			__this->error = 1;
 			return;
 			
 		}
 		
 	}
 	
-	void socket_server(socket_t* this, ip_address_t host_ip, unsigned long long port) {
-		this->port = port;
+	void socket_server(socket_t* __this, ip_address_t host_ip, unsigned long long port) {
+		__this->port = port;
 		
-		socket_socket(this);
-		__internal_socket_t* sock = (__internal_socket_t*) this->__internal_pointer;
-		
-		if (socket_actor(this, SOCKET_SERVER)) {
+		socket_socket(__this);
+		__internal_socket_t* sock = (__internal_socket_t*) __this->__internal_pointer;
+
+		int option = 1;
+
+		int temp_error;
+		if (socket_actor(__this, SOCKET_SERVER)) {
 			goto error;
 			
 		}
-		
-		int option = 1;
-		int temp_error = setsockopt(sock->socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option));
+
+		temp_error = setsockopt(sock->socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option));
 		
 		if (temp_error) {
 			printf("WARNING Failed to set socket options (%d)\n", temp_error);
@@ -150,22 +153,22 @@
 		return;
 		
 		error: {
-			socket_close(this);
+			socket_close(__this);
 			
-			this->error = 1;
+			__this->error = 1;
 			return;
 			
 		}
 		
 	}
 	
-	void socket_send(socket_t* this, const char* data, unsigned long long bytes) {
-		send(((__internal_socket_t*) this->__internal_pointer)->socket, data, bytes, 0);
+	void socket_send(socket_t* __this, const char* data, unsigned long long bytes) {
+		send(((__internal_socket_t*) __this->__internal_pointer)->socket, data, bytes, 0);
 		
 	}
 	
-	char* socket_receive(socket_t* this, unsigned long long bytes) {
-		__internal_socket_t* sock = (__internal_socket_t*) this->__internal_pointer;
+	char* socket_receive(socket_t* __this, unsigned long long bytes) {
+		__internal_socket_t* sock = (__internal_socket_t*) __this->__internal_pointer;
 		memset(sock->buffer, '\0',         bytes);
 		read  (sock->socket, sock->buffer, bytes);
 		return sock->buffer;

@@ -6,11 +6,12 @@
 	
 	rectangle_t new_rectangle(unsigned long long x, unsigned long long y, unsigned long long width, unsigned long long height) {
 		KOS_DEPRECATED
-		return *((rectangle_t*) 0);
+		rectangle_t rectangle;
+		return rectangle;
 		
 	}
 	
-	void draw_rectangle(rectangle_t* this) {
+	void draw_rectangle(rectangle_t* __this) {
 		KOS_DEPRECATED
 		
 	}

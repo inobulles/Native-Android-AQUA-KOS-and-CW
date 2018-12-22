@@ -63,20 +63,20 @@
 	
 	#ifndef KOS_CHECK_FONT
 		#define KOS_CHECK_FONT(return_value) { \
-			if (this < 0 && this >= KOS_MAX_FONTS && !kos_fonts[this].used) { \
-				printf("WARNING Font %lld does not exist\n", this); \
+			if (__this < 0 && __this >= KOS_MAX_FONTS && !kos_fonts[__this].used) { \
+				printf("WARNING Font %lld does not exist\n", __this); \
 				return (return_value); \
 			} \
 		}
 	#endif
 	
-	static void kos_unuse_font(kos_font_t* this) {
-		this->used    = 0;
-		this->text    = NULL;
+	static void kos_unuse_font(kos_font_t* __this) {
+		__this->used = 0;
+		__this->text = NULL;
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			this->font    = NULL;
-			this->surface = NULL;
+			__this->font    = NULL;
+			__this->surface = NULL;
 		#endif
 		
 	}
@@ -195,48 +195,48 @@
 		
 	}
 	
-	static void kos_font_create_text(kos_font_t* this, char* text) {
+	static void kos_font_create_text(kos_font_t* __this, char* text) {
 		if (
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			!this->surface ||
+			!__this->surface ||
 		#endif
-			(this->text == NULL || strcmp(text, this->text) != 0)) {
+			(__this->text == NULL || strcmp(text, __this->text) != 0)) {
 			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-				if (this->surface) {
-					SDL_FreeSurface(this->surface);
-					this->surface = NULL;
+				if (__this->surface) {
+					SDL_FreeSurface(__this->surface);
+					__this->surface = NULL;
 					
 				}
 			#endif
 			
-			if      (this->text) {
-				free(this->text);
+			if      (__this->text) {
+				free(__this->text);
 				
 			}
 			
-			this->text = (char*) malloc(strlen(text) + 1);
-			strcpy(this->text,                 text);
+			__this->text = (char*) malloc(strlen(text) + 1);
+			strcpy(__this->text,                 text);
 			
 			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-				SDL_Surface* temp = TTF_RenderUTF8_Blended(this->font, text, kos_font_colour);
-				this->surface = SDL_CreateRGBSurface(0, temp->w, temp->h, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+				SDL_Surface* temp = TTF_RenderUTF8_Blended(__this->font, text, kos_font_colour);
+				__this->surface = SDL_CreateRGBSurface(0, temp->w, temp->h, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 				
-				SDL_BlitSurface(temp, NULL, this->surface, NULL);
+				SDL_BlitSurface(temp, NULL, __this->surface, NULL);
 				SDL_FreeSurface(temp);
 				
-				if (!this->surface) {
+				if (!__this->surface) {
 					printf("WARNING Could not create the font surface (SDL `%s`, TTF `%s`)\n", SDL_GetError(), TTF_GetError());
-					this->used = 0;
+					__this->used = 0;
 					
 					return;
 					
 				}
 				
-				SDL_LockSurface(this->surface);
-				uint64_t* pixels = (uint64_t*) this->surface->pixels;
+				SDL_LockSurface(__this->surface);
+				uint64_t* pixels = (uint64_t*) __this->surface->pixels;
 				
 				unsigned long long i;
-				for (i = 0; i < (this->surface->w * this->surface->h) / 2; i++) {
+				for (i = 0; i < (__this->surface->w * __this->surface->h) / 2; i++) {
 					pixels[i] &= 0xFF000000FF000000;
 					pixels[i] += 0x00FFFFFF00FFFFFF;
 					
@@ -254,17 +254,17 @@
 				position.x = 0;
 				position.y = 0;
 				
-				FT_GlyphSlot slot = this->font->glyph;
+				FT_GlyphSlot slot = __this->font->glyph;
 				
-				this->surface.w = 1000;
-				this->surface.h = 1000;
-				this->surface.pixels = (unsigned long long*) malloc(this->surface.w * this->surface.h * 4);
+				__this->surface.w = 1000;
+				__this->surface.h = 1000;
+				__this->surface.pixels = (unsigned long long*) malloc(__this->surface.w * __this->surface.h * 4);
 				
 				unsigned long long i;
 				for (i = 0; i < strlen(text) - 1; i++) {
-					FT_Set_Transform(this->font, &matrix, &position);
+					FT_Set_Transform(__this->font, &matrix, &position);
 					
-					if (FT_Load_Char(this->font, text[i], FT_LOAD_RENDER)) {
+					if (FT_Load_Char(__this->font, text[i], FT_LOAD_RENDER)) {
 						printf("WARNING Failed to load \"%d\" (or %c) character\n", text[i], text[i]);
 						continue;
 						
@@ -289,7 +289,7 @@
 					for (x = ox; x < xmax; x++, p++) {
 						for (y = oy; y < ymax; y++, q++) {
 							if (x < 0 || y < 0) continue;
-							((char*) this->surface.pixels)[q * bitmap.width + p] |= bitmap.buffer[q * bitmap.width + p];
+							((char*) __this->surface.pixels)[q * bitmap.width + p] |= bitmap.buffer[q * bitmap.width + p];
 							
 						}
 						
@@ -305,34 +305,34 @@
 		
 	}
 	
-	unsigned long long font_remove(font_t this) {
+	unsigned long long font_remove(font_t __this) {
 		KOS_CHECK_FONT(-1)
 		
-		if (kos_fonts[this].text != NULL) {
-			free(kos_fonts[this].text);
+		if (kos_fonts[__this].text != NULL) {
+			free(kos_fonts[__this].text);
 			
 		}
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			if (kos_fonts[this].surface) {
-				SDL_FreeSurface(kos_fonts[this].surface);
+			if (kos_fonts[__this].surface) {
+				SDL_FreeSurface(kos_fonts[__this].surface);
 				
 			}
 			
-			TTF_CloseFont(kos_fonts[this].font);
+			TTF_CloseFont(kos_fonts[__this].font);
 		#elif KOS_USES_SDL2
-			FT_Done_Face(kos_fonts[this].font);
+			FT_Done_Face(kos_fonts[__this].font);
 		#endif
 		
-		kos_unuse_font(&kos_fonts[this]);
+		kos_unuse_font(&kos_fonts[__this]);
 		return 0;
 		
 	}
 	
-	texture_t create_texture_from_font(font_t this, char* text) {
+	texture_t create_texture_from_font(font_t __this, char* text) {
 		KOS_CHECK_FONT(0)
 		
-		kos_font_t* font = &kos_fonts[this];
+		kos_font_t* font = &kos_fonts[__this];
 		kos_font_create_text(font, text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
@@ -345,10 +345,10 @@
 		
 	}
 	
-	unsigned long long get_font_width(font_t this, char* text) {
+	unsigned long long get_font_width(font_t __this, char* text) {
 		KOS_CHECK_FONT(-1)
 		
-		kos_font_t* font = &kos_fonts[this];
+		kos_font_t* font = &kos_fonts[__this];
 		kos_font_create_text(font, text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
@@ -361,10 +361,10 @@
 		
 	}
 	
-	unsigned long long get_font_height(font_t this, char* text) {
+	unsigned long long get_font_height(font_t __this, char* text) {
 		KOS_CHECK_FONT(-1)
 		
-		kos_font_t* font = &kos_fonts[this];
+		kos_font_t* font = &kos_fonts[__this];
 		kos_font_create_text(font, text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2

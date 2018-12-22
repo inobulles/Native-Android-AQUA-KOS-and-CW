@@ -32,6 +32,7 @@ extern char* LOG_TAG;
 
 #include "safemem.h"
 
+#define MAX_PATH_LENGTH 4096
 #define CALLBACK_NO_PARAMS "()V"
 
 static JNIEnv* callback_env;

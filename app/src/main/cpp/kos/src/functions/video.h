@@ -15,7 +15,7 @@
 	}
 	
 	void video_draw(void) {
-		printf("WARNING This function (`video_draw`) is deprecated\n");
+		printf("WARNING __this function (`video_draw`) is deprecated\n");
 		
 	}
 	
@@ -71,28 +71,28 @@
 	static unsigned char kos_is_mouse_pressed = 0;
 	static unsigned char kos_has_clicked = 0;
 	
-	static unsigned long long get_device_keyboard_key;
-	static unsigned long long get_device_keyboard_keycode;
+	extern unsigned long long get_device_keyboard_key;
+	extern unsigned long long get_device_keyboard_keycode;
 	
 	static unsigned long long resize_count;
 	static unsigned char      first_event_flush = 1;
 	
-	void get_events(event_list_t* this) { // I guess this shouldn't be here but idc tbh
+	void get_events(event_list_t* __this) { // I guess __this shouldn't be here but idc tbh
 		unsigned long long half_width  = current_kos->width  >> 1;
 		unsigned long long half_height = current_kos->height >> 1;
 		
 		if (first_event_flush) {
 			first_event_flush = 0;
-			memset(this, 0, sizeof(event_list_t));
+			memset(__this, 0, sizeof(event_list_t));
 			
-			this->pointer_x = half_width;
-			this->pointer_y = half_height;
+			__this->pointer_x = half_width;
+			__this->pointer_y = half_height;
 			
 		}
 		
-		this->quit = 0;
-		this->resize = 0;
-		this->pointer_click_type = kos_is_mouse_pressed;
+		__this->quit = 0;
+		__this->resize = 0;
+		__this->pointer_click_type = kos_is_mouse_pressed;
 		
 		#if KOS_USES_SDL2
 			SDL_Event event;
@@ -100,14 +100,14 @@
 			
 			while (SDL_PollEvent(&event)) {
 				if (event.type == SDL_QUIT) {
-					this->quit = 1;
+					__this->quit = 1;
 					break;
 					
 				} else if (event.type == SDL_WINDOWEVENT) {
 					switch (event.window.event) {
 						case SDL_WINDOWEVENT_SIZE_CHANGED: {
 							resize_count++;
-							this->resize = 1;
+							__this->resize = 1;
 							
 							current_kos->width  = event.window.data1;
 							current_kos->height = event.window.data2;
@@ -127,12 +127,12 @@
 					break;
 					
 				} else if (event.type == SDL_MOUSEMOTION) {
-					this->pointer_x = event.motion.x;
-					this->pointer_y = event.motion.y;
+					__this->pointer_x = event.motion.x;
+					__this->pointer_y = event.motion.y;
 					
 				} else if (event.type == SDL_MOUSEBUTTONDOWN) {
-					this->pointer_x = event.button.x;
-					this->pointer_y = event.button.y;
+					__this->pointer_x = event.button.x;
+					__this->pointer_y = event.button.y;
 					
 					kos_has_clicked = 1;
 					kos_is_mouse_pressed = 1;
@@ -140,8 +140,8 @@
 					break;
 					
 				} else if (event.type == SDL_MOUSEBUTTONUP) {
-					this->pointer_x = event.button.x;
-					this->pointer_y = event.button.y;
+					__this->pointer_x = event.button.x;
+					__this->pointer_y = event.button.y;
 					
 					kos_is_mouse_pressed = 0;
 					break;
@@ -159,12 +159,12 @@
 			}
 		#endif
 		
-		this->pointer_x = this->pointer_x < 0 && this->pointer_x >= video_width()  ? half_width  : this->pointer_x;
-		this->pointer_y = this->pointer_y < 0 && this->pointer_y >= video_height() ? half_height : this->pointer_y;
+		__this->pointer_x = __this->pointer_x >= video_width()  ? half_width  : __this->pointer_x;
+		__this->pointer_y = __this->pointer_y >= video_height() ? half_height : __this->pointer_y;
 		
 	}
 	
-	void free_events(event_list_t* this) {
+	void free_events(event_list_t* __this) {
 		
 	}
 	
@@ -176,10 +176,10 @@
 	static unsigned long long predefined_background_texture_dimensions      [2];
 	static unsigned long long predefined_frost_background_texture_dimensions[2];
 	
-	void bmp_load(bitmap_image_t* this, unsigned long long _path);
-	void bmp_free(bitmap_image_t* this);
+	void bmp_load(bitmap_image_t* __this, unsigned long long _path);
+	void bmp_free(bitmap_image_t* __this);
 	
-	static int kos_setup_predefined_textures(kos_t* this) {
+	static int kos_setup_predefined_textures(kos_t* __this) {
 		int warning = 0;
 		bitmap_image_t temp_bmp;
 		
@@ -205,7 +205,7 @@
 		
 	}
 	
-	static void kos_free_predefined_textures(kos_t* this) {
+	static void kos_free_predefined_textures(kos_t* __this) {
 		if (predefined_background_texture       != -1) texture_remove(predefined_background_texture);
 		if (predefined_frost_background_texture != -1) texture_remove(predefined_frost_background_texture);
 		

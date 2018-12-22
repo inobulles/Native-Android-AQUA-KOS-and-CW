@@ -85,21 +85,6 @@ signed_t __THREAD_START(signed_t address, signed_t freq, void* argument);
 signed_t __THREAD_FREQ(signed_t address, signed_t freq);
 signed_t __THREAD_INST(signed_t address);
 
-#if ANDROID
-#include "../kos/placeholders.h" // include all of the KOS functions
-#include "../kos/video.h"
-#include "../kos/events.h"
-#include "../kos/misc.h"
-#include "../kos/decoders/bmp.h"
-
-#include "../kos/fs.h"
-#include "../kos/socket.h"
-#include "../kos/gl/font.h"
-
-void bmp_load(unsigned long long __this, unsigned long long _path);
-void bmp_free(unsigned long long __this);
-#endif
-
 #include "heap.h"
 
 /// TODO FOR ALL MEM* FUNCTIONS check if __src + __n and __dest + __n are within heap bounds

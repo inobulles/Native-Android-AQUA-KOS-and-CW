@@ -5,16 +5,16 @@
 	#include "../../macros_and_inclusions.h"
 	#include "../../gl_common/texture.h"
 	
-	int glDeleteFramebuffers     ();
-	int glCheckFramebufferStatus ();
-	int glDrawBuffers            ();
-	int glFramebufferTexture     ();
-	int glFramebufferRenderbuffer();
-	int glRenderbufferStorage    ();
-	int glBindRenderbuffer       ();
-	int glGenRenderbuffers       ();
-	int glBindFramebuffer        ();
-	int glGenFramebuffers        ();
+	int glDeleteFramebuffers     (...);
+	int glCheckFramebufferStatus (...);
+	int glDrawBuffers            (...);
+	int glFramebufferTexture     (...);
+	int glFramebufferRenderbuffer(...);
+	int glRenderbufferStorage    (...);
+	int glBindRenderbuffer       (...);
+	int glGenRenderbuffers       (...);
+	int glBindFramebuffer        (...);
+	int glGenFramebuffers        (...);
 	
 	framebuffer_t gl2_framebuffer_create(texture_t texture) {
 		GLint                                  old_framebuffer;
@@ -36,14 +36,14 @@
 		
 	}
 	
-	void gl2_framebuffer_bind(framebuffer_t this, unsigned long long x, unsigned long long y, unsigned long long width, unsigned long long height) {
-		glBindFramebuffer(GL_FRAMEBUFFER, this);
+	void gl2_framebuffer_bind(framebuffer_t __this, unsigned long long x, unsigned long long y, unsigned long long width, unsigned long long height) {
+		glBindFramebuffer(GL_FRAMEBUFFER, __this);
 		glViewport(x, y, width, height);
 		
 	}
 	
-	void gl2_framebuffer_remove(framebuffer_t this) {
-		glDeleteFramebuffers(1, &this);
+	void gl2_framebuffer_remove(framebuffer_t __this) {
+		glDeleteFramebuffers(1, &__this);
 		
 	}
 	
