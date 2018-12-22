@@ -175,6 +175,7 @@
 		
 		unsigned long long previous_math_device_sqrt_result;
 		unsigned long long previous_math_device_sin_result;
+		unsigned long long previous_math_device_sigmoid_result;
 		
 		unsigned long long get_device_keyboard_key_packet;
 		unsigned long long get_device_keyboard_keycode_packet;
@@ -220,7 +221,23 @@
 		return errors;
 		
 	}
-	
+
+	double exponential(double x) {
+		int precision = 10;
+		double sum = 1.0f;
+
+		int i;
+		for (i = precision - 1; i > 0; i--) {
+			sum *= x;
+			sum /= i;
+			sum += 1;
+
+		}
+
+		return sum;
+
+	}
+
 	unsigned long long* get_device(unsigned long long device, const char* extra) {
 		unsigned long long* result = (unsigned long long*) 0;
 		
@@ -236,6 +253,12 @@
 					kos_bda_implementation.previous_math_device_sin_result = (unsigned long long) (sin((double) data->x / FLOAT_ONE) * FLOAT_ONE);
 					result = &kos_bda_implementation.previous_math_device_sin_result;
 					
+				} else if (strcmp(extra, "sigmoid") == 0) {
+					math_device_generic_t* data = (math_device_generic_t*) extra;
+					double exp = exponential((double) ((int64_t) data->x) / FLOAT_ONE);
+					kos_bda_implementation.previous_math_device_sigmoid_result = (unsigned long long) ((((exp / (exp + 1.0f)) - 0.5f) * 2.0f) * FLOAT_ONE);
+					result = &kos_bda_implementation.previous_math_device_sigmoid_result;
+
 				} else {
 					KOS_DEVICE_COMMAND_WARNING("math")
 					

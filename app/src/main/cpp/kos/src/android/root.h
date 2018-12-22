@@ -36,7 +36,7 @@ bool default_assets = false;
 #define JNI_FUNCTION_NAME(name) glue(glue(glue(glue(Java_com_, PKG_ORG), glue(_, PKG_PER)), glue(_, PKG_APP)), glue(_Lib_, name))
 
 extern "C" {
-	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)  (JNIEnv* env, jobject obj, jboolean has_response, jstring, response);
+	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1text_1input_1response)  (JNIEnv* env, jobject obj, jboolean has_response, jstring response);
 	JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)               (JNIEnv* env, jobject obj, jstring tag, jboolean standalone);
     JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)                         (JNIEnv* env, jobject obj, jobject java_asset_manager);
     JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)                 (JNIEnv* env, jobject obj);
