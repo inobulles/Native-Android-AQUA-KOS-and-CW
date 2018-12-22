@@ -11,8 +11,6 @@
 #include <time.h>
 #include "native-lib.h"
 
-extern bool disable_gl;
-
 Renderer::Renderer(void)  {
 	last_frame_ns = 0;
 
@@ -50,7 +48,7 @@ unsigned long long Renderer::step(void) {
 }
 
 unsigned long long Renderer::render(void) {
-	if (!disable_gl) {
+	/*if (!disable_gl) {
 		unsigned long long fps = step();
 		check_gl_error("Renderer::render");
 		return fps;
@@ -58,7 +56,9 @@ unsigned long long Renderer::render(void) {
 	} else {
 		return 0;
 
-	}
+	}*/
+
+	return 0;
 
 }
 

@@ -14,6 +14,7 @@ static kos_t kos;
 #define ROM_PATH "ROM.zed"
 
 static unsigned long long kos_roms_loaded = 0;
+static program_t* current_de_program = nullptr;
 
 static signed long long __load_rom(unsigned long long __path) {
 	const char* ____path;
@@ -33,6 +34,7 @@ static signed long long __load_rom(unsigned long long __path) {
 	__pointer__program_t* __pointer___this_previous          = __pointer___this;
 	
 	program_t de_program;
+	current_de_program = (program_t*) &de_program;
 	
 	FILE* fp = fopen(path, "rb");
 		

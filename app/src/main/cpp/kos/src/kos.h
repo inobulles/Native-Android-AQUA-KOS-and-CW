@@ -57,8 +57,10 @@
 			bcm_ogles_exit(__this);
 		#endif
 
-		printf("Freeing requests and CURL ...\n");
-		request_global_free();
+		#ifdef __HAS_CURL
+			printf("Freeing requests and CURL ...\n");
+			request_global_free();
+		#endif
 		
 	}
 	

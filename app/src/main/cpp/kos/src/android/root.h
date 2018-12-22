@@ -60,6 +60,10 @@ extern "C" {
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 
+void nothing(...) {
+
+}
+
 #ifndef     __LOG_TAG
 	#define __LOG_TAG "AQUA"
 	char*     LOG_TAG = (char*) __LOG_TAG;
@@ -131,21 +135,6 @@ bool text_input_has_string_response = false;
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 	if (!cw_pause) {
-		while (!waiting_video_flip) {
-			int return_value = loop();
-
-			if (return_value != -1) {
-				exit(return_value);
-
-			}
-
-		}
-
-		if (renderer) {
-			waiting_video_flip = 0;
-			gl_fps = renderer->render();
-
-		}
 
 	} else {
 		if (!text_input_has_response) {
@@ -154,10 +143,10 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 
 			if (text_input_has_string_response) {
 				extern const char* text_input_response;
-				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
+				current_de_program->main_thread.registers[REGISTER_FAMILY_a] = (unsigned long long) text_input_response;
 
 			} else {
-				current_de->program->main_thread.registers[REGISTER_FAMILY_a] = 0;
+				current_de_program->main_thread.registers[REGISTER_FAMILY_a] = 0;
 
 			}
 
@@ -168,9 +157,6 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(event)(JNIEnv* env, jobject obj, jint pointer_index, jint pointer_type, jint x, jint y, jint quit, jint release, jint tray_offset) {
-	extern int notification_tray_offset;
-	notification_tray_offset = (int) tray_offset;
-
 	has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = true;
 	event_last_release = release;
 

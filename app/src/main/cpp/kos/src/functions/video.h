@@ -76,7 +76,18 @@
 	
 	static unsigned long long resize_count;
 	static unsigned char      first_event_flush = 1;
-	
+
+	#if KOS_USES_JNI
+		static int event_pointer_x = 0;
+		static int event_pointer_y = 0;
+
+		static int event_pointer_click_type = 0;
+		static int event_quit               = 0;
+
+		static unsigned char has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 0;
+		static int event_last_release = 1;
+	#endif
+
 	void get_events(event_list_t* __this) { // I guess __this shouldn't be here but idc tbh
 		unsigned long long half_width  = current_kos->width  >> 1;
 		unsigned long long half_height = current_kos->height >> 1;
@@ -157,8 +168,21 @@
 				}
 				
 			}
+		#elif KOS_USES_JNI
+			int gl_resize = 0; /// TODO
+
+			__this->quit = (unsigned long long) event_quit;
+			__this->resize = gl_resize;
+
+			__this->pointer_click_type = (unsigned long long) event_pointer_click_type;
+			has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 0;
+
+			__this->pointer_x = (unsigned long long) event_pointer_x;
+			__this->pointer_y = (unsigned long long) event_pointer_y;
+
+			gl_resize = 0;
 		#endif
-		
+
 		__this->pointer_x = __this->pointer_x >= video_width()  ? half_width  : __this->pointer_x;
 		__this->pointer_y = __this->pointer_y >= video_height() ? half_height : __this->pointer_y;
 		

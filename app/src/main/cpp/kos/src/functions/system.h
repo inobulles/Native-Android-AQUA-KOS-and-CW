@@ -190,7 +190,11 @@
 	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <dirent.h>
-	
+
+	#if KOS_USES_JNI
+		static unsigned char text_input_has_response = 0;
+	#endif
+
 	int remove_directory_recursive(const char* name) {
 		DIR* directory = opendir(name);
 		
