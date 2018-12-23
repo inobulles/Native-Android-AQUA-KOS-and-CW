@@ -192,6 +192,8 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 			last_frame_nanoseconds = nanoseconds;
 			check_gl_error("video_flip");
 			
+			waiting_video_flip = 0;
+			
 		}
 
 	} else {

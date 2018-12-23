@@ -296,6 +296,8 @@
 				#if !KOS_USES_SHADER_PIPELINE
 					glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
 					glTranslatef(0.0f, 0.0f, -100.0f);
+				#else
+					ortho(-1.0f, 1.0f, -1.0f, 1.0f, -100.0f, 500.0f);
 				#endif
 			#endif
 

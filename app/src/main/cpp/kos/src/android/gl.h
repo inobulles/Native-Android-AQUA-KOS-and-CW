@@ -13,9 +13,9 @@ bool check_gl_error(const char* function_name) {
 	if (error != GL_NO_ERROR) {
 		const char* error_string;
 
-#define GL_TABLE_TOO_LARGE 0x8031
-#define GL_STACK_OVERFLOW  0x0503
-#define GL_STACK_UNDERFLOW 0x0504
+		#define GL_TABLE_TOO_LARGE 0x8031
+		#define GL_STACK_OVERFLOW  0x0503
+		#define GL_STACK_UNDERFLOW 0x0504
 
 		switch (error) {
 			case GL_INVALID_ENUM:                  error_string = "GL_INVALID_ENUM";                  break;
