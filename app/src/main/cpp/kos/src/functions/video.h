@@ -187,9 +187,9 @@ void video_clear(void) {
 			__this->quit   = (unsigned long long) event_quit;
 			__this->resize = (unsigned long long) gl_resize;
 
-			__this->pointer_click_type = (unsigned long long) event_pointer_click_type;
+			__this->pointer_click_type = (unsigned long long) !event_last_release;
 			has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 0;
-
+		
 			__this->pointer_x = (unsigned long long) event_pointer_x;
 			__this->pointer_y = (unsigned long long) event_pointer_y;
 

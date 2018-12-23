@@ -22,7 +22,7 @@
 		
 		int i;
 		for (i = 0; i < 4; i++) {
-			__this->vertices[i].z = (GLfloat) layer / 256.0f;
+			__this->vertices[i].z = 1.0f - (GLfloat) layer / 512.0f; /// FIXME
 			
 		}
 		
