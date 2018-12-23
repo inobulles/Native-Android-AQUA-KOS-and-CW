@@ -18,17 +18,26 @@
 	static unsigned long long __fs_read(unsigned long long _path, unsigned long long data, unsigned long long bytes, unsigned long long offset) {
 		GET_PATH((char*) _path);
 		
-		FILE* file = fopen(path, "rb");
-		FS_CHECK_FILE("reading")
+		#if KOS_USES_JNI
+			if (load_asset_bytes(path, (char**) data, (unsigned long long*) bytes)) {
+				ALOGE("WARNING File `%s` could not be opened (for reading)\n", path);
+				return 1;
+				
+			}
+		#else
+			FILE* file = fopen(path, "rb");
+			FS_CHECK_FILE("reading")
+			
+			fseek(file, 0, SEEK_END);
+			*((unsigned long long*) bytes) = ftell(file) + offset;
+			rewind(file);
+			
+			*((char**) data) = (char*) malloc(*((unsigned long long*) bytes) + 1);
+			fread(*((char**) data) + offset,  *((unsigned long long*) bytes) - offset, sizeof(char), file);
+			
+			fclose(file);
+		#endif
 		
-		fseek(file, 0, SEEK_END);
-		*((unsigned long long*) bytes) = ftell(file) + offset;
-		rewind(file);
-		
-		*((char**) data) = (char*) malloc(*((unsigned long long*) bytes) + 1);
-		fread(*((char**) data) + offset,  *((unsigned long long*) bytes) - offset, sizeof(char), file);
-		
-		fclose(file);
 		return 0;
 		
 	}
@@ -42,17 +51,49 @@
 		free((char*) data);
 		
 	}
-	
+
+	#if KOS_USES_JNI
+		#define FS_WRITE_CHECK_DEFAULT_ASSETS false
+	#endif
+
 	unsigned long long fs_write(unsigned long long _path, unsigned long long data, unsigned long long bytes) {
-		GET_PATH((char*) _path);
+		#if KOS_USES_JNI
+			extern bool default_assets;
 		
-		FILE* file = fopen(path, "wb");
+			#if FS_WRITE_CHECK_DEFAULT_ASSETS
+				if (!default_assets) {
+			#endif
+		#endif
+		
+		GET_PATH((char*) _path);
+		char* final_path = path;
+		
+		#if KOS_USES_JNI
+			SET_FINAL_PATH
+		#endif
+		
+		FILE* file = fopen(final_path, "wb");
+		
+		#if KOS_USES_JNI
+			free(final_path);
+		#endif
+		
 		FS_CHECK_FILE("writing")
 		
 		fwrite((const void*) ((const char*) data), sizeof(char), bytes, file);
 		fclose(file);
 		
 		return 0;
+		
+		#if KOS_USES_JNI
+			#if FS_WRITE_CHECK_DEFAULT_ASSETS
+				} else {
+					ALOGE("WARNING `default_assets` is set\n");
+					return 1;
+		
+				}
+			#endif
+		#endif
 		
 	}
 	
