@@ -130,6 +130,9 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint 
 	extern unsigned long long last_frame_nanoseconds;
 	last_frame_nanoseconds = 0;
 	
+	current_kos->width  = width;
+	current_kos->height = height;
+	
 	gl_resize = 1;
 	glViewport(0, 0, width, height);
 

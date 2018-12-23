@@ -192,7 +192,7 @@ void video_clear(void) {
 		
 			__this->pointer_x = (unsigned long long) event_pointer_x;
 			__this->pointer_y = (unsigned long long) event_pointer_y;
-
+			
 			gl_resize = 0;
 		#endif
 
