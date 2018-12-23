@@ -21,8 +21,8 @@
 		__this->layer = (signed long long) layer;
 		
 		int i;
-		for (i = 0; i < 4; i++) {
-			__this->vertices[i].z = 1.0f - (GLfloat) layer / 512.0f; /// FIXME
+		for (i = 0; i < SURFACE_VERTEX_COUNT; i++) {
+			__this->vertices[i].z = 1.0f - (GLfloat) layer / 512.0f - 0.1f; /// FIXME
 			
 		}
 		

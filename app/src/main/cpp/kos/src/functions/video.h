@@ -101,7 +101,7 @@ void video_clear(void) {
 
 	int gl_resize = 0;
 
-	void get_events(unsigned long long ____this) { // I guess __this shouldn't be here but idc tbh
+	void get_events(unsigned long long ____this) { // I guess this shouldn't be here but idc tbh
 		event_list_t* __this = (event_list_t*) ____this;
 		
 		unsigned long long half_width  = (unsigned long long) (current_kos->width  >> 1);

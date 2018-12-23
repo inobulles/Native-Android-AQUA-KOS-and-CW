@@ -13,8 +13,13 @@
 static std::vector<void*> allocated_pointer_list;
 
 static inline void* safe_malloc(unsigned long long bytes) {
+	if (bytes > 4294967296 /* 1 << 32 */) {
+		ALOGA("WARNING I'm pretty sure you shouldn't be allocating this much memory (%llu bytes)\n", bytes);
+		
+	}
+	
 #if CPP_MMAN_STYLE
-	char* pointer =  new char[bytes];
+	char* pointer = new char[bytes];
 #else
 	void* pointer = malloc(bytes);
 

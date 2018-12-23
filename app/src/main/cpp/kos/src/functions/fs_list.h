@@ -25,7 +25,7 @@
 			
 		} else {
 			printf("WARNING Directory `%s` could not be opened (for list counting)\n", path);
-			return -1;
+			return (unsigned long long) -1;
 			
 		}
 		
@@ -40,7 +40,14 @@
 	char** fs_list(unsigned long long _path) {
 		GET_PATH((char*) _path);
 		
-		unsigned long long count   = fs_list_count(_path);
+		unsigned long long count = fs_list_count(_path);
+		
+		if (count <= -1) {
+			printf("WARNING Failed to open current directory");
+			return (char**) 0;
+			
+		}
+		
 		unsigned long long current = 0;
 		char** result              = (char**) malloc(count * sizeof(char*));
 		
