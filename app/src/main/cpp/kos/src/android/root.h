@@ -71,7 +71,6 @@ void nothing(...) {
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)(JNIEnv* env, jobject obj, jstring tag, jboolean standalone) {
 	default_assets = (bool) standalone;
-	ALOGA("DEFAULRAOERUAIWRNHAUI %lld\n", default_assets);
 
 	jboolean is_copy = 0;
 	LOG_TAG = (char*) env->GetStringUTFChars(tag, &is_copy);

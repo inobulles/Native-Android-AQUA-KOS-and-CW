@@ -115,8 +115,6 @@ static bool load_asset_bytes(const char* path, char** buffer, unsigned long long
 		extern AAssetManager* asset_manager;
 		AAsset* asset = AAssetManager_open(asset_manager, path, AASSET_MODE_UNKNOWN);
 		
-		ALOGA("%s\n", path);
-
 		if (asset) {
 			assert(asset);
 

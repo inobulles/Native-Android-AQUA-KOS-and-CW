@@ -212,7 +212,9 @@
 		
 		#if KOS_USES_OPENGLES && KOS_USES_JNI
 			__this->context = eglGetCurrentContext();
-			extern bool default_assets;
+			
+			extern bool               default_assets;
+			bool old_default_assets = default_assets;
 		
 			int error = 0;
 			default_assets = true;
@@ -226,7 +228,7 @@
 				
 			}
 		
-			default_assets = false;
+			default_assets         = old_default_assets;
 			__this->shader_program = create_program(__this->vertex_shader, __this->fragment_shader);
 		
 			if (!__this->shader_program) {

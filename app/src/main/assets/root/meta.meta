@@ -2,4 +2,4 @@ orientation:full
 permission:write external storage
 permission:read external storage
 tag:AQUA
-standalone:false
+standalone:true
