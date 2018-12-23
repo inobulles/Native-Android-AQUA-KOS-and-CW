@@ -112,6 +112,9 @@
 		__this->height = (unsigned long long) info_header.height;
 		
 		#if KOS_USES_JNI
+			buffer  = original;
+			buffer += header.offset;
+		
 			unsigned char* char_data = (unsigned char*) buffer;
 		#else
 			unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
@@ -150,7 +153,7 @@
 			free(char_data);
 			fclose(file);
 		#endif
-	
+		
 	}
 	
 	void bmp_free(unsigned long long ____this) {
