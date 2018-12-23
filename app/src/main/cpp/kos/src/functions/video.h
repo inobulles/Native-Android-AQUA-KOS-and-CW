@@ -99,6 +99,8 @@ void video_clear(void) {
 		static int event_last_release = 1;
 	#endif
 
+	int gl_resize = 0;
+
 	void get_events(event_list_t* __this) { // I guess __this shouldn't be here but idc tbh
 		unsigned long long half_width  = (unsigned long long) (current_kos->width  >> 1);
 		unsigned long long half_height = (unsigned long long) (current_kos->height >> 1);
@@ -180,8 +182,6 @@ void video_clear(void) {
 				
 			}
 		#elif KOS_USES_JNI
-			int gl_resize = 0; /// TODO
-
 			__this->quit   = (unsigned long long) event_quit;
 			__this->resize = (unsigned long long) gl_resize;
 

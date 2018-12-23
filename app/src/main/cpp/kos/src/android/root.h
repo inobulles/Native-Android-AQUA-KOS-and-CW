@@ -127,12 +127,10 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)(JNIEnv* env, jobject obj)
 }
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint width, jint height) {
-	extern unsigned char gl_resize;
-	gl_resize = 1;
-	
 	extern unsigned long long last_frame_nanoseconds;
 	last_frame_nanoseconds = 0;
 	
+	gl_resize = 1;
 	glViewport(0, 0, width, height);
 
 }
@@ -176,23 +174,23 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 				
 			}
 			
-			if (!disable_gl) {
-				timespec now;
-				clock_gettime(CLOCK_MONOTONIC, &now);
-				
-				unsigned long long nanoseconds = (unsigned long long) (now.tv_sec * 1000000000 + now.tv_nsec);
-				gl_fps = 0;
-				
-				if (last_frame_nanoseconds > 0) {
-					float delta = (float) (nanoseconds - last_frame_nanoseconds) * 0.000000001f;
-					gl_fps = (unsigned long long) (1.0f / delta);
-					
-				}
-				
-				last_frame_nanoseconds = nanoseconds;
-				check_gl_error("video_flip");
+		}
+		
+		if (!disable_gl) {
+			timespec now;
+			clock_gettime(CLOCK_MONOTONIC, &now);
+			
+			unsigned long long nanoseconds = (unsigned long long) (now.tv_sec * 1000000000 + now.tv_nsec);
+			gl_fps = 0;
+			
+			if (last_frame_nanoseconds > 0) {
+				float delta = (float) (nanoseconds - last_frame_nanoseconds) * 0.000000001f;
+				gl_fps = (unsigned long long) (1.0f / delta);
 				
 			}
+			
+			last_frame_nanoseconds = nanoseconds;
+			check_gl_error("video_flip");
 			
 		}
 
