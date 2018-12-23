@@ -35,8 +35,16 @@
 		char name[MAX_PATH_LENGTH] = "root/"; \
 		strncat(name, (char*) (_path), MAX_PATH_LENGTH - strlen(name)); \
 
-	#define GET_PATH(_path) GET_PATH_NAME(path, _path)
-
+	#if KOS_USES_JNI
+		#define GET_PATH(_path) \
+			char path[MAX_PATH_LENGTH] = "root/root/"; \
+		    strncat(path, (char*) (_path), MAX_PATH_LENGTH - strlen(path));
+	#else
+		#define GET_PATH(_path) GET_PATH_NAME(path, _path)
+	#endif
+	
+	#define GET_PATH_FS(_path) GET_PATH_NAME
+	
 	#ifndef KOS_TODO
 		#define KOS_TODO printf("TODO `%s` in `%s` line %d\n", __func__, __FILE__, __LINE__);
 	#endif

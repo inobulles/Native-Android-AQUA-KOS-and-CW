@@ -71,6 +71,7 @@ void nothing(...) {
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)(JNIEnv* env, jobject obj, jstring tag, jboolean standalone) {
 	default_assets = (bool) standalone;
+	ALOGA("DEFAULRAOERUAIWRNHAUI %lld\n", default_assets);
 
 	jboolean is_copy = 0;
 	LOG_TAG = (char*) env->GetStringUTFChars(tag, &is_copy);
@@ -111,7 +112,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(asset_manager != NULL);
 	
-	main(2, (char*[]) {(char*) "./a.out", (char*) "assets/root/rom.zed"});
+	main(2, (char*[]) {(char*) "./a.out", (char*) "root/rom.zed"});
 
 }
 

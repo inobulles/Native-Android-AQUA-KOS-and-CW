@@ -42,22 +42,44 @@ static signed long long __load_rom(unsigned long long __path) {
 	
 	current_de_program = de_program;
 	
-	FILE* fp = fopen(path, "rb");
+	char*              rom   = nullptr;
+	unsigned long long bytes = 0;
+	
+	#if KOS_USES_JNI
+		if (load_asset_bytes((const char*) __path, &rom, &bytes)) {
+			if (!default_assets) {
+				ALOGW("WARNING Could not load the ROM from internal / external storage. Trying from assets ...\n");
+				default_assets = true;
+				
+				if (load_asset_bytes((const char*) __path, &rom, &bytes)) {
+					ALOGE("ERROR Could not load ROM from assets either\n");
+					
+				}
+				
+			} else {
+				ALOGE("ERROR Could not load the ROM\n");
+				
+			}
+			
+		}
+	#else
+		FILE* fp = fopen(path, "rb");
 		
-	if (!fp) {
-		printf("WARNING Could not open ROM file (%s)\n", path);
-		kos_quit(&kos);
-		exit(1);
-
-	}
-
-	fseek(fp, 0, SEEK_END);
-	unsigned long long bytes = (unsigned long long) ftell(fp);
-	rewind(fp);
-
-	char* rom = (char*) malloc(bytes);
-	fread(rom, sizeof(char), bytes, fp);
-
+		if (!fp) {
+			printf("WARNING Could not open ROM file (%s)\n", path);
+			kos_quit(&kos);
+			exit(1);
+	
+		}
+	
+		fseek(fp, 0, SEEK_END);
+		bytes = (unsigned long long) ftell(fp);
+		rewind(fp);
+	
+		rom = (char*) malloc(bytes);
+		fread(rom, sizeof(char), bytes, fp);
+	#endif
+	
 	de_program->pointer = rom;
 
 	printf("Starting run setup phase ...\n");

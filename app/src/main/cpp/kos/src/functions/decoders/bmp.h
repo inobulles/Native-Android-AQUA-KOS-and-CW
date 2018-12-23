@@ -3,8 +3,9 @@
 	#define __AQUA__SDL2_SRC_FUNCTIONS_DECODERS_BMP_H
 	
 	#include "../../macros_and_inclusions.h"
-	
-	#pragma pack(push, 1)
+#include "../../lib/structs.h"
+
+#pragma pack(push, 1)
 		typedef struct {
 			uint16_t magic;
 			uint32_t file_size;
@@ -43,86 +44,119 @@
 	}
 	
 	#define BMP_MAGIC 0x4D42
+	static const char* bmp_load_default_path = "test.bmp";
 	
-	void bmp_load(bitmap_image_t* __this, unsigned long long _path) {
+	void bmp_load(unsigned long long ____this, unsigned long long _path) {
+		bitmap_image_t* __this = (bitmap_image_t*) ____this;
 		__this->data = (unsigned long long*) 0;
 		
-		char* buffer;
+		if (!(*((char*) _path))) {
+			_path = (unsigned long long) bmp_load_default_path;
+			printf("WARNING Empty path in %s (setting path to %s)\n", __func__, (char*) _path);
+			
+		}
+		
 		GET_PATH((char*) _path);
+		int error = 0;
 		
-		FILE* file = fopen(path, "rb");
+		#if KOS_USES_JNI
+			unsigned long long bytes;
+			char* buffer;
+			
+			error = load_asset_bytes(path, &buffer, &bytes);
+			ALOGA("%s %lld\n", path, bytes);
+			char* original = buffer;
+		#else
+			FILE* file = fopen(path, "rb");
+			error = !file;
+		#endif
 		
-		if (!file) {
+		if (error) {
 			printf("WARNING Image file could not be opened (probably wrong path `%s`)\n", path);
 			return;
 			
 		}
 		
-		bitmap_header_t header;
+		bitmap_header_t           header;
 		bitmap_info_header_t info_header;
 		
-		fread((char*) &header, sizeof(bitmap_header_t), 1, file);
+		#if KOS_USES_JNI
+			header = *((bitmap_header_t*) buffer);
+			buffer += sizeof(bitmap_header_t);
+		#else
+			fread((char*) &header, sizeof(bitmap_header_t), 1, file);
+		#endif
 		
-		if (header.magic != 0x4D42) {
+		if (header.magic != BMP_MAGIC) {
 			printf("WARNING File is not a bitmap image\n");
-			fclose(file);
+			
+			#if KOS_USES_JNI
+				free(original);
+			#else
+				fclose(file);
+			#endif
 			
 			return;
 			
 		}
 		
-		fread((char*) &info_header, sizeof(bitmap_info_header_t), 1, file);
+		#if KOS_USES_JNI
+			info_header = *((bitmap_info_header_t*) buffer);
+		#else
+			fread((char*) &info_header, sizeof(bitmap_info_header_t), 1, file);
+		#endif
 		
 		__this->image_size = info_header.image_bytes / sizeof(unsigned long long);
-		__this->width  = info_header.width;
-		__this->height = info_header.height;
+		__this->bpp        = (unsigned long long) info_header.bpp;
 		
-		unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
-		unsigned char temp;
+		__this->width  = (unsigned long long) info_header.width;
+		__this->height = (unsigned long long) info_header.height;
 		
-		fseek(file, header.offset, SEEK_SET);
-		fread(char_data, info_header.image_bytes, 1, file);
-		__this->bpp = info_header.bpp;
+		#if KOS_USES_JNI
+			unsigned char* char_data = (unsigned char*) buffer;
+		#else
+			unsigned char* char_data = (unsigned char*) malloc(info_header.image_bytes);
 		
-		int i;
-		for (i = 0; i < info_header.image_bytes; i += __this->bpp / 8) {
+			fseek(file, header.offset, SEEK_SET);
+			fread(char_data, info_header.image_bytes, 1, file);
+		#endif
+		
+		unsigned long long components = __this->bpp >> 3;
+		
+		__this->data             = (unsigned long long*) malloc(info_header.image_bytes);
+		unsigned long long pitch = (unsigned long long)  info_header.width * components;
+		
+		unsigned long long i;
+		for (i = 0; i < info_header.image_bytes; i += components) {
+			unsigned long long flipped_i = (__this->height - (i / (__this->width * components)) - 1) * pitch + ((i / components) % __this->width) * components;
+			
 			if (__this->bpp == 32) {
-				unsigned char a = char_data[i];
-				unsigned char r = char_data[i + 1];
-				unsigned char g = char_data[i + 2];
-				unsigned char b = char_data[i + 3];
-				
-				char_data[i]     = b;
-				char_data[i + 1] = g;
-				char_data[i + 2] = r;
-				char_data[i + 3] = a;
+				((char*) __this->data)[flipped_i]     = char_data[i + 3];
+				((char*) __this->data)[flipped_i + 1] = char_data[i + 2];
+				((char*) __this->data)[flipped_i + 2] = char_data[i + 1];
+				((char*) __this->data)[flipped_i + 3] = char_data[i];
 				
 			} else {
-				temp             = char_data[i];
-				char_data[i]     = char_data[i + 2];
-				char_data[i + 2] = temp;
+				((char*) __this->data)[flipped_i]     = char_data[i + 2];
+				((char*) __this->data)[flipped_i + 1] = char_data[i + 1];
+				((char*) __this->data)[flipped_i + 2] = char_data[i];
 				
 			}
 			
 		}
 		
-		__this->data               = (unsigned long long*) malloc(info_header.image_bytes);
-		unsigned char* data8     = (unsigned char*)      __this->data;
-		unsigned long long pitch = (unsigned long long)  info_header.width * (info_header.bpp / 8);
-		
-		int y;
-		for (y = 0; y < info_header.height; y++) {
-			memcpy(data8 + (info_header.height - y - 1) * pitch, char_data + y * pitch, pitch);
-			
-		}
-		
-		free(char_data);
-		fclose(file);
+		#if KOS_USES_JNI
+			free(original);
+		#else
+			free(char_data);
+			fclose(file);
+		#endif
 	
 	}
 	
-	void bmp_free(bitmap_image_t* __this) {
-		free(__this->data/*, __this->image_size * sizeof(unsigned long long)*/);
+	void bmp_free(unsigned long long ____this) {
+		bitmap_image_t* __this = (bitmap_image_t*) ____this;
+		free(__this->data);
 	
 	}
 	
