@@ -127,7 +127,13 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(dispose_1all)(JNIEnv* env, jobject obj)
 }
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint width, jint height) {
-	ALOGA("resize\n");
+	extern unsigned char gl_resize;
+	gl_resize = 1;
+	
+	extern unsigned long long last_frame_nanoseconds;
+	last_frame_nanoseconds = 0;
+	
+	glViewport(0, 0, width, height);
 
 }
 

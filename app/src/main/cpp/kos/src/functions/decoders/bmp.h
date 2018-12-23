@@ -64,7 +64,6 @@
 			char* buffer;
 			
 			error = load_asset_bytes(path, &buffer, &bytes);
-			ALOGA("%s %lld\n", path, bytes);
 			char* original = buffer;
 		#else
 			FILE* file = fopen(path, "rb");
