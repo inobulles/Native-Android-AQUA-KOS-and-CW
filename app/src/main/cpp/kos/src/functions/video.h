@@ -101,7 +101,9 @@ void video_clear(void) {
 
 	int gl_resize = 0;
 
-	void get_events(event_list_t* __this) { // I guess __this shouldn't be here but idc tbh
+	void get_events(unsigned long long ____this) { // I guess __this shouldn't be here but idc tbh
+		event_list_t* __this = (event_list_t*) ____this;
+		
 		unsigned long long half_width  = (unsigned long long) (current_kos->width  >> 1);
 		unsigned long long half_height = (unsigned long long) (current_kos->height >> 1);
 		
@@ -219,7 +221,7 @@ void video_clear(void) {
 		bitmap_image_t temp_bmp;
 		
 		bmp_load((unsigned long long) &temp_bmp, (unsigned long long) "wallpaper/wallpaper.bmp");
-		predefined_background_texture = texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
+		predefined_background_texture = texture_create((unsigned long long) temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
 		
 		predefined_background_texture_dimensions[0] = temp_bmp.width;
 		predefined_background_texture_dimensions[1] = temp_bmp.height;
@@ -228,7 +230,7 @@ void video_clear(void) {
 		warning += predefined_background_texture == -1;
 		
 		bmp_load((unsigned long long) &temp_bmp, (unsigned long long) "wallpaper/frost.bmp");
-		predefined_frost_background_texture = texture_create(temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
+		predefined_frost_background_texture = texture_create((unsigned long long) temp_bmp.data, temp_bmp.bpp, temp_bmp.width, temp_bmp.height);
 		
 		predefined_frost_background_texture_dimensions[0] = temp_bmp.width;
 		predefined_frost_background_texture_dimensions[1] = temp_bmp.height;
@@ -253,7 +255,7 @@ void video_clear(void) {
 			
 			default: {
 				printf("WARNING Texture %lld is unknown. Returning -1 ...\n", name);
-				return -1;
+				return (texture_t) -1;
 				
 			}
 			

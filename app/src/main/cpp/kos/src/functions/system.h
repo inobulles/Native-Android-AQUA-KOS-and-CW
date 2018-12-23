@@ -34,9 +34,11 @@
 		
 	}
 	
-	unsigned long long platform_system(const char* command) {
+	unsigned long long platform_system(unsigned long long __command) {
+		const char* command = (const char*) __command;
+		
 		#if SYSTEM_ACCESS
-			return system(command);
+			return (unsigned long long) system(command);
 		#else
 			printf("WARNING You do not seem to have the privileges (SYSTEM_ACCESS = %d) to run the command `%s`\n", SYSTEM_ACCESS, command);
 			return 1;
@@ -49,7 +51,9 @@
 		
 	}
 	
-	unsigned long long is_device_supported(const char* device) {
+	unsigned long long is_device_supported(unsigned long long __device) {
+		const char* device = (const char*) __device;
+		
 		if      (strcmp(device, "texture")  == 0) return DEVICE_TEXTURE;
 		else if (strcmp(device, "keyboard") == 0) return DEVICE_KEYBOARD;
 		else if (strcmp(device, "wm")       == 0) return DEVICE_WM;
@@ -242,7 +246,8 @@
 
 	}
 
-	unsigned long long* get_device(unsigned long long device, const char* extra) {
+	unsigned long long* get_device(unsigned long long device, unsigned long long __extra) {
+		const char* extra = (const char*) __extra;
 		unsigned long long* result = (unsigned long long*) 0;
 		
 		switch (device) {
@@ -755,7 +760,10 @@
 		} discord_device_struct_t;
 	#endif
 	
-	void send_device(unsigned long long device, const char* extra, unsigned long long* data) {
+	void send_device(unsigned long long device, unsigned long long __extra, unsigned long long __data) {
+		const char*         extra = (const char*)        __extra;
+		unsigned long long* data  = (unsigned long long*) __data;
+		
 		switch (device) {
 			case DEVICE_TEXTURE: {
 				if (strcmp(extra, "sharp") == 0) SHARP_TEXTURES = *data;

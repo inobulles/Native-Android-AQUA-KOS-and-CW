@@ -17,15 +17,15 @@
 		}
 		
 		switch (kos_best_gl_version_major) {
-			case 1: return -1;
+			case 1: return (texture_t) -1;
 			case 2: return gl2_texture_create(data, bpp, width, height);
-			case 3: return -1;
-			case 4: return -1;
-			case 5: return -1;
+			case 3: return (texture_t) -1;
+			case 4: return (texture_t) -1;
+			case 5: return (texture_t) -1;
 			
 			default: {
 				KOS_WARN_NO_GL_VERSION
-				return -1;
+				return (texture_t) -1;
 				
 			}
 			
@@ -33,7 +33,8 @@
 		
 	}
 	
-	texture_t texture_create(unsigned long long* data, unsigned long long bpp, unsigned long long width, unsigned long long height) {
+	texture_t texture_create(unsigned long long __data, unsigned long long bpp, unsigned long long width, unsigned long long height) {
+		unsigned long long* data = (unsigned long long*) __data;
 		return __texture_create(data, bpp, width, height, KOS_TEXTURE_WARNING);
 		
 	}

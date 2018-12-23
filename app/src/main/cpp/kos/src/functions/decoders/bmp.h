@@ -80,7 +80,7 @@
 		bitmap_info_header_t info_header;
 		
 		#if KOS_USES_JNI
-			header = *((bitmap_header_t*) buffer);
+			header  = *((bitmap_header_t*) buffer);
 			buffer += sizeof(bitmap_header_t);
 		#else
 			fread((char*) &header, sizeof(bitmap_header_t), 1, file);
@@ -123,7 +123,7 @@
 		unsigned long long components = __this->bpp >> 3;
 		
 		__this->data             = (unsigned long long*) malloc(info_header.image_bytes);
-		unsigned long long pitch = (unsigned long long)  info_header.width * components;
+		unsigned long long pitch = __this->width * components;
 		
 		unsigned long long i;
 		for (i = 0; i < info_header.image_bytes; i += components) {

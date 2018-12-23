@@ -16,7 +16,8 @@
 	
 	//static unsigned long long resize_count;
 	
-	static inline void surface_set_layer_float(surface_t* __this, float layer) {
+	static inline void surface_set_layer_float(unsigned long long ____this, float layer) {
+		surface_t* __this = (surface_t*) ____this;
 		__this->layer = (signed long long) layer;
 		
 		int i;
@@ -27,13 +28,15 @@
 		
 	}
 	
-	void surface_set_layer(surface_t* __this, signed long long layer) {
-		surface_set_layer_float(__this, (float) layer);
+	void surface_set_layer(unsigned long long ____this, signed long long layer) {
+		surface_t* __this = (surface_t*) ____this;
+		surface_set_layer_float((unsigned long long) __this, (float) layer);
 		
 	}
 	
-	static inline void surface_update_vertices(surface_t* __this) {
-		surface_set_layer(__this, __this->layer);
+	static inline void surface_update_vertices(unsigned long long ____this) {
+		surface_t* __this = (surface_t*) ____this;
+		surface_set_layer((unsigned long long) __this, __this->layer);
 		
 		float width  = (float) __this->width  / _UI64_MAX_MARGIN;
 		float height = (float) __this->height / _UI64_MAX_MARGIN;
@@ -56,7 +59,8 @@
 		
 	}
 	
-	void surface_scroll(surface_t* __this, signed long long _x, signed long long _y, unsigned long long _width, unsigned long long _height) {
+	void surface_scroll(unsigned long long ____this, signed long long _x, signed long long _y, unsigned long long _width, unsigned long long _height) {
+		surface_t* __this = (surface_t*) ____this;
 		__this->scroll_texture = 1;
 		
 		float x      = ((float) _x      / _SI64_MAX_MARGIN / 4) + 0.5f;
@@ -76,7 +80,9 @@
 		
 	}
 	
-	static void surface_update_colours(surface_t* __this) {
+	static void surface_update_colours(unsigned long long ____this) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		float red   = (float) __this->red   / _UI64_MAX;
 		float green = (float) __this->green / _UI64_MAX;
 		float blue  = (float) __this->blue  / _UI64_MAX;
@@ -94,13 +100,17 @@
 		
 	}
 
-	static void surface_update(surface_t* __this) {
-		surface_update_vertices(__this);
-		surface_update_colours (__this);
+	static void surface_update(unsigned long long ____this) {
+		surface_t* __this = (surface_t*) ____this;
+		
+		surface_update_vertices((unsigned long long) __this);
+		surface_update_colours ((unsigned long long) __this);
 		
 	}
 
-	static void surface_faces(surface_t* __this) {
+	static void surface_faces(unsigned long long ____this) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->faces[0] = 0;
 		__this->faces[1] = 1;
 		__this->faces[2] = 2;
@@ -111,7 +121,9 @@
 		
 	}
 
-	void surface_new(surface_t* __this, signed long long x, signed long long y, unsigned long long width, unsigned long long height) {
+	void surface_new(unsigned long long ____this, signed long long x, signed long long y, unsigned long long width, unsigned long long height) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->red    = _UI64_MAX;
 		__this->green  = _UI64_MAX;
 		__this->blue   = _UI64_MAX;
@@ -128,20 +140,22 @@
 		__this->scroll_texture = 0;
 		__this->has_texture    = 0;
 		
-		surface_update(__this);
-		surface_faces( __this);
+		surface_update((unsigned long long) __this);
+		surface_faces ((unsigned long long) __this);
 		
 	}
 	
-	void surface_free(surface_t* __this) {
+	void surface_free(unsigned long long ____this) {
 		//~ printf("FREED SURFACE %p\n", __this);
 		
 	}
 	
 	static float surface_layer_offset = 0.0f;
 	
-	int surface_draw(surface_t* __this) {
-		surface_set_layer_float(__this, (float) __this->layer + surface_layer_offset);
+	int surface_draw(unsigned long long ____this) {
+		surface_t* __this = (surface_t*) ____this;
+		
+		surface_set_layer_float((unsigned long long) __this, (float) __this->layer + surface_layer_offset);
 		surface_layer_offset += 0.01f;
 		
 		if (surface_layer_offset >= 0.5f) {
@@ -166,13 +180,17 @@
 		
 	}
 	
-	void surface_set_texture(surface_t* __this, texture_t texture) {
+	void surface_set_texture(unsigned long long ____this, texture_t texture) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->has_texture = 1;
 		__this->texture = texture;
 		
 	}
 	
-	void surface_set_alpha(surface_t* __this, unsigned long long alpha) {
+	void surface_set_alpha(unsigned long long ____this, unsigned long long alpha) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->alpha         = alpha;
 		GLfloat float_alpha = (GLfloat) __this->alpha / _UI64_MAX;
 		
@@ -184,36 +202,46 @@
 		
 	}
 	
-	void surface_set_colour(surface_t* __this, unsigned long long red, unsigned long long green, unsigned long long blue) {
+	void surface_set_colour(unsigned long long ____this, unsigned long long red, unsigned long long green, unsigned long long blue) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->red   = red;
 		__this->green = green;
 		__this->blue  = blue;
 		
-		surface_update_colours(__this);
+		surface_update_colours((unsigned long long) __this);
 		
 	}
 	
-	void surface_set_x(surface_t* __this, signed long long x) {
+	void surface_set_x(unsigned long long ____this, signed long long x) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->x = x;
-		surface_update_vertices(__this);
+		surface_update_vertices((unsigned long long) __this);
 		
 	}
 	
-	void surface_set_y(surface_t* __this, signed long long y) {
+	void surface_set_y(unsigned long long ____this, signed long long y) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->y = y;
-		surface_update_vertices(__this);
+		surface_update_vertices((unsigned long long) __this);
 		
 	}
 	
-	void surface_set_width(surface_t* __this, unsigned long long width) {
+	void surface_set_width(unsigned long long ____this, unsigned long long width) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->width = width;
-		surface_update_vertices(__this);
+		surface_update_vertices((unsigned long long) __this);
 		
 	}
 	
-	void surface_set_height(surface_t* __this, unsigned long long height) {
+	void surface_set_height(unsigned long long ____this, unsigned long long height) {
+		surface_t* __this = (surface_t*) ____this;
+		
 		__this->height = height;
-		surface_update_vertices(__this);
+		surface_update_vertices((unsigned long long) __this);
 		
 	}
 	

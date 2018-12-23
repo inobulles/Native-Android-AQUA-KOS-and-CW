@@ -80,10 +80,10 @@ signed_t noop(unsigned long long none, ...) {
 
 }
 
-signed_t __THREAD_END(signed_t address); // thread function prototypes
+signed_t __THREAD_END  (signed_t address); // thread function prototypes
 signed_t __THREAD_START(signed_t address, signed_t freq, void* argument);
-signed_t __THREAD_FREQ(signed_t address, signed_t freq);
-signed_t __THREAD_INST(signed_t address);
+signed_t __THREAD_FREQ (signed_t address, signed_t freq);
+signed_t __THREAD_INST (signed_t address);
 
 #include "heap.h"
 

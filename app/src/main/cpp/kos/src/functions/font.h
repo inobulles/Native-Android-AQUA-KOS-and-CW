@@ -135,18 +135,20 @@
 	
 	unsigned long long video_width(void);
 	
-	font_t new_font(const char* _path, unsigned long long size) {
+	font_t new_font(unsigned long long ___path, unsigned long long size) {
+		const char* _path = (const char*) ___path;
+		
 		unsigned long long i;
 		for (i = 0; i < KOS_MAX_FONTS; i++) {
-			if (!kos_fonts[i].used) {
-				kos_fonts[i].used = 1;
+			if (kos_fonts[i].used == 0) {
+				kos_fonts[i].used =  1;
 				
 				GET_PATH((char*) _path);
 				memcpy(kos_fonts[i].path, path, MAX_PATH_LENGTH * sizeof(char));
 				
 				kos_fonts[i].size = (float) size / _UI64_MAX;
 				unsigned char font_loading_error = 0;
-				unsigned long long size = kos_fonts[i].size * video_width();
+				unsigned long long size = (unsigned long long) (kos_fonts[i].size * video_width());
 				
 				#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 					kos_fonts[i].font  = TTF_OpenFont(kos_fonts[i].path, size);
@@ -159,7 +161,7 @@
 					printf("WARNING Font could not be loaded (possibly an incorrect path? `%s`)\n", path);
 					kos_fonts[i].used = 0;
 					
-					return -1;
+					return (font_t) -1;
 					
 				}
 				
@@ -170,7 +172,7 @@
 		}
 		
 		printf("WARNING You have surpassed the maximum font count (KOS_MAX_FONTS = %d)\n", KOS_MAX_FONTS);
-		return -1;
+		return (font_t) -1;
 		
 	}
 	
@@ -179,7 +181,7 @@
 		for (i = 0; i < KOS_MAX_FONTS; i++) {
 			if (kos_fonts[i].used) {
 				unsigned char font_loading_error = 0;
-				unsigned long long size = kos_fonts[i].size * video_width();
+				unsigned long long size = (unsigned long long) (kos_fonts[i].size * video_width());
 				
 				#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 					TTF_CloseFont(kos_fonts[i].font);
@@ -195,7 +197,9 @@
 		
 	}
 	
-	static void kos_font_create_text(kos_font_t* __this, char* text) {
+	static void kos_font_create_text(kos_font_t* __this, unsigned long long __text) {
+		char* text = (char*) __text;
+		
 		if (
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 			!__this->surface ||
@@ -329,11 +333,12 @@
 		
 	}
 	
-	texture_t create_texture_from_font(font_t __this, char* text) {
+	texture_t create_texture_from_font(font_t __this, unsigned long long __text) {
+		char* text = (char*) __text;
 		KOS_CHECK_FONT(0)
 		
 		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, text);
+		kos_font_create_text(font, (unsigned long long) text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 			return __texture_create(font->surface->pixels, 32, font->surface->w, font->surface->h, 0);
@@ -345,11 +350,12 @@
 		
 	}
 	
-	unsigned long long get_font_width(font_t __this, char* text) {
+	unsigned long long get_font_width(font_t __this, unsigned long long __text) {
+		char* text = (char*) __text;
 		KOS_CHECK_FONT(-1)
 		
 		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, text);
+		kos_font_create_text(font, (unsigned long long) text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 			return font->surface->w;
@@ -361,11 +367,12 @@
 		
 	}
 	
-	unsigned long long get_font_height(font_t __this, char* text) {
+	unsigned long long get_font_height(font_t __this, unsigned long long __text) {
+		char* text = (char*) __text;
 		KOS_CHECK_FONT(-1)
 		
 		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, text);
+		kos_font_create_text(font, (unsigned long long) text);
 		
 		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
 			return font->surface->h;
