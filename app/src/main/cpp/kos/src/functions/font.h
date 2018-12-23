@@ -137,42 +137,54 @@
 	
 	font_t new_font(unsigned long long ___path, unsigned long long size) {
 		const char* _path = (const char*) ___path;
+		GET_PATH((char*) _path);
 		
-		unsigned long long i;
-		for (i = 0; i < KOS_MAX_FONTS; i++) {
-			if (kos_fonts[i].used == 0) {
-				kos_fonts[i].used =  1;
+		#if KOS_USES_JNI
+			jint error = CALLBACK_INT(java_new_font, (jint) (((float) size / _UI64_MAX) * (float) video_width()), callback_env->NewStringUTF(path));
+			
+			if (error < 0) {
+				ALOGE("WARNING Java had a problem loading the font\n");
 				
-				GET_PATH((char*) _path);
-				memcpy(kos_fonts[i].path, path, MAX_PATH_LENGTH * sizeof(char));
-				
-				kos_fonts[i].size = (float) size / _UI64_MAX;
-				unsigned char font_loading_error = 0;
-				unsigned long long size = (unsigned long long) (kos_fonts[i].size * video_width());
-				
-				#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-					kos_fonts[i].font  = TTF_OpenFont(kos_fonts[i].path, size);
-					font_loading_error = !kos_fonts[i].font;
-				#elif KOS_USES_SDL2
-					font_loading_error = kos_freetype_new_font(kos_fonts[i].path, size, &kos_fonts[i].font);
-				#endif
-				
-				if (font_loading_error) {
-					printf("WARNING Font could not be loaded (possibly an incorrect path? `%s`)\n", path);
-					kos_fonts[i].used = 0;
+			}
+		
+			return (font_t) error;
+			
+		#else
+			unsigned long long i;
+			for (i = 0; i < KOS_MAX_FONTS; i++) {
+				if (kos_fonts[i].used == 0) {
+					kos_fonts[i].used =  1;
 					
-					return (font_t) -1;
+					memcpy(kos_fonts[i].path, path, MAX_PATH_LENGTH * sizeof(char));
+					
+					kos_fonts[i].size = (float) size / _UI64_MAX;
+					unsigned char font_loading_error = 0;
+					unsigned long long _size = (unsigned long long) (kos_fonts[i].size * video_width());
+					
+					#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
+						kos_fonts[i].font  = TTF_OpenFont(kos_fonts[i].path, _size);
+						font_loading_error = !kos_fonts[i].font;
+					#elif KOS_USES_SDL2
+						font_loading_error = kos_freetype_new_font(kos_fonts[i].path, _size, &kos_fonts[i].font);
+					#endif
+					
+					if (font_loading_error) {
+						printf("WARNING Font could not be loaded (possibly an incorrect path? `%s`)\n", path);
+						kos_fonts[i].used = 0;
+						
+						return (font_t) -1;
+						
+					}
+					
+					return i;
 					
 				}
 				
-				return i;
-				
 			}
 			
-		}
-		
-		printf("WARNING You have surpassed the maximum font count (KOS_MAX_FONTS = %d)\n", KOS_MAX_FONTS);
-		return (font_t) -1;
+			printf("WARNING You have surpassed the maximum font count (KOS_MAX_FONTS = %d)\n", KOS_MAX_FONTS);
+			return (font_t) -1;
+		#endif
 		
 	}
 	
@@ -310,76 +322,110 @@
 	}
 	
 	unsigned long long font_remove(font_t __this) {
-		KOS_CHECK_FONT(-1)
-		
-		if (kos_fonts[__this].text != NULL) {
-			free(kos_fonts[__this].text);
+		#if KOS_USES_JNI
+			//CALLBACK_VOID(java_font_remove, font); // This was replaced by Lib.clear_fonts, called in InstanceActivity.dispose_all
+		#else
+			KOS_CHECK_FONT(-1)
 			
-		}
-		
-		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			if (kos_fonts[__this].surface) {
-				SDL_FreeSurface(kos_fonts[__this].surface);
+			if (kos_fonts[__this].text != NULL) {
+				free(kos_fonts[__this].text);
 				
 			}
 			
-			TTF_CloseFont(kos_fonts[__this].font);
-		#elif KOS_USES_SDL2
-			FT_Done_Face(kos_fonts[__this].font);
+			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
+				if (kos_fonts[__this].surface) {
+					SDL_FreeSurface(kos_fonts[__this].surface);
+					
+				}
+				
+				TTF_CloseFont(kos_fonts[__this].font);
+			#elif KOS_USES_SDL2
+				FT_Done_Face(kos_fonts[__this].font);
+			#endif
+			
+			kos_unuse_font(&kos_fonts[__this]);
 		#endif
 		
-		kos_unuse_font(&kos_fonts[__this]);
 		return 0;
 		
 	}
-	
-	texture_t create_texture_from_font(font_t __this, unsigned long long __text) {
-		char* text = (char*) __text;
-		KOS_CHECK_FONT(0)
-		
-		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, (unsigned long long) text);
-		
-		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			return __texture_create(font->surface->pixels, 32, font->surface->w, font->surface->h, 0);
-		#elif KOS_USES_SDL2
-			return __texture_create(font->surface.pixels, 32, font->surface.w, font->surface.h, 0);
-		#else
-			return 0;
-		#endif
-		
-	}
-	
+
 	unsigned long long get_font_width(font_t __this, unsigned long long __text) {
 		char* text = (char*) __text;
-		KOS_CHECK_FONT(-1)
 		
-		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, (unsigned long long) text);
-		
-		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			return font->surface->w;
-		#elif KOS_USES_SDL2
-			return font->surface.w;
+		#if KOS_USES_JNI
+			return (unsigned long long) CALLBACK_INT(java_get_font_width, (jint) __this, callback_env->NewStringUTF((const char*) text));
 		#else
-			return 100;
+			KOS_CHECK_FONT(-1)
+			
+			kos_font_t* font = &kos_fonts[__this];
+			kos_font_create_text(font, (unsigned long long) text);
+			
+			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
+				return font->surface->w;
+			#elif KOS_USES_SDL2
+				return font->surface.w;
+			#else
+				return 100;
+			#endif
 		#endif
 		
 	}
 	
 	unsigned long long get_font_height(font_t __this, unsigned long long __text) {
 		char* text = (char*) __text;
-		KOS_CHECK_FONT(-1)
 		
-		kos_font_t* font = &kos_fonts[__this];
-		kos_font_create_text(font, (unsigned long long) text);
-		
-		#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
-			return font->surface->h;
-		#elif KOS_USES_SDL2
-			return font->surface.h;
+		#if KOS_USES_JNI
+			return (unsigned long long) CALLBACK_INT(java_get_font_height, (jint) __this, callback_env->NewStringUTF((const char*) text));
 		#else
-			return 100;
+			KOS_CHECK_FONT(-1)
+			
+			kos_font_t* font = &kos_fonts[__this];
+			kos_font_create_text(font, (unsigned long long) text);
+			
+			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
+				return font->surface->h;
+			#elif KOS_USES_SDL2
+				return font->surface.h;
+			#else
+				return 100;
+			#endif
+		#endif
+		
+	}
+
+	texture_t create_texture_from_font(font_t __this, unsigned long long __text) {
+		char* text = (char*) __text;
+		
+		#if KOS_USES_JNI
+			texture_t texture = 0;
+			jint      error   = 1;
+		
+			unsigned long long width  = get_font_width (__this, (unsigned long long) text);
+			unsigned long long height = get_font_height(__this, (unsigned long long) text);
+		
+			if (!(width <= 0 || height <= 0)) {
+				error = CALLBACK_INT(java_create_texture_from_font, (jint) __this, callback_env->NewStringUTF((const char*) text), TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
+				
+			}
+		
+			if (error < 0) ALOGE("WARNING Java had a problem loading the font\n");
+			else           texture = (texture_t) error;
+		
+			return texture;
+		#else
+			KOS_CHECK_FONT(0)
+			
+			kos_font_t* font = &kos_fonts[__this];
+			kos_font_create_text(font, (unsigned long long) text);
+			
+			#if __USE_SDL_TTF_PROVIDED && KOS_USES_SDL2
+				return __texture_create(font->surface->pixels, 32, font->surface->w, font->surface->h, 0);
+			#elif KOS_USES_SDL2
+				return __texture_create(font->surface.pixels, 32, font->surface.w, font->surface.h, 0);
+			#else
+				return 0;
+			#endif
 		#endif
 		
 	}

@@ -22,7 +22,7 @@
 			
 		}
 		
-		texture_t texture = texture_create(data, bpp, video_width(), video_height());
+		texture_t texture = texture_create((unsigned long long) data, bpp, video_width(), video_height());
 		
 		free(pixels);
 		free(data);
