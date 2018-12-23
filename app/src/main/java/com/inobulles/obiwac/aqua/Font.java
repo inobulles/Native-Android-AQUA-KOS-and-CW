@@ -37,6 +37,8 @@ public class Font {
 
 		}
 
+
+
 		long texture_width  = (long) get_width( text);
 		long texture_height = (long) get_height(text);
 

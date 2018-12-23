@@ -1,5 +1,6 @@
 orientation:full
 permission:write external storage
 permission:read external storage
+permission:internet
 tag:AQUA
 standalone:true
