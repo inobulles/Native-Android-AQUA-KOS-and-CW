@@ -4,6 +4,7 @@
 	
 	#include "../macros_and_inclusions.h"
 #include "../lib/structs.h"
+#include "../android/root.h"
 
 void video_clear(void) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -19,7 +20,11 @@ void video_clear(void) {
 		printf("WARNING __this function (`video_draw`) is deprecated\n");
 		
 	}
-	
+
+	#if KOS_USES_JNI
+		unsigned char waiting_video_flip = 0;
+	#endif
+
 	void video_flip(void) {
 		surface_layer_offset = 0.0f;
 		
@@ -31,29 +36,34 @@ void video_clear(void) {
 			eglSwapBuffers(current_kos->display, current_kos->surface);
 		#endif
 		
+		#if KOS_USES_JNI
+			waiting_video_flip = 1;
+		#endif
+		
 		#if KOS_3D_VISUALIZATION
 			glRotatef(1.0f, 0.0f, 1.0f, 0.0f);
 		#endif
 		
 	}
 	
-	unsigned long long video_width (void) { return current_kos->width;  }
-	unsigned long long video_height(void) { return current_kos->height; }
-	unsigned long long video_bpp   (void) { return current_kos->bpp;    }
+	unsigned long long video_width (void) { return (unsigned long long) current_kos->width;  }
+	unsigned long long video_height(void) { return (unsigned long long) current_kos->height; }
+	unsigned long long video_bpp   (void) { return (unsigned long long) current_kos->bpp;    }
 	
 	static unsigned long long kos_last_time;
 	
 	unsigned long long video_fps(void) {
-		unsigned long long tick_time = 0;
-		
-		#if KOS_USES_SDL2
-			tick_time = SDL_GetTicks();
-		#endif
+		#if KOS_USES_JNI
+			extern unsigned long long gl_fps;
+			return gl_fps;
+		#elif KOS_USES_SDL2
+			unsigned long long tick_time = SDL_GetTicks();
 			
-		float fps = 1000.0f / (float) (tick_time - kos_last_time);
-		kos_last_time = tick_time;
-		
-		return (unsigned long long) fps;
+			float fps = 1000.0f / (float) (tick_time - kos_last_time);
+			kos_last_time = tick_time;
+			
+			return (unsigned long long) fps;
+		#endif
 		
 	}
 	
@@ -90,8 +100,8 @@ void video_clear(void) {
 	#endif
 
 	void get_events(event_list_t* __this) { // I guess __this shouldn't be here but idc tbh
-		unsigned long long half_width  = current_kos->width  >> 1;
-		unsigned long long half_height = current_kos->height >> 1;
+		unsigned long long half_width  = (unsigned long long) (current_kos->width  >> 1);
+		unsigned long long half_height = (unsigned long long) (current_kos->height >> 1);
 		
 		if (first_event_flush) {
 			first_event_flush = 0;
@@ -172,8 +182,8 @@ void video_clear(void) {
 		#elif KOS_USES_JNI
 			int gl_resize = 0; /// TODO
 
-			__this->quit = (unsigned long long) event_quit;
-			__this->resize = gl_resize;
+			__this->quit   = (unsigned long long) event_quit;
+			__this->resize = (unsigned long long) gl_resize;
 
 			__this->pointer_click_type = (unsigned long long) event_pointer_click_type;
 			has_the_event_been_updated_in_the_previous_call_to_Java_com_inobulles_obiwac_aqua_Lib_event_question_mark = 0;

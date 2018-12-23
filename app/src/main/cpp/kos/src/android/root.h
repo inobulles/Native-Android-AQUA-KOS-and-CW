@@ -78,6 +78,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)(JNIEnv* env, jobject ob
 }
 
 #include "../../glue.c"
+#include "../../asm/asm.h"
 
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env   =          env;
@@ -133,8 +134,61 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(resize)(JNIEnv* env, jobject obj, jint 
 bool cw_pause                       = false;
 bool text_input_has_string_response = false;
 
+static bool rom_free_last(void) {
+	ALOGA("TODO %s\n", __func__);
+	return true;
+	
+}
+
+static int loop(void) {
+	if (waiting_video_flip) {
+		return -1;
+		
+	}
+	
+	if (program_run_loop_phase         (current_de_program)) {
+		ALOGV("DE return code is %d\n", current_de_program->error_code);
+		return rom_free_last() ?        current_de_program->error_code : 0;
+		
+	} else {
+		return -1;
+		
+	}
+	
+}
+
+unsigned long long gl_fps;
+unsigned long long last_frame_nanoseconds = 0;
+
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(step)(JNIEnv* env, jobject obj) {
 	if (!cw_pause) {
+		while (!waiting_video_flip) {
+			int return_value = loop();
+			
+			if (return_value != -1) {
+				exit(return_value);
+				
+			}
+			
+			if (!disable_gl) {
+				timespec now;
+				clock_gettime(CLOCK_MONOTONIC, &now);
+				
+				unsigned long long nanoseconds = (unsigned long long) (now.tv_sec * 1000000000 + now.tv_nsec);
+				gl_fps = 0;
+				
+				if (last_frame_nanoseconds > 0) {
+					float delta = (float) (nanoseconds - last_frame_nanoseconds) * 0.000000001f;
+					gl_fps = (unsigned long long) (1.0f / delta);
+					
+				}
+				
+				last_frame_nanoseconds = nanoseconds;
+				check_gl_error("video_flip");
+				
+			}
+			
+		}
 
 	} else {
 		if (!text_input_has_response) {

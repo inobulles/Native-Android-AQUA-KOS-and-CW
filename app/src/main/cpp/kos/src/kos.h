@@ -289,8 +289,8 @@
 				
 				glTranslatef(0.0f, 0.0f, -10.0f);
 			#else
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_BACK);
+				glEnable   (GL_CULL_FACE);
+				glCullFace (GL_BACK);
 				glFrontFace(GL_CCW);
 
 				#if !KOS_USES_SHADER_PIPELINE
