@@ -79,12 +79,6 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(give_1log_1tag)(JNIEnv* env, jobject ob
 
 #include "../../glue.c"
 
-static EGLContext egl_context;
-static GLuint shader_program;
-
-static GLint sampler_location; /// TODO I think that similar things already exist in shader.h
-static GLint has_texture_location;
-
 JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject java_asset_manager) {
 	callback_env   =          env;
 	jclass _class  =          env->FindClass("com/" str(PKG_ORG) "/" str(PKG_PER) "/" str(PKG_APP) "/Lib");
@@ -116,7 +110,7 @@ JNIEXPORT void JNICALL JNI_FUNCTION_NAME(init)(JNIEnv* env, jobject obj, jobject
 
 	asset_manager = AAssetManager_fromJava(env, java_asset_manager);
 	assert(asset_manager != NULL);
-
+	
 	main(2, (char*[]) {(char*) "./a.out", (char*) "assets/root/rom.zed"});
 
 }

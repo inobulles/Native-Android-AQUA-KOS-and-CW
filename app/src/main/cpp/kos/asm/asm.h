@@ -26,7 +26,9 @@
 #endif
 
 #ifdef ALOGI
-	#define printf ALOGI
+	#ifndef printf
+		#define printf ALOGI
+	#endif
 	#define ANDROID 1
 #else
 	#define ANDROID 0

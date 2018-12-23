@@ -53,10 +53,22 @@
 			printf("Destroyed all SDL subsystems\n");
 		#endif
 		
-		#if KOS_USES_BCM && KOS_USES_OPENGLES
-			bcm_ogles_exit(__this);
+		#if KOS_USES_OPENGLES
+			#if KOS_USES_BCM
+				bcm_ogles_exit(__this);
+			#endif
+		
+			#if KOS_USES_JNI
+				if (eglGetCurrentContext() == __this->context) {
+					gl_delete_shader_program(&__this->shader_program);
+					
+					free(__this->vertex_shader);
+					free(__this->fragment_shader);
+					
+				}
+			#endif
 		#endif
-
+		
 		#ifdef __HAS_CURL
 			printf("Freeing requests and CURL ...\n");
 			request_global_free();
@@ -196,6 +208,34 @@
 		
 				KOS_BEST_GL_VERSION
 			#endif
+		#endif
+		
+		#if KOS_USES_OPENGLES && KOS_USES_JNI
+			__this->context = eglGetCurrentContext();
+			extern bool default_assets;
+		
+			int error = 0;
+			default_assets = true;
+			
+			error += load_asset("es2_vertex_shader.glsl",   &__this->vertex_shader);
+			error += load_asset("es2_fragment_shader.glsl", &__this->fragment_shader);
+		
+			if (error > 1) {
+				printf("WARNING Failed to load shader assets, incrementing __this->warning_count ...\n");
+				__this->warning_count++;
+				
+			}
+		
+			default_assets = false;
+			__this->shader_program = create_program(__this->vertex_shader, __this->fragment_shader);
+		
+			if (!__this->shader_program) {
+				printf("WARNING Failed to create shader_program, incrementing __this->warning_count ...\n");
+				__this->warning_count++;
+				
+			}
+			
+			gl_use_shader_program(&__this->shader_program);
 		#endif
 		
 		#if KOS_USES_SDL2

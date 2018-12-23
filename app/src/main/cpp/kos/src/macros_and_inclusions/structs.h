@@ -19,10 +19,18 @@
 			GLuint shader_program;
 		#endif
 		
-		#if KOS_USES_BCM && KOS_USES_OPENGLES
-			EGLDisplay display;
-			EGLSurface surface;
+		#if KOS_USES_OPENGLES
 			EGLContext context;
+			
+			#if KOS_USES_BCM
+				EGLDisplay display;
+				EGLSurface surface;
+			#endif
+		
+			#if KOS_USES_JNI
+				char*   vertex_shader;
+				char* fragment_shader;
+			#endif
 		#endif
 		
 	} kos_t;
