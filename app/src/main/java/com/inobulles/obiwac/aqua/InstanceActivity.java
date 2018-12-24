@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class InstanceActivity extends Activity {
 	public static String TAG = "AQUA";
@@ -68,6 +69,7 @@ public class InstanceActivity extends Activity {
 
 			permissions.add("read external storage");
 			permissions.add("write external storage");
+			permissions.add("internet");
 
 		} finally {
 			if (meta_reader != null) {
@@ -106,6 +108,7 @@ public class InstanceActivity extends Activity {
 				switch (permission) {
 					case "read external storage":  manifest_permission = Manifest.permission.READ_EXTERNAL_STORAGE;  break;
 					case "write external storage": manifest_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE; break;
+					case "internet":               manifest_permission = Manifest.permission.INTERNET;               break;
 					default:                       manifest_permission = permission;                                 break;
 
 				}
