@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/kos"]
+	path = app/src/main/cpp/kos
+	url = https://github.com/inobulles/AQUA-KOS
