@@ -5,14 +5,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.opengl.GLES20;
 import android.os.Environment;
 import android.util.Log;
 
+import javax.microedition.khronos.opengles.GL10;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class Lib {
@@ -238,6 +242,20 @@ public class Lib {
 				main_activity.text_input.create();
 			}
 		});
+
+	}
+
+	public static int create_texture_from_screenshot(int width, int height, int TEXTURE_WRAP_TYPE, int SHARP_TEXTURES) {
+		int bpp = 32;
+		ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * (bpp >> 3));
+
+		GLES20.glReadPixels(0 ,0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, pixels);
+		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		bitmap.copyPixelsFromBuffer(pixels);
+
+		int texture = Utils.create_texture_from_bitmap(bitmap, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
+		bitmap.recycle();
+		return texture;
 
 	}
 

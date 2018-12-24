@@ -58,29 +58,10 @@ public class Font {
 		}
 
 		bitmap.setPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());*/
-		GLES20.glPixelStorei(GLES20.GL_UNPACK_ALIGNMENT, 1);
 
-		IntBuffer texture = IntBuffer.allocate(1);
-		GLES20.glGenTextures(1, texture);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.get(0));
-
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, TEXTURE_WRAP_TYPE); // x axis
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, TEXTURE_WRAP_TYPE); // y axis
-
-		if (SHARP_TEXTURES == 1) {
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-
-		} else {
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-
-		}
-
-		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+		int texture = Utils.create_texture_from_bitmap(bitmap, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
 		bitmap.recycle();
-
-		return texture.get();
+		return texture;
 
 	}
 
