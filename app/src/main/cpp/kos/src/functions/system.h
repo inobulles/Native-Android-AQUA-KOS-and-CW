@@ -197,7 +197,7 @@
 		unsigned long long fs_device_result;
 
 		#if KOS_USES_JNI
-			unsigned long long previous_package_existance;
+			unsigned long long previous_package_existence;
 		#endif
 		
 	} kos_bda_extension_t;
@@ -750,8 +750,8 @@
 				case DEVICE_ANDROID: {
 					if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
 						extra += 4;
-						kos_bda_implementation.previous_package_existance = (unsigned long long) CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
-						result = &kos_bda_implementation.previous_package_existance;
+						kos_bda_implementation.previous_package_existence = (unsigned long long) CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
+						result = &kos_bda_implementation.previous_package_existence;
 
 					} else {
 						KOS_DEVICE_COMMAND_WARNING("android")
