@@ -8,32 +8,44 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+class RequestResponse {
+    public String text;
+    public int    code;
+
+    RequestResponse(String text, int code) {
+        this.text = text;
+        this.code = code;
+
+    }
+
+}
+
 public class Requests {
-    public Requests() throws IOException {
-        URL url;
+    private static RequestResponse __get(String url_string) throws IOException {
+        URL               url;
         HttpURLConnection connection;
-        BufferedReader reader;
+        BufferedReader    reader;
 
         try {
-            url = new URL("https://www.google.com/");
+            url = new URL(url_string);
 
         } catch (MalformedURLException exception) {
             exception.printStackTrace();
-            return;
+            throw new IOException();
 
         } try {
             connection = (HttpURLConnection) url.openConnection();
 
         } catch (IOException exception) {
             exception.printStackTrace();
-            return;
+            throw new IOException();
 
         } try {
             connection.setRequestMethod("GET");
 
         } catch (ProtocolException exception) {
             exception.printStackTrace();
-            return;
+            throw new IOException();
 
         }
 
@@ -46,20 +58,36 @@ public class Requests {
 
         } catch (IOException exception) {
             exception.printStackTrace();
-            return;
+            throw new IOException();
 
         } try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
         } catch (IOException exception) {
             exception.printStackTrace();
-            return;
+            throw new IOException();
 
         }
 
-        String content = "", line;
+        StringBuilder content = new StringBuilder();
+
+        String line;
         while ((line = reader.readLine()) != null) {
-            content += line + "\n";
+            content.append(line).append("\n");
+
+        }
+
+        return new RequestResponse(content.toString(), connection.getResponseCode());
+
+    }
+
+    public static RequestResponse get(String url_string) {
+        try {
+            return __get(url_string);
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return null;
 
         }
 
