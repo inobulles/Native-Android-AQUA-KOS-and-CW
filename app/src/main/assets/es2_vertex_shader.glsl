@@ -8,7 +8,7 @@ out vec2 vertex_texture_coord;
 out vec4 vertex_colour;
 
 void main() {
-	gl_Position = position;
+	gl_Position = vec4(position.x, position.y, 0.9f - position.z, position.w);
 
 	vertex_colour = colour;
 	vertex_texture_coord = texture_coord;

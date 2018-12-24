@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Lib {
 	static {
-		System.loadLibrary("native-lib");
+		System.loadLibrary("entry");
 
 	}
 
