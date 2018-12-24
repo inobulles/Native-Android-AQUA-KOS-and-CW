@@ -2,20 +2,21 @@
 #ifndef __AQUA__SDL2_SRC_MACROS_AND_INCLUSIONS_DEVICES_H
 	#define __AQUA__SDL2_SRC_MACROS_AND_INCLUSIONS_DEVICES_H
 	
-	#define DEVICE_NULL     0
-	#define DEVICE_TEXTURE  1
-	#define DEVICE_KEYBOARD 2
-	#define DEVICE_WM       3
-	#define DEVICE_MATH     4
-	#define DEVICE_CLOCK    5
-	#define DEVICE_ANDROID  6
-	#define DEVICE_FBO      7
-	#define DEVICE_SHADER   8
-	#define DEVICE_REQUESTS 9
-	#define DEVICE_DISCORD  10
-	#define DEVICE_GL       11
-	#define DEVICE_GL_BATCH 12
-	#define DEVICE_FS       13
+	#define DEVICE_NULL            0
+	#define DEVICE_TEXTURE         1
+	#define DEVICE_KEYBOARD        2
+	#define DEVICE_WM              3
+	#define DEVICE_MATH            4
+	#define DEVICE_CLOCK           5
+	#define DEVICE_ANDROID         6
+	#define DEVICE_FBO             7
+	#define DEVICE_SHADER          8
+	#define DEVICE_REQUESTS        9
+	#define DEVICE_DISCORD         10
+	#define DEVICE_GL              11
+	#define DEVICE_GL_BATCH        12
+	#define DEVICE_FS              13
+	#define DEVICE_KEYBOARD_DIALOG 14
 	
 	// compute devices
 	

@@ -59,7 +59,6 @@
 		const char* device = (const char*) __device;
 		
 		if      (strcmp(device, "texture")  == 0) return DEVICE_TEXTURE;
-		else if (strcmp(device, "keyboard") == 0) return DEVICE_KEYBOARD;
 		else if (strcmp(device, "wm")       == 0) return DEVICE_WM;
 		else if (strcmp(device, "math")     == 0) return DEVICE_MATH;
 		else if (strcmp(device, "clock")    == 0) return DEVICE_CLOCK;
@@ -68,6 +67,13 @@
 		else if (strcmp(device, "gl")       == 0) return DEVICE_GL;
 		else if (strcmp(device, "gl batch") == 0) return DEVICE_GL_BATCH;
 		else if (strcmp(device, "fs")       == 0) return DEVICE_FS;
+
+		#if KOS_USES_JNI // JNI specific
+			else if (strcmp(device, "android")         == 0) return DEVICE_ANDROID;
+			else if (strcmp(device, "keyboard dialog") == 0) return DEVICE_KEYBOARD_DIALOG;
+		#else // absolutely not JNI
+			else if (strcmp(device, "keyboard") == 0) return DEVICE_KEYBOARD; /// TODO Add keyboard support for Android
+		#endif
 		
 		// compute
 		
@@ -189,6 +195,10 @@
 		unsigned long long get_device_keyboard_keycode_packet;
 		
 		unsigned long long fs_device_result;
+
+		#if KOS_USES_JNI
+			unsigned long long previous_package_existance;
+		#endif
 		
 	} kos_bda_extension_t;
 
@@ -332,18 +342,18 @@
 				GET_PATH((char*) fs_command[1]);
 				
 				if (fs_command[0] == 'm') { // mkdir
-					kos_bda_implementation.fs_device_result = mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-					result = (unsigned long long*) &kos_bda_implementation.fs_device_result;
+					kos_bda_implementation.fs_device_result = (unsigned long long) mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+					result = &kos_bda_implementation.fs_device_result;
 					
 				} else if (fs_command[0] == 'r') { // remove
-					kos_bda_implementation.fs_device_result = remove_directory_recursive(path);
-					result = (unsigned long long*) &kos_bda_implementation.fs_device_result;
+					kos_bda_implementation.fs_device_result = (unsigned long long) remove_directory_recursive(path);
+					result = &kos_bda_implementation.fs_device_result;
 					
 				} else if (fs_command[0] == 'c') { // move
 					GET_PATH_NAME(destination, (char*) fs_command[2]);
 					
-					kos_bda_implementation.fs_device_result = rename(path, destination);
-					result = (unsigned long long*) &kos_bda_implementation.fs_device_result;
+					kos_bda_implementation.fs_device_result = (unsigned long long) rename(path, destination);
+					result = &kos_bda_implementation.fs_device_result;
 					
 				} else {
 					KOS_DEVICE_COMMAND_WARNING("fs")
@@ -357,7 +367,7 @@
 				
 				if (fbo_command[0] == 'c') { // create
 					kos_bda_implementation.previous_fbo_device_create_result = framebuffer_create(fbo_command[1]);
-					result = (unsigned long long*) &kos_bda_implementation.previous_fbo_device_create_result;
+					result = &kos_bda_implementation.previous_fbo_device_create_result;
 					
 				} else if (fbo_command[0] == 'b') {
 					framebuffer_bind(fbo_command[1], fbo_command[4], fbo_command[5], fbo_command[2], fbo_command[3]);
@@ -378,8 +388,8 @@
 				const unsigned long long* shader_command = (const unsigned long long*) extra;
 				
 				if (shader_command[0] == 'c') { // create
-					kos_bda_implementation.previous_shader_device_create_result = gl_load_shaders((GLuint*) shader_command[1], (char*) shader_command[3], (char*) shader_command[4]);
-					result = (unsigned long long*) &kos_bda_implementation.previous_shader_device_create_result;
+					kos_bda_implementation.previous_shader_device_create_result = (unsigned long long) gl_load_shaders((GLuint*) shader_command[1], (char*) shader_command[3], (char*) shader_command[4]);
+					result = &kos_bda_implementation.previous_shader_device_create_result;
 					
 				} else if (shader_command[0] == 'u') { // use
 					gl_use_shader_program((GLuint*) shader_command[1]);
@@ -734,6 +744,40 @@
 				
 				break;
 				
+			}
+
+			#if KOS_USES_JNI
+				case DEVICE_ANDROID: {
+					if (extra[0] == 'p' && extra[1] == 'k' && extra[2] == 'g' && extra[3] == 'e') {
+						extra += 4;
+						kos_bda_implementation.previous_package_existance = (unsigned long long) CALLBACK_INT(java_package_exists, callback_env->NewStringUTF(extra));
+						result = &kos_bda_implementation.previous_package_existance;
+
+					} else {
+						KOS_DEVICE_COMMAND_WARNING("android")
+
+					}
+
+					break;
+
+				}
+			#endif
+
+			case DEVICE_KEYBOARD_DIALOG: {
+				#if KOS_USES_JNI
+					if (strcmp(extra, "open") == 0) {
+						CALLBACK_VOID_NO_PARAMS(java_open_text_input);
+						text_input_has_response = 0;
+
+						extern bool cw_pause;
+						cw_pause = true;
+
+					} else
+				#endif
+
+				{ KOS_DEVICE_COMMAND_WARNING("keyboard dialog") }
+				break;
+
 			} case DEVICE_NULL: {
 				printf("WARNING The device you have selected is DEVICE_NULL\n");
 				break;
