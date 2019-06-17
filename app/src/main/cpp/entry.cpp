@@ -1,3 +1,2 @@
 
-#define KOS_CURRENT KOS_ANDROID
-#include "kos/src/android/root.h"
+#include "kos/src/platforms/android/root.h"

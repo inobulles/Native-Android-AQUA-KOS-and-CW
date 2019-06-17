@@ -30,7 +30,7 @@ if (${ANDROID_PLATFORM_LEVEL} LESS 12)
 elseif (${ANDROID_PLATFORM_LEVEL} LESS 128) # LESS 18
 	add_definitions("-DDYNAMIC_ES3")
 	
-	set(GL3_STUB_SRC kos/src/android/gl3_stub.c)
+	set(GL3_STUB_SRC kos/src/platforms/android/gl3_stub.c)
 	set(OPENGL_LIB GLESv2)
 	
 else ()

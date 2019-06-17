@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Lib {
@@ -25,6 +26,8 @@ public class Lib {
 
 	}
 
+	private static ArrayList<Integer> joysticks;
+
 	private static final int MAX_FONTS = 4096;
 	public  static Font fonts[];
 
@@ -32,6 +35,8 @@ public class Lib {
 		Log.v(InstanceActivity.TAG, "`init_lib` called\n");
 		fonts = new Font[MAX_FONTS];
 		clear_fonts();
+
+		joysticks = Joystick.get_game_controller_ids();
 
 	}
 
@@ -256,6 +261,20 @@ public class Lib {
 		int texture = Utils.create_texture_from_bitmap(bitmap, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
 		bitmap.recycle();
 		return texture;
+
+	}
+
+	public static String joystick_name(int joystick) {
+		return "Generic joystick"; /// TODO
+
+	} public static int joystick_count() {
+		return joysticks.size();
+
+	} public static boolean joystick_button(int joystick, int button) {
+		return false; /// TODO
+
+	} public static float joystick_axis(int joystick, int axis) {
+		return 0.0f; /// TODO
 
 	}
 

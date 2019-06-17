@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -243,7 +244,15 @@ public class InstanceActivity extends Activity {
 	}
 
 	private boolean on_key(int key_code, KeyEvent event, int release) {
-		switch (key_code) {
+		if ((event.getSource() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
+			if (event.getRepeatCount() == 0) {
+
+
+			}
+
+			return true;
+
+		} else switch (key_code) {
 			case KeyEvent.KEYCODE_HEADSETHOOK: {
 				Lib.event_macro(0, release == 0 ? 1 : 0);
 				return true;
