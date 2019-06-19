@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import javax.microedition.khronos.opengles.GL10;
 import java.io.BufferedReader;
@@ -28,6 +29,8 @@ public class Lib {
 
 	private static ArrayList<Integer> joysticks;
 
+	public static Mouse[] mice;
+
 	private static final int MAX_FONTS = 4096;
 	public  static Font fonts[];
 
@@ -37,6 +40,20 @@ public class Lib {
 		clear_fonts();
 
 		joysticks = Joystick.get_game_controller_ids();
+
+		int mc = 0;
+
+		if      (InstanceActivity.package_manager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) mc = 20;
+		else if (InstanceActivity.package_manager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) mc = 4;
+		else if (InstanceActivity.package_manager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH))          mc = 2;
+		else if (InstanceActivity.package_manager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN))                     mc = 1;
+
+		mice = new Mouse[mc];
+
+		for (int i = 0; i < mice.length; i++) {
+			mice[i] = new Mouse();
+
+		}
 
 	}
 
@@ -261,6 +278,20 @@ public class Lib {
 		int texture = Utils.create_texture_from_bitmap(bitmap, TEXTURE_WRAP_TYPE, SHARP_TEXTURES);
 		bitmap.recycle();
 		return texture;
+
+	}
+
+	public static int mouse_count() {
+		return mice.length;
+
+	} public static int mouse_button(int mouse, int button) {
+		return mice[mouse].mt;
+
+	} public static int mouse_x(int mouse) {
+		return mice[mouse].mx;
+
+	} public static int mouse_y(int mouse) {
+		return mice[mouse].my;
 
 	}
 

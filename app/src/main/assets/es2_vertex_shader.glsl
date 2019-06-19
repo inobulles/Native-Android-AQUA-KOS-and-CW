@@ -7,8 +7,10 @@ layout(location = 2) in vec4 colour;
 out vec2 vertex_texture_coord;
 out vec4 vertex_colour;
 
+uniform mat4 mvp_matrix;
+
 void main() {
-	gl_Position = vec4(position.x, position.y, 0.9f - position.z, position.w);
+	gl_Position = mvp_matrix * position;
 
 	vertex_colour = colour;
 	vertex_texture_coord = texture_coord;

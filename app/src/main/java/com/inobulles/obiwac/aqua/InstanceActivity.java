@@ -207,8 +207,6 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int tray_offset = 0;
-
 		int x = (int) event.getX();
 		int y = (int) event.getY();
 
@@ -216,11 +214,14 @@ public class InstanceActivity extends Activity {
 		int pointer_id    = event.getPointerId(pointer_index);
 		int masked_action = event.getActionMasked();
 
+		Lib.mice[pointer_index].mx = x;
+		Lib.mice[pointer_index].my = y;
+
 		switch (masked_action) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_POINTER_DOWN:
 			case MotionEvent.ACTION_MOVE: {
-				Lib.event(pointer_index, 1, x, y, 0, 0, tray_offset);
+				Lib.mice[pointer_index].mt = 1;
 				break;
 
 			}
@@ -228,7 +229,7 @@ public class InstanceActivity extends Activity {
 			case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
 			case MotionEvent.ACTION_CANCEL: {
-				Lib.event(pointer_index, 1, x, y, 0, 1, tray_offset);
+				Lib.mice[pointer_index].mt = 0;
 				break;
 
 			} default: {
@@ -246,7 +247,7 @@ public class InstanceActivity extends Activity {
 	private boolean on_key(int key_code, KeyEvent event, int release) {
 		if ((event.getSource() & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
 			if (event.getRepeatCount() == 0) {
-
+				/// TODO
 
 			}
 
