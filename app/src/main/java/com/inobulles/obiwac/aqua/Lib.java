@@ -57,6 +57,14 @@ public class Lib {
 
 	}
 
+	public static void clear_mice() {
+		for (Mouse mouse : mice) {
+			mouse.mt = 0;
+
+		}
+
+	}
+
 	public static void clear_fonts() {
 		int i;
 		for (i = 0; i < MAX_FONTS; i++) {

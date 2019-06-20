@@ -207,33 +207,29 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
+		Lib.event(0, 0, 0, 0, 0, 0, 0);
 
 		int pointer_index = event.getActionIndex();
 		int pointer_id    = event.getPointerId(pointer_index);
 		int masked_action = event.getActionMasked();
 
-		Lib.mice[pointer_index].mx = x;
-		Lib.mice[pointer_index].my = y;
+		Lib.mice[pointer_id].mx = (int) event.getX(pointer_index);
+		Lib.mice[pointer_id].my = (int) event.getY(pointer_index);
 
 		switch (masked_action) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_POINTER_DOWN:
 			case MotionEvent.ACTION_MOVE: {
-				Lib.mice[pointer_index].mt = 1;
+				Lib.mice[pointer_id].mt = 1;
 				break;
 
-			}
-
-			case MotionEvent.ACTION_UP:
+			} case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
 			case MotionEvent.ACTION_CANCEL: {
-				Lib.mice[pointer_index].mt = 0;
+				Lib.mice[pointer_id].mt = 0;
 				break;
 
 			} default: {
-				Log.e("AQUA", String.format("WOOWOWOWOWO NEW TOUCGH EVENT DETECTED %d %d %d %d %d", pointer_index, pointer_id, masked_action, x, y));
 				return super.onTouchEvent(event);
 
 			}
