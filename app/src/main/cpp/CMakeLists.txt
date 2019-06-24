@@ -20,8 +20,8 @@ cmake_minimum_required(VERSION 3.4.1)
 #                    detection.
 #   [24, infinite)   ES2 & ES3 & Vulkan
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unused-variable -Wno-unused-function -Wno-implicitly-unsigned-literal")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-rtti -fno-exceptions -Wall -Wno-unused-variable -Wno-unused-function -Wno-implicitly-unsigned-literal")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unused-variable -Wno-unused-function -Wno-implicitly-unsigned-literal -D__HAS_CURL")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-rtti -fno-exceptions -Wall -Wno-unused-variable -Wno-unused-function -Wno-implicitly-unsigned-literal -D__HAS_CURL")
 
 if (${ANDROID_PLATFORM_LEVEL} LESS 12)
 	message(FATAL_ERROR "ERROR OpenGL 2 is not supported before API level 11 (currently using ${ANDROID_PLATFORM_LEVEL}).")
@@ -44,8 +44,14 @@ add_library(entry SHARED
             ${GL3_STUB_SRC}
             entry.cpp)
 
-# Include libraries needed for entry lib
+# include inclusion directories needed for entry lib
+target_include_directories(entry PUBLIC
+            prebuild/include)
+
+# include libraries needed for entry lib
 target_link_libraries(entry
+            z
+            ${CMAKE_CURRENT_SOURCE_DIR}/prebuild/${CMAKE_ANDROID_ARCH_ABI}/libcurl.a
             ${OPENGL_LIB}
             android
             EGL

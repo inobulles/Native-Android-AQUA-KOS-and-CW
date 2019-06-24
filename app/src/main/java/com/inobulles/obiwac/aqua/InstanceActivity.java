@@ -207,23 +207,33 @@ public class InstanceActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Lib.event(0, 0, 0, 0, 0, 0, 0);
-
+		int action = event.getActionMasked();
 		int pointer_index = event.getActionIndex();
-		int pointer_id    = event.getPointerId(pointer_index);
-		int masked_action = event.getActionMasked();
+		int pointer_id = event.getPointerId(pointer_index);
 
 		Lib.mice[pointer_id].mx = (int) event.getX(pointer_index);
 		Lib.mice[pointer_id].my = (int) event.getY(pointer_index);
 
-		switch (masked_action) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_POINTER_DOWN:
+		switch (action) {
 			case MotionEvent.ACTION_MOVE: {
+				for (int i = 0; i < event.getPointerCount(); i++) {
+					int current = event.getPointerId(i);
+
+					Lib.mice[current].mx = (int) event.getX(i);
+					Lib.mice[current].my = (int) event.getY(i);
+
+				}
+
 				Lib.mice[pointer_id].mt = 1;
 				break;
 
-			} case MotionEvent.ACTION_UP:
+			} case MotionEvent.ACTION_DOWN:
+			case MotionEvent.ACTION_POINTER_DOWN: {
+				Lib.mice[pointer_id].mt = 1;
+				break;
+
+			} case MotionEvent.ACTION_OUTSIDE:
+			case MotionEvent.ACTION_UP:
 			case MotionEvent.ACTION_POINTER_UP:
 			case MotionEvent.ACTION_CANCEL: {
 				Lib.mice[pointer_id].mt = 0;
