@@ -1,93 +1,63 @@
 package com.inobulles.obiwac.aqua;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
+import android.os.StrictMode;
+
+import java.io.*;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 class RequestResponse {
-    public String text;
+    public byte[] text;
+    public long   length;
     public int    code;
 
-    RequestResponse(String text, int code) {
-        this.text = text;
-        this.code = code;
+    RequestResponse(int code, byte[] text, long length) {
+        this.text   = text;
+        this.length = length;
+        this.code   = code;
 
     }
 
 }
 
 public class Requests {
+    private static final String USER_AGENT = "Mozilla/5.0 Android AQUA/3.0";
+
     private static RequestResponse __get(String url_string) throws IOException {
-        URL               url;
-        HttpURLConnection connection;
-        BufferedReader    reader;
+    	URL url = new URL(url_string);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-        try {
-            url = new URL(url_string);
+        connection.setConnectTimeout(5000); // 5 second timeout
+        connection.setReadTimeout(5000);
 
-        } catch (MalformedURLException exception) {
-            exception.printStackTrace();
-            throw new IOException();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("User-Agent", USER_AGENT);
 
-        } try {
-            connection = (HttpURLConnection) url.openConnection();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputStream stream = (InputStream) connection.getContent();
+        byte[] chunk = new byte[4096]; // read in 4kb chunks
 
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            throw new IOException();
-
-        } try {
-            connection.setRequestMethod("GET");
-
-        } catch (ProtocolException exception) {
-            exception.printStackTrace();
-            throw new IOException();
+        int n;
+        while ((n = stream.read(chunk)) > 0) {
+            baos.write(chunk, 0, n);
 
         }
 
-        connection.setDoOutput      (true);
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout   (5000);
-
-        try {
-            connection.connect();
-
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            throw new IOException();
-
-        } try {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            throw new IOException();
-
-        }
-
-        StringBuilder content = new StringBuilder();
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            content.append(line).append("\n");
-
-        }
-
-        return new RequestResponse(content.toString(), connection.getResponseCode());
+        stream.close();
+        return new RequestResponse(connection.getResponseCode(), baos.toByteArray(), baos.size());
 
     }
 
     public static RequestResponse get(String url_string) {
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build()); /// FIXME This should not be here. I'm doing this for now, because the ZVM can't anyway do anything while still requesting, but this isn't a viable long-term solution
+
         try {
             return __get(url_string);
 
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
-            return null;
+            return new RequestResponse(0, null, 0);
 
         }
 

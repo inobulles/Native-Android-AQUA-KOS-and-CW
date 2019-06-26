@@ -317,6 +317,20 @@ public class Lib {
 
 	}
 
+	private static RequestResponse current_request_response;
+
+	public static int requests_get(String url) {
+		current_request_response = Requests.get(url);
+		return current_request_response.code;
+
+	} public static long requests_length() {
+		return current_request_response.length;
+
+	} public static byte[] requests_text() {
+		return current_request_response.text;
+
+	}
+
 	public static native void give_text_input_response(boolean has_response, String response);
 	public static native void give_log_tag(String tag, boolean standalone);
 	public static native void init(AssetManager asset_manager);
