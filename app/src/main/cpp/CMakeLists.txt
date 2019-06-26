@@ -50,8 +50,6 @@ target_include_directories(entry PUBLIC
 
 # include libraries needed for entry lib
 target_link_libraries(entry
-            z
-            ${CMAKE_CURRENT_SOURCE_DIR}/prebuild/${CMAKE_ANDROID_ARCH_ABI}/libcurl.a
             ${OPENGL_LIB}
             android
             EGL
