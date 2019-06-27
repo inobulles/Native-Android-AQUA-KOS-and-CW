@@ -109,6 +109,7 @@ public class InstanceActivity extends Activity {
 					case "read external storage":  manifest_permission = Manifest.permission.READ_EXTERNAL_STORAGE;  break;
 					case "write external storage": manifest_permission = Manifest.permission.WRITE_EXTERNAL_STORAGE; break;
 					case "internet":               manifest_permission = Manifest.permission.INTERNET;               break;
+					case "bluetooth":              manifest_permission = Manifest.permission.BLUETOOTH;              break;
 					default:                       manifest_permission = permission;                                 break;
 
 				}

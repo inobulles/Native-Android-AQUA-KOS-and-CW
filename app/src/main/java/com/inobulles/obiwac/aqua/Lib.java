@@ -1,12 +1,14 @@
 
 package com.inobulles.obiwac.aqua;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -328,6 +330,17 @@ public class Lib {
 
 	} public static byte[] requests_text() {
 		return current_request_response.text;
+
+	}
+
+	public static String platform(String data) {
+		switch (data) {
+			case "nickname": return BluetoothAdapter.getDefaultAdapter().getName();
+			case "model":    return Build.MODEL;
+			case "vendor":   return Build.BRAND;
+			default:         return "unknown";
+
+		}
 
 	}
 

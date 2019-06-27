@@ -1,6 +1,7 @@
-orientation:full
+orientation:landscape
 permission:write external storage
 permission:read external storage
 permission:internet
+permission:bluetooth
 tag:AQUA
 standalone:true
