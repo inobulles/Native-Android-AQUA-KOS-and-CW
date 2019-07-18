@@ -11,9 +11,7 @@ import android.opengl.GLES20;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-import android.view.MotionEvent;
 
-import javax.microedition.khronos.opengles.GL10;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -333,6 +331,38 @@ public class Lib {
 
 	} public static void requests_ua(String ua) {
 		Requests.USER_AGENT = ua;
+
+	}
+
+	private static ArrayList<Sound> sounds = new ArrayList<>();
+
+	public static long mp3_load(String path) {
+		sounds.add(new Sound(main_activity.getApplicationContext(), path));
+		return sounds.size(); // always > 0, otherwise DE assumes error
+
+	} public static void sound_dispose(long index) {
+		sounds.get((int) (index - 1)).dispose();
+
+	} public static double sound_get_seconds(long index) {
+		return (double) sounds.get((int) (index - 1)).get_ms() / 1000.0f;
+
+	} public static void sound_play(long index) {
+		sounds.get((int) (index - 1)).play_or_resume();
+
+	} public static void sound_stop(long index) {
+		sounds.get((int) (index - 1)).stop();
+
+	} public static void sound_pause(long index) {
+		sounds.get((int) (index - 1)).pause();
+
+	} public static void sound_volume(long index, double fraction) {
+		sounds.get((int) (index - 1)).volume((float) fraction);
+
+	} public static void sound_position(long index, double fraction) {
+		sounds.get((int) (index - 1)).position((long) (sounds.get((int) (index - 1)).get_ms() * fraction));
+
+	} public static long sound_frequency(long index) {
+		return sounds.get((int) (index - 1)).frequency();
 
 	}
 
