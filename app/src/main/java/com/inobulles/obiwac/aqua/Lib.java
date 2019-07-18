@@ -337,8 +337,16 @@ public class Lib {
 	private static ArrayList<Sound> sounds = new ArrayList<>();
 
 	public static long mp3_load(String path) {
-		sounds.add(new Sound(main_activity.getApplicationContext(), path));
-		return sounds.size(); // always > 0, otherwise DE assumes error
+		Sound sound = new Sound(main_activity.getApplicationContext(), path);
+
+		if (sound.failure()) {
+			return 0;
+
+		} else {
+			sounds.add(sound);
+			return sounds.size(); // always > 0, otherwise DE assumes error
+
+		}
 
 	} public static void sound_dispose(long index) {
 		sounds.get((int) (index - 1)).dispose();

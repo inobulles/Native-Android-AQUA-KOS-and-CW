@@ -1,10 +1,13 @@
 package com.inobulles.obiwac.aqua;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Sound {
 	private static final long DEFAULT_FREQUENCY = 48000;
@@ -13,7 +16,21 @@ public class Sound {
 	private static final long frequency = DEFAULT_FREQUENCY;
 
 	Sound(Context context, String path) {
-		media_player = MediaPlayer.create(context, Uri.fromFile(new File(path)));
+		media_player = new MediaPlayer();
+
+		try {
+			AssetFileDescriptor fd = Lib.main_activity.getAssets().openFd(path);
+			media_player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+			media_player.prepare();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			media_player = null;
+
+		}
+
+	} public boolean failure() {
+		return media_player == null;
 
 	} public long get_ms() {
 		return media_player.getDuration();
