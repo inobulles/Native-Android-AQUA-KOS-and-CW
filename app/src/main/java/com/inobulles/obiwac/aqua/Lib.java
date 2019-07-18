@@ -228,7 +228,7 @@ public class Lib {
 
 	}
 
-	private static InstanceActivity main_activity;
+	public static InstanceActivity main_activity;
 
 	public static void give_activity(InstanceActivity activity) {
 		main_activity = activity;
@@ -331,14 +331,27 @@ public class Lib {
 	} public static byte[] requests_text() {
 		return current_request_response.text;
 
+	} public static void requests_ua(String ua) {
+		Requests.USER_AGENT = ua;
+
 	}
 
 	public static String platform(String data) {
 		switch (data) {
-			case "nickname": return BluetoothAdapter.getDefaultAdapter().getName();
-			case "model":    return Build.MODEL;
-			case "vendor":   return Build.BRAND;
-			default:         return "unknown";
+			case "nickname": {
+				BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+				return adapter != null ? adapter.getName() : Build.HOST;
+
+			} case "model": {
+				return Build.MODEL;
+
+			} case "vendor": {
+				return Build.BRAND;
+
+			} default: {
+				return "unknown";
+
+			}
 
 		}
 

@@ -9,10 +9,8 @@ user/*
 !user/music/*
 !user/videos/*
 
-config/desktop_category_entries.rmf
 config/theme.rmf
 config/user.rmf
-config/widgets.rmf
 
 perm/*
 temp/*

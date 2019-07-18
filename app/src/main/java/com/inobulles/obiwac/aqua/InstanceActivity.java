@@ -161,6 +161,7 @@ public class InstanceActivity extends Activity {
 				}
 
 			};
+
 			runOnUiThread(view_thread);
 
 		}

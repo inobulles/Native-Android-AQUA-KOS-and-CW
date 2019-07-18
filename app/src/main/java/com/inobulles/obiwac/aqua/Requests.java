@@ -22,7 +22,7 @@ class RequestResponse {
 }
 
 public class Requests {
-    private static final String USER_AGENT = "Mozilla/5.0 Android AQUA/3.0";
+    public static String USER_AGENT = "Mozilla/5.0 Android AQUA/3.0";
 
     private static RequestResponse __get(String url_string) throws IOException {
     	URL url = new URL(url_string);
@@ -45,6 +45,7 @@ public class Requests {
         }
 
         stream.close();
+        USER_AGENT = "Mozilla/5.0 Android AQUA/3.0"; // reset ua
         return new RequestResponse(connection.getResponseCode(), baos.toByteArray(), baos.size());
 
     }
