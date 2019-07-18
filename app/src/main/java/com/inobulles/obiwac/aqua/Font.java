@@ -11,25 +11,12 @@ import android.util.Log;
 import java.nio.IntBuffer;
 
 public class Font {
-	/*private Paint paint;
-	private Paint.FontMetrics metrics;*/
-
 	private TextPaint paint;
 	private StaticLayout layout;
 	private String current;
 
 	Font(String path, int size) {
 		Typeface face = Typeface.createFromAsset(InstanceActivity.assets, path);
-		/*paint = new Paint();
-
-		paint.setAntiAlias(true);
-		paint.setTextSize(size);
-		paint.setColor(Color.WHITE);
-		paint.setStyle(Paint.Style.FILL);
-		paint.setTypeface(face);
-		paint.setHinting(Paint.HINTING_ON);
-
-		metrics = paint.getFontMetrics();*/
 
 		paint = new TextPaint();
 		layout = null;
