@@ -32,7 +32,7 @@ public class Font {
 
 	private void create(String text) {
 		if (text == null) {
-			text = "FIXME: NO TEXT PASSED";
+			text = "FIXME No text passed";
 
 		} if (current == null || !current.equals(text) || layout == null) {
 			current = text;
@@ -43,10 +43,13 @@ public class Font {
 	}
 
 	private int internal_get_width() {
-		Rect bounds = new Rect();
-		paint.getTextBounds(current, 0, current.length(), bounds);
-		return (int) Math.ceil(bounds.width());
+		double width = 0;
+		for (int i = 0; i < layout.getLineCount(); i++) {
+			width = Math.max(width, layout.getLineWidth(i));
 
+		}
+
+		return (int) Math.ceil(width);
 
 	}
 

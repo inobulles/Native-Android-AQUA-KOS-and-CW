@@ -63,9 +63,7 @@ public class Lib {
 
 		}
 
-	}
-
-	public static void clear_fonts() {
+	} public static void clear_fonts() {
 		int i;
 		for (i = 0; i < MAX_FONTS; i++) {
 			fonts[i] = null;
@@ -335,6 +333,15 @@ public class Lib {
 	}
 
 	private static ArrayList<Sound> sounds = new ArrayList<>();
+
+	public static void clear_sounds() {
+		for (Sound sound : sounds) {
+			sound.stop();
+			sound.dispose();
+
+		}
+
+	}
 
 	public static long mp3_load(String path) {
 		Sound sound = new Sound(main_activity.getApplicationContext(), path);

@@ -177,6 +177,7 @@ public class InstanceActivity extends Activity {
 		if (Lib.fonts != null) {
 			Lib.dispose_all();
 			Lib.clear_fonts();
+			Lib.clear_sounds();
 
 		}
 
